@@ -42,12 +42,22 @@ def _find(
 
 
 def _layer_depth_m(field: Field) -> float | None:
+    # cfgrib can combine several heightAboveGroundLayer messages into one
+    # variable and expose the individual layer tops through the vertical
+    # coordinate (Field.level). The GRIB topLevel/bottomLevel attributes can
+    # then be inherited from the first message in that group and are not
+    # reliable for each split Field. For the HRRR 0-based layers used here,
+    # prefer the decoded coordinate value.
+    if (
+        "heightabovegroundlayer" in field.type_of_level.lower()
+        and field.level is not None
+        and field.level in {1000.0, 3000.0, 6000.0}
+    ):
+        return float(field.level)
     if field.top_level is not None and field.bottom_level is not None:
         depth = abs(field.top_level - field.bottom_level)
         if depth > 0:
             return depth
-    if field.level is not None and field.level in {1000.0, 3000.0, 6000.0}:
-        return float(field.level)
     return None
 
 

@@ -46,7 +46,16 @@ class OperationalTests(unittest.TestCase):
             field("pwat", "atmosphereSingleLayer", 0, "instant", "kg m-2", [[25.4, 38.1], [50.8, 63.5]]),
             field("cape", "surface", 0, "instant", "J kg-1", [[500, 1000], [1500, 2000]]),
             field("cape", "pressureFromGroundLayer", 9000, "instant", "J kg-1", [[600, 1100], [1600, 2100]]),
-            field("hlcy", "heightAboveGroundLayer", 3000, "instant", "m2 s-2", [[50, 100], [150, 200]]),
+            field(
+                "hlcy",
+                "heightAboveGroundLayer",
+                3000,
+                "instant",
+                "m2 s-2",
+                [[50, 100], [150, 200]],
+                top=0,
+                bottom=1000,
+            ),
         ]
         specials = {
             "max_downdraft": [

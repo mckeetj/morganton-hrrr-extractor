@@ -106,6 +106,11 @@ class DiagnosticTests(unittest.TestCase):
                 np.array([[value]], dtype=float),
                 lat,
                 lon,
+                # Simulate cfgrib grouping behavior: top/bottom metadata can
+                # reflect the first layer even when the split coordinate is
+                # the 6000-m layer. Field.level must therefore take priority.
+                top_level=0.0,
+                bottom_level=1000.0,
             )
 
         # Components 0.005 and 0.010 s^-1 over 6 km imply a vector difference
