@@ -1,0 +1,113 @@
+name: Update MORG ECONet Morning Context
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 8 * * *"
+      timezone: "America/New_York"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Preserve current HRRR JSON
+        run: |
+          mkdir -p public
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 3 \
+            --retry-all-errors \
+            "https://mckeetj.github.io/morganton-hrrr-extractor/burke-hrrr.json" \
+            --output public/burke-hrrr.json
+          python -m json.tool public/burke-hrrr.json > /dev/null
+
+      - name: Run MORG ECONet extractor
+        env:
+          NCSCO_CLOUDS_HASH: ${{ secrets.NCSCO_CLOUDS_HASH }}
+        run: |
+          PYTHONPATH=. python -m burke_hrrr.econet --output public/morg-econet.json
+
+      - name: Validate generated MORG ECONet JSON
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("public/morg-econet.json").read_text(encoding="utf-8"))
+          if data.get("station", {}).get("id") != "MORG":
+              raise SystemExit("ECONet output is not for MORG")
+          if data.get("schema_version") != 1:
+              raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
+
+          generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
+          age_minutes = (dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)).total_seconds() / 60
+          if age_minutes < -5 or age_minutes > 20:
+              raise SystemExit(f"ECONet generated_at is unexpectedly stale: {age_minutes:.1f} minutes")
+
+          status = data.get("status")
+          if status not in {"current", "stale", "unavailable"}:
+              raise SystemExit(f"unexpected ECONet status: {status!r}")
+
+          if status != "unavailable":
+              rainfall = data.get("rainfall", {})
+              soil = data.get("soil_moisture", {})
+              for period in ("24h", "72h", "168h"):
+                  if period not in rainfall:
+                      raise SystemExit(f"missing ECONet rainfall period: {period}")
+              for depth in ("10cm", "20cm"):
+                  if depth not in soil:
+                      raise SystemExit(f"missing ECONet soil depth: {depth}")
+                  if soil[depth].get("qc_score") not in {0, 1}:
+                      raise SystemExit(f"unacceptable current QC score for {depth}")
+                  if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
+                      raise SystemExit("public ECONet summary must not republish raw soil-moisture values")
+
+          print(f"MORG ECONet status: {status}")
+          print(f"Generated: {data['generated_at']}")
+          PY
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: "./public"
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
