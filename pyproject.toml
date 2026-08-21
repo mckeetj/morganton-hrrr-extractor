@@ -1,0 +1,23 @@
+[project]
+name = "burke-hrrr"
+version = "0.1.0"
+description = "Burke County HRRR environmental field extractor"
+requires-python = ">=3.11"
+dependencies = [
+  "cfgrib>=0.9.14",
+  "eccodes>=2.38",
+  "metpy>=1.6",
+  "numpy>=1.26",
+  "xarray>=2024.1",
+]
+
+[project.scripts]
+burke-hrrr = "burke_hrrr.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["burke_hrrr*"]
+

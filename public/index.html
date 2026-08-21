@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Burke County HRRR Extractor</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
+    code { background: #f3f4f6; padding: .15rem .35rem; border-radius: .25rem; }
+    dt { font-weight: 700; margin-top: .8rem; }
+    dd { margin-left: 0; }
+  </style>
+</head>
+<body>
+  <h1>Burke County HRRR Data</h1>
+  <p>The current machine-readable output is <a href="burke-hrrr.json"><code>burke-hrrr.json</code></a>.</p>
+  <dl id="status"><dt>Status</dt><dd>Loading current metadata…</dd></dl>
+  <script>
+    fetch('burke-hrrr.json', {cache: 'no-store'})
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(d => {
+        document.getElementById('status').innerHTML = `
+          <dt>Generated</dt><dd>${d.generated_at ?? 'unknown'}</dd>
+          <dt>HRRR cycle initialized</dt><dd>${d.cycle_initialized ?? 'unknown'}</dd>
+          <dt>Forecast through</dt><dd>${d.through ?? 'unknown'}</dd>
+          <dt>Forecast hours</dt><dd>${Array.isArray(d.forecast_hours) ? d.forecast_hours.length : 'unknown'}</dd>`;
+      })
+      .catch(err => {
+        document.getElementById('status').innerHTML = `<dt>Status</dt><dd>JSON not available: ${err.message}</dd>`;
+      });
+  </script>
+</body>
+</html>
