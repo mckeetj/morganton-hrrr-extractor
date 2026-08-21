@@ -49,7 +49,7 @@ jobs:
             --workdir "${RUNNER_TEMP}/hrrr-data" \
             --output public/burke-hrrr.json
 
-      - name: Validate generated JSON
+      - name: Validate generated V2 JSON
         run: |
           python - <<'PY'
           import datetime as dt
@@ -59,36 +59,63 @@ jobs:
           path = Path("public/burke-hrrr.json")
           data = json.loads(path.read_text(encoding="utf-8"))
 
-          required = [
+          required_top_level = [
               "schema_version",
+              "extractor_version",
               "generated_at",
               "cycle_initialized",
               "through",
               "forecast_hours",
+              "operational_summary",
           ]
-          missing = [key for key in required if key not in data]
+          missing = [key for key in required_top_level if key not in data]
           if missing:
               raise SystemExit(f"missing required JSON fields: {missing}")
+          if data["schema_version"] != 2:
+              raise SystemExit(f"expected schema_version 2, got {data['schema_version']!r}")
           if not data["forecast_hours"]:
               raise SystemExit("forecast_hours is empty")
 
-          generated = dt.datetime.fromisoformat(
-              data["generated_at"].replace("Z", "+00:00")
-          )
+          generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
           age_minutes = (
               dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
           ).total_seconds() / 60
-
           if age_minutes < -5 or age_minutes > 45:
               raise SystemExit(
-                  f"generated_at is unexpectedly stale: "
-                  f"{age_minutes:.1f} minutes"
+                  f"generated_at is unexpectedly stale: {age_minutes:.1f} minutes"
               )
 
+          key_sets = [
+              set(hour.get("key_diagnostics", {}))
+              for hour in data["forecast_hours"]
+              if isinstance(hour.get("key_diagnostics"), dict)
+          ]
+          present = set().union(*key_sets) if key_sets else set()
+          required_diagnostics = {
+              "surface_gust_mph",
+              "max_downdraft_magnitude_ms",
+              "cape_90_0mb_jkg",
+              "lapse_rate_700_500mb_k_per_km",
+              "bulk_shear_0_6km_kt",
+          }
+          missing_diagnostics = sorted(required_diagnostics - present)
+          if missing_diagnostics:
+              raise SystemExit(
+                  "V2 core diagnostics missing from all forecast hours: "
+                  + ", ".join(missing_diagnostics)
+              )
+
+          metrics = data["operational_summary"].get("metrics", {})
+          if not metrics:
+              raise SystemExit("operational_summary.metrics is empty")
+
           print(f"Generated: {data['generated_at']}")
+          print(f"Extractor: {data['extractor_version']}")
           print(f"HRRR cycle: {data['cycle_initialized']}")
           print(f"Through: {data['through']}")
           print(f"Forecast hours: {len(data['forecast_hours'])}")
+          print(f"Key diagnostics present: {len(present)}")
+          print(f"Operational summary metrics: {len(metrics)}")
           PY
 
       - name: Configure GitHub Pages
@@ -103,10 +130,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     runs-on: ubuntu-latest
     needs: build
-
     permissions:
       pages: write
       id-token: write
