@@ -133,6 +133,57 @@ def _common_pressure_profile(
     return heights, values
 
 
+
+def _common_wind_profile(
+    fields: list[Field],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+    """Return common pressure-level height/u/v arrays with vertical dim first.
+
+    This provides a robust fallback for bulk shear when cfgrib does not expose
+    HRRR VUCSH/VVCSH layer coordinates consistently.
+    """
+    u_by_level = {
+        float(field.level): field
+        for field in fields
+        if _name(field) in {"u", "ugrd"}
+        and "isobaric" in field.type_of_level.lower()
+        and field.level is not None
+    }
+    v_by_level = {
+        float(field.level): field
+        for field in fields
+        if _name(field) in {"v", "vgrd"}
+        and "isobaric" in field.type_of_level.lower()
+        and field.level is not None
+    }
+    z_by_level = {
+        float(field.level): field
+        for field in fields
+        if _name(field) in {"gh", "hgt"}
+        and "isobaric" in field.type_of_level.lower()
+        and field.level is not None
+    }
+    levels = sorted(
+        set(u_by_level).intersection(v_by_level).intersection(z_by_level),
+        reverse=True,
+    )
+    if len(levels) < 2:
+        return None
+    shape = u_by_level[levels[0]].values.shape
+    levels = [
+        level
+        for level in levels
+        if u_by_level[level].values.shape == shape
+        and v_by_level[level].values.shape == shape
+        and z_by_level[level].values.shape == shape
+    ]
+    if len(levels) < 2:
+        return None
+    heights = np.stack([np.asarray(z_by_level[level].values, dtype=float) for level in levels])
+    u_values = np.stack([np.asarray(u_by_level[level].values, dtype=float) for level in levels])
+    v_values = np.stack([np.asarray(v_by_level[level].values, dtype=float) for level in levels])
+    return heights, u_values, v_values
+
 def _layer_depth_m(field: Field) -> float | None:
     # cfgrib can combine several heightAboveGroundLayer messages into one
     # variable and expose the individual layer tops through the vertical
@@ -235,22 +286,57 @@ def derive_diagnostics(
             bounds,
         )
 
-    # Direct HRRR vertical shear components are in s^-1. Multiplying by the
-    # layer depth produces the vector wind difference across the layer.
+    # Bulk shear: prefer HRRR's direct VUCSH/VVCSH layer components when cfgrib
+    # exposes the requested layer unambiguously. If not, derive the vector wind
+    # difference from 10-m winds and pressure-level winds interpolated to the
+    # requested AGL height. The fallback is independent of the fragile GRIB
+    # layer-coordinate metadata that caused the V2 validation failure.
+    terrain_for_shear = terrain if terrain is not None else _terrain_height(surface_fields)
+    u10 = _surface_field(surface_fields, {"10u", "u10", "u", "ugrd"}, 10)
+    v10 = _surface_field(surface_fields, {"10v", "v10", "v", "vgrd"}, 10)
+    wind_profile = _common_wind_profile(pressure_fields)
+
     for depth_m, label in ((1000.0, "0_1km"), (6000.0, "0_6km")):
         u_shear = _find_shear_component(surface_fields, "vucsh", depth_m)
         v_shear = _find_shear_component(surface_fields, "vvcsh", depth_m)
-        if u_shear is None or v_shear is None:
+        if u_shear is not None and v_shear is not None:
+            shear_ms = np.hypot(
+                np.asarray(u_shear.values, dtype=float) * depth_m,
+                np.asarray(v_shear.values, dtype=float) * depth_m,
+            )
+            output[f"bulk_shear_{label}"] = _metric(
+                shear_ms * 1.943844,
+                u_shear,
+                "kt",
+                f"HRRR-derived from VUCSH/VVCSH over the {int(depth_m / 1000)}-km layer",
+                bounds,
+            )
             continue
+
+        if (
+            terrain_for_shear is None
+            or u10 is None
+            or v10 is None
+            or wind_profile is None
+        ):
+            continue
+
+        heights, u_profile, v_profile = wind_profile
+        target_height = np.asarray(terrain_for_shear.values, dtype=float) + depth_m
+        upper_u = interpolate_at_height(heights, u_profile, target_height)
+        upper_v = interpolate_at_height(heights, v_profile, target_height)
         shear_ms = np.hypot(
-            np.asarray(u_shear.values, dtype=float) * depth_m,
-            np.asarray(v_shear.values, dtype=float) * depth_m,
+            upper_u - np.asarray(u10.values, dtype=float),
+            upper_v - np.asarray(v10.values, dtype=float),
         )
         output[f"bulk_shear_{label}"] = _metric(
             shear_ms * 1.943844,
-            u_shear,
+            u10,
             "kt",
-            f"HRRR-derived from VUCSH/VVCSH over the {int(depth_m / 1000)}-km layer",
+            (
+                f"HRRR-derived vector wind difference from 10 m AGL to {int(depth_m / 1000)} km AGL; "
+                "upper wind linearly interpolated from pressure-level U/V and geopotential height"
+            ),
             bounds,
         )
 
