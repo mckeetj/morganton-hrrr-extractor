@@ -8,7 +8,9 @@ CLOUDS API data-service agreement's restriction on redistributing raw data.
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
+import io
 import json
 import math
 import os
@@ -32,6 +34,7 @@ VARIABLES = ("precip1m", "soilmoist", "soilmoist20cm")
 QC_ACCEPTED = {0, 1}
 MAX_CURRENT_AGE_MINUTES = 90.0
 SOIL_DEPTHS_CM = {"soilmoist": 10, "soilmoist20cm": 20}
+CSV_ATTRS = ("location", "datetime", "var", "value", "unit", "score", "flag", "obtime")
 
 
 @dataclass(frozen=True)
@@ -268,6 +271,10 @@ def parse_clouds_json(payload: Any) -> list[Observation]:
 
 
 def _build_url(api_hash: str, start: dt.datetime, end: dt.datetime) -> str:
+    # CLOUDS documents `attr` (including score/flag) as CSV/HTML-only.  JSON is
+    # useful for ordinary values, but it does not expose the QC attributes needed by
+    # this operational workflow.  Request long-form CSV internally, then publish the
+    # derived result as JSON.
     params = {
         "hash": api_hash,
         "loc": f"location={STATION}",
@@ -276,18 +283,18 @@ def _build_url(api_hash: str, start: dt.datetime, end: dt.datetime) -> str:
         "end": end.astimezone(EASTERN).strftime("%Y-%m-%d %H:%M:%S"),
         "int": "1 hour",
         "obtype": "H",
-        "output": "json",
+        "output": "csv_long",
         "qclimit": "1",
         "timezone": "US/Eastern",
         "order": "location,datetime",
-        # Documented as CSV/HTML-only, but included to express requested metadata;
-        # JSON is validated below and rejected if score/flag are unavailable.
-        "attr": "location,datetime,var,value,unit,score,flag,obtime",
+        "attr": ",".join(CSV_ATTRS),
+        "metadata": "no",
+        "attr_delim": ";",
     }
     return f"{API_ENDPOINT}?{urllib.parse.urlencode(params)}"
 
 
-def _fetch_json(api_hash: str, start: dt.datetime, end: dt.datetime, retries: int = 4) -> Any:
+def _fetch_csv(api_hash: str, start: dt.datetime, end: dt.datetime, retries: int = 4) -> str:
     url = _build_url(api_hash, start, end)
     retryable = {429, 500, 502, 503, 504}
     last_error: Exception | None = None
@@ -296,13 +303,13 @@ def _fetch_json(api_hash: str, start: dt.datetime, end: dt.datetime, retries: in
         req = urllib.request.Request(
             url,
             headers={
-                "User-Agent": "morganton-electric-weather-support/1.0",
-                "Accept": "application/json",
+                "User-Agent": "morganton-electric-weather-support/1.1",
+                "Accept": "text/csv,text/plain;q=0.9,*/*;q=0.1",
             },
         )
         try:
             with urllib.request.urlopen(req, timeout=45) as response:
-                return json.loads(response.read().decode("utf-8"))
+                return response.read().decode("utf-8-sig")
         except urllib.error.HTTPError as exc:
             # Do not stringify the exception because its URL contains the secret hash.
             last_error = RuntimeError(f"CLOUDS API returned HTTP {exc.code}")
@@ -312,13 +319,126 @@ def _fetch_json(api_hash: str, start: dt.datetime, end: dt.datetime, retries: in
             last_error = RuntimeError("CLOUDS API network request failed")
             if attempt == retries - 1:
                 raise last_error from None
-        except (TimeoutError, json.JSONDecodeError):
-            last_error = RuntimeError("CLOUDS API response timed out or was not valid JSON")
+        except (TimeoutError, UnicodeDecodeError):
+            last_error = RuntimeError("CLOUDS API response timed out or was not valid UTF-8 CSV")
             if attempt == retries - 1:
                 raise last_error from None
         time.sleep(2**attempt)
 
     raise last_error or RuntimeError("CLOUDS API request failed")
+
+
+def _normalize_csv_name(value: str) -> str:
+    return value.strip().strip('\ufeff').strip().lower().replace(" ", "_")
+
+
+def _observation_from_record(record: dict[str, Any], *, flag_present: bool) -> Observation | None:
+    variable_raw = str(_first(record, ("var", "variable", "parameter")) or "").strip()
+    variable = variable_raw.split("|", 1)[0]
+    if variable not in VARIABLES:
+        return None
+
+    location = str(_first(record, ("location", "loc", "station", "station_id")) or STATION).strip()
+    if location.upper() != STATION:
+        return None
+
+    # obtime is the actual observation time; datetime is the requested interval time.
+    # Prefer obtime for freshness calculations when the API provides it.
+    observed_at = _parse_time(_first(record, ("obtime", "ob_time")))
+    if observed_at is None:
+        observed_at = _parse_time(_first(record, ("datetime", "date_time", "time", "timestamp")))
+    if observed_at is None:
+        return None
+
+    value = _as_float(_first(record, ("value", "val", "observation")))
+    score = _as_int(_first(record, ("score", "qc_score", "qcscore", "qc")))
+    if value is None or score is None:
+        return None
+
+    unit_raw = _first(record, ("unit", "units"))
+    unit = str(unit_raw).strip() if unit_raw not in (None, "") else ("in" if variable == "precip1m" else "m3/m3")
+    flag_raw = _first(record, ("flag", "qc_flag", "qcflag", "flags"))
+    flag = None if flag_raw is None else str(flag_raw)
+
+    return Observation(
+        variable=variable,
+        observed_at=observed_at,
+        value=value,
+        unit=unit,
+        qc_score=score,
+        qc_flag=flag,
+        flag_present=flag_present,
+    )
+
+
+def parse_clouds_csv(text: str) -> list[Observation]:
+    """Parse CLOUDS csv_long output with explicit QC score/flag attributes.
+
+    CLOUDS CSV output can appear either as ordinary long-form columns or as an
+    attribute-packed cell separated by `attr_delim`.  Supporting both forms keeps
+    this bridge tolerant of presentation differences without accepting records that
+    lack an explicit QC score and flag field.
+    """
+    raw_lines = [
+        line for line in text.splitlines()
+        if line.strip() and not line.lstrip().startswith("##")
+    ]
+    if not raw_lines:
+        return []
+
+    rows = list(csv.reader(io.StringIO("\n".join(raw_lines))))
+    parsed: list[Observation] = []
+    seen: set[tuple[str, dt.datetime, float, int]] = set()
+
+    # Form 1: a conventional header row followed by one observation per row.
+    header_index: int | None = None
+    header: list[str] = []
+    for i, row in enumerate(rows[:10]):
+        normalized = [_normalize_csv_name(cell) for cell in row]
+        names = set(normalized)
+        if {"var", "value", "score"}.issubset(names) and ({"datetime", "obtime"} & names):
+            header_index = i
+            header = normalized
+            break
+
+    if header_index is not None:
+        flag_present_in_header = "flag" in header or "qc_flag" in header
+        for row in rows[header_index + 1:]:
+            if not row:
+                continue
+            padded = row + [""] * max(0, len(header) - len(row))
+            record = {header[i]: padded[i] for i in range(len(header))}
+            obs = _observation_from_record(record, flag_present=flag_present_in_header)
+            if obs is None:
+                continue
+            key = (obs.variable, obs.observed_at.astimezone(dt.UTC), obs.value, obs.qc_score)
+            if key not in seen:
+                seen.add(key)
+                parsed.append(obs)
+
+    # Form 2: CSV cells containing attr-delimited values in the requested order.
+    # Example shape: MORG;2026-08-21 09:00;soilmoist;0.31;m3/m3;0;;2026-08-21 09:00
+    for row in rows:
+        for cell in row:
+            cell = cell.strip()
+            if ";" not in cell:
+                continue
+            parts = [part.strip() for part in cell.split(";")]
+            if len(parts) < 6:
+                continue
+            if _normalize_csv_name(parts[0]) == "location":
+                continue
+            padded = parts + [""] * (len(CSV_ATTRS) - len(parts))
+            record = {CSV_ATTRS[i]: padded[i] for i in range(len(CSV_ATTRS))}
+            obs = _observation_from_record(record, flag_present=len(parts) >= 7)
+            if obs is None:
+                continue
+            key = (obs.variable, obs.observed_at.astimezone(dt.UTC), obs.value, obs.qc_score)
+            if key not in seen:
+                seen.add(key)
+                parsed.append(obs)
+
+    return sorted(parsed, key=lambda item: (item.observed_at, item.variable))
 
 
 def _dedupe_accepted(observations: Iterable[Observation]) -> list[Observation]:
@@ -435,7 +555,7 @@ def build_summary(observations: list[Observation], now: dt.datetime) -> dict[str
     )
     if missing_qc_flags:
         raise RuntimeError(
-            "CLOUDS JSON did not expose QC flag metadata for: " + ", ".join(missing_qc_flags)
+            "CLOUDS CSV did not expose QC flag metadata for: " + ", ".join(missing_qc_flags)
         )
 
     latest_all = max(accepted, key=lambda item: item.observed_at) if accepted else None
@@ -545,27 +665,26 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     start = now - dt.timedelta(hours=168)
     try:
-        payload = _fetch_json(api_hash, start, now)
+        payload = _fetch_csv(api_hash, start, now)
     except RuntimeError as exc:
         if args.strict:
             raise
         return unavailable_summary(now, str(exc))
 
-    observations = parse_clouds_json(payload)
+    observations = parse_clouds_csv(payload)
     if not observations:
-        shape = type(payload).__name__
-        keys = sorted(str(key) for key in payload)[:12] if isinstance(payload, dict) else []
-        detail = f"top-level={shape}"
-        if keys:
-            detail += f" keys={keys}"
-        raise RuntimeError(f"CLOUDS JSON contained no parseable observations with QC scores; {detail}")
+        nonempty = [line for line in payload.splitlines() if line.strip()]
+        raise RuntimeError(
+            "CLOUDS CSV contained no parseable observations with explicit QC score/flag metadata; "
+            f"response_lines={len(nonempty)}"
+        )
 
-    # Ensure all requested variables are represented after JSON parsing. This catches
+    # Ensure all requested variables are represented after CSV parsing. This catches
     # API/schema changes rather than silently generating a misleading partial summary.
     present = {obs.variable for obs in observations}
     missing = sorted(set(VARIABLES) - present)
     if missing:
-        raise RuntimeError("CLOUDS JSON missing requested variables: " + ", ".join(missing))
+        raise RuntimeError("CLOUDS CSV missing requested variables: " + ", ".join(missing))
 
     return build_summary(observations, now)
 
