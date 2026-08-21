@@ -4,6 +4,7 @@ import datetime as dt
 import urllib.error
 import urllib.parse
 import urllib.request
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -34,14 +35,54 @@ class Cycle:
         return self.initialized + dt.timedelta(hours=forecast_hour)
 
 
-def _request(url: str, *, method: str = "GET", timeout: float = 30.0) -> bytes:
-    req = urllib.request.Request(
-        url,
-        method=method,
-        headers={"User-Agent": "burke-hrrr/0.1 operational-decision-support"},
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        return response.read()
+def _request(
+    url: str,
+    *,
+    method: str = "GET",
+    timeout: float = 30.0,
+    retries: int = 4,
+) -> bytes:
+    retryable_http_codes = {429, 500, 502, 503, 504}
+
+    for attempt in range(retries):
+        req = urllib.request.Request(
+            url,
+            method=method,
+            headers={
+                "User-Agent": "burke-hrrr/0.1 operational-decision-support"
+            },
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                return response.read()
+
+        except urllib.error.HTTPError as exc:
+            if (
+                exc.code not in retryable_http_codes
+                or attempt == retries - 1
+            ):
+                raise
+
+            wait_seconds = 2 ** attempt
+            print(
+                f"NOAA returned HTTP {exc.code}; "
+                f"retrying in {wait_seconds}s..."
+            )
+            time.sleep(wait_seconds)
+
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == retries - 1:
+                raise
+
+            wait_seconds = 2 ** attempt
+            print(
+                f"NOAA request failed; "
+                f"retrying in {wait_seconds}s..."
+            )
+            time.sleep(wait_seconds)
+
+    raise RuntimeError("NOAA request failed after retries")
 
 
 def nodd_index_url(cycle: Cycle, forecast_hour: int, product: str = "wrfsfc") -> str:
