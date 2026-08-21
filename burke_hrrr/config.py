@@ -21,9 +21,15 @@ class Bounds:
 # wider than the county so storms approaching from the Blue Ridge are retained.
 BURKE_BOUNDS = Bounds(west=-82.10, south=35.50, east=-81.30, north=36.05)
 
-PRESSURE_LEVELS_HPA = (1000, 975, 950, 925, 900, 875, 850, 825, 800, 775,
-                       750, 725, 700, 675, 650, 625, 600, 575, 550, 525, 500,
-                       475, 450, 425, 400)
+PRESSURE_LEVELS_HPA = (
+    1000,
+    925,
+    850,
+    700,
+    500,
+    300,
+    250,
+)
 
 SURFACE_VARIABLES = (
     "CAPE", "PWAT", "REFC", "MAXREF", "GUST", "WIND", "TMP", "DPT",
