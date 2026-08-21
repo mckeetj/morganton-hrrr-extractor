@@ -9,22 +9,56 @@ from burke_hrrr.econet import (
     Observation,
     _build_url,
     build_summary,
+    parse_clouds_csv,
     parse_clouds_json,
 )
 
 
 class EconetTests(unittest.TestCase):
-    def test_url_requests_morg_hourly_json_qc(self) -> None:
+    def test_url_requests_morg_hourly_csv_qc(self) -> None:
         now = dt.datetime(2026, 8, 21, 10, 15, tzinfo=EASTERN)
         url = _build_url("SECRET_HASH", now - dt.timedelta(days=7), now)
         self.assertIn("location%3DMORG", url)
-        self.assertIn("output=json", url)
+        self.assertIn("output=csv_long", url)
+        self.assertIn("metadata=no", url)
+        self.assertIn("score%2Cflag%2Cobtime", url)
         self.assertIn("obtype=H", url)
         self.assertIn("int=1+hour", url)
         self.assertIn("qclimit=1", url)
         self.assertIn("precip1m%7Cin", url)
         self.assertIn("soilmoist%7Cm3%2Fm3", url)
         self.assertIn("soilmoist20cm%7Cm3%2Fm3", url)
+
+
+    def test_parse_standard_csv_long_records(self) -> None:
+        payload = """location,datetime,var,value,unit,score,flag,obtime
+MORG,2026-08-21 09:00:00,soilmoist,0.31,m3/m3,0,,2026-08-21 09:02:00
+MORG,2026-08-21 09:00:00,precip1m,0.05,in,1,LG,2026-08-21 09:00:00
+"""
+        obs = parse_clouds_csv(payload)
+        self.assertEqual(len(obs), 2)
+        self.assertEqual({item.variable for item in obs}, {"soilmoist", "precip1m"})
+        soil = next(item for item in obs if item.variable == "soilmoist")
+        self.assertEqual(soil.qc_score, 0)
+        self.assertTrue(soil.flag_present)
+        # Freshness should use actual obtime when it is available.
+        self.assertEqual(soil.observed_at.minute, 2)
+
+    def test_parse_attribute_packed_csv(self) -> None:
+        payload = """soilmoist20cm
+MORG;2026-08-21 09:00:00;soilmoist20cm;0.40;m3/m3;0;OK;2026-08-21 09:01:00
+"""
+        obs = parse_clouds_csv(payload)
+        self.assertEqual(len(obs), 1)
+        self.assertEqual(obs[0].variable, "soilmoist20cm")
+        self.assertAlmostEqual(obs[0].value, 0.40)
+        self.assertEqual(obs[0].qc_flag, "OK")
+
+    def test_csv_without_score_fails_to_parse(self) -> None:
+        payload = """location,datetime,var,value,unit,flag,obtime
+MORG,2026-08-21 09:00:00,soilmoist,0.31,m3/m3,,2026-08-21 09:00:00
+"""
+        self.assertEqual(parse_clouds_csv(payload), [])
 
     def test_parse_long_records(self) -> None:
         payload = {
