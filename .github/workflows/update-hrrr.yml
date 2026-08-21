@@ -1,4 +1,4 @@
-name: Update Burke County HRRR Data
+name: Update Burke County HRRR and MORG ECONet Data
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
@@ -31,7 +31,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: pyproject.toml
 
-      - name: Install extractor and dependencies
+      - name: Install extractors and dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
@@ -49,7 +49,13 @@ jobs:
             --workdir "${RUNNER_TEMP}/hrrr-data" \
             --output public/burke-hrrr.json
 
-      - name: Validate generated V2 JSON
+      - name: Run MORG ECONet extractor
+        env:
+          NCSCO_CLOUDS_HASH: ${{ secrets.NCSCO_CLOUDS_HASH }}
+        run: |
+          morg-econet --output public/morg-econet.json
+
+      - name: Validate generated HRRR V2 JSON
         run: |
           python - <<'PY'
           import datetime as dt
@@ -70,11 +76,11 @@ jobs:
           ]
           missing = [key for key in required_top_level if key not in data]
           if missing:
-              raise SystemExit(f"missing required JSON fields: {missing}")
+              raise SystemExit(f"missing required HRRR JSON fields: {missing}")
           if data["schema_version"] != 2:
-              raise SystemExit(f"expected schema_version 2, got {data['schema_version']!r}")
+              raise SystemExit(f"expected HRRR schema_version 2, got {data['schema_version']!r}")
           if not data["forecast_hours"]:
-              raise SystemExit("forecast_hours is empty")
+              raise SystemExit("HRRR forecast_hours is empty")
 
           generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
           age_minutes = (
@@ -82,7 +88,7 @@ jobs:
           ).total_seconds() / 60
           if age_minutes < -5 or age_minutes > 45:
               raise SystemExit(
-                  f"generated_at is unexpectedly stale: {age_minutes:.1f} minutes"
+                  f"HRRR generated_at is unexpectedly stale: {age_minutes:.1f} minutes"
               )
 
           key_sets = [
@@ -101,21 +107,75 @@ jobs:
           missing_diagnostics = sorted(required_diagnostics - present)
           if missing_diagnostics:
               raise SystemExit(
-                  "V2 core diagnostics missing from all forecast hours: "
+                  "HRRR core diagnostics missing from all forecast hours: "
                   + ", ".join(missing_diagnostics)
               )
 
           metrics = data["operational_summary"].get("metrics", {})
           if not metrics:
-              raise SystemExit("operational_summary.metrics is empty")
+              raise SystemExit("HRRR operational_summary.metrics is empty")
 
-          print(f"Generated: {data['generated_at']}")
-          print(f"Extractor: {data['extractor_version']}")
+          print(f"HRRR generated: {data['generated_at']}")
+          print(f"HRRR extractor: {data['extractor_version']}")
           print(f"HRRR cycle: {data['cycle_initialized']}")
-          print(f"Through: {data['through']}")
-          print(f"Forecast hours: {len(data['forecast_hours'])}")
-          print(f"Key diagnostics present: {len(present)}")
-          print(f"Operational summary metrics: {len(metrics)}")
+          print(f"HRRR through: {data['through']}")
+          print(f"HRRR forecast hours: {len(data['forecast_hours'])}")
+          print(f"HRRR key diagnostics present: {len(present)}")
+          PY
+
+      - name: Validate generated MORG ECONet JSON
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          path = Path("public/morg-econet.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          if data.get("station", {}).get("id") != "MORG":
+              raise SystemExit("ECONet output is not for MORG")
+          if data.get("schema_version") != 1:
+              raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
+
+          generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
+          age_minutes = (
+              dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
+          ).total_seconds() / 60
+          if age_minutes < -5 or age_minutes > 30:
+              raise SystemExit(
+                  f"ECONet generated_at is unexpectedly stale: {age_minutes:.1f} minutes"
+              )
+
+          status = data.get("status")
+          if status not in {"current", "stale", "unavailable"}:
+              raise SystemExit(f"unexpected ECONet status: {status!r}")
+
+          # A transient MORG/API outage is allowed to publish an explicit unavailable
+          # state so the downstream briefing can use nearby rainfall only as context.
+          if status == "unavailable":
+              print(f"MORG ECONet unavailable: {data.get('reason', 'unspecified')}")
+          else:
+              rainfall = data.get("rainfall", {})
+              soil = data.get("soil_moisture", {})
+              for period in ("24h", "72h", "168h"):
+                  if period not in rainfall:
+                      raise SystemExit(f"missing ECONet rainfall period: {period}")
+              for depth in ("10cm", "20cm"):
+                  if depth not in soil:
+                      raise SystemExit(f"missing ECONet soil depth: {depth}")
+                  if soil[depth].get("qc_score") not in {0, 1}:
+                      raise SystemExit(f"unacceptable current QC score for {depth}")
+                  if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
+                      raise SystemExit("public ECONet summary must not republish raw soil-moisture values")
+
+              print(f"MORG ECONet status: {status}")
+              print(f"Latest accepted observation: {data.get('freshness', {}).get('latest_accepted_observation_time')}")
+              print(f"24h rain: {rainfall['24h'].get('total_inches')} in")
+              print(f"72h rain: {rainfall['72h'].get('total_inches')} in")
+              print(f"168h rain: {rainfall['168h'].get('total_inches')} in")
+              print(f"10cm soil 24h change: {soil['10cm'].get('change_24h_m3m3')}")
+              print(f"20cm soil 24h change: {soil['20cm'].get('change_24h_m3m3')}")
           PY
 
       - name: Configure GitHub Pages
