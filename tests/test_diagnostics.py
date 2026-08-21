@@ -92,6 +92,37 @@ class DiagnosticTests(unittest.TestCase):
         rh = derived["relative_humidity_700mb"]["summary"]["max"]
         self.assertTrue(45.0 < rh < 55.0)
 
+    def test_v2_pressure_profile_shear_fallback(self) -> None:
+        lat = np.array([[35.75]])
+        lon = np.array([[-81.70]])
+
+        def fld(name, type_of_level, level, value, units="m s^-1"):
+            return Field(
+                name, type_of_level, level, "instant", units,
+                np.array([[value]], dtype=float), lat, lon,
+            )
+
+        surface = [
+            fld("orog", "surface", 0, 500.0, "m"),
+            fld("10u", "heightAboveGround", 10, 2.0),
+            fld("10v", "heightAboveGround", 10, 1.0),
+        ]
+        pressure = [
+            fld("gh", "isobaricInhPa", 700, 3000.0, "gpm"),
+            fld("gh", "isobaricInhPa", 500, 5600.0, "gpm"),
+            fld("gh", "isobaricInhPa", 300, 9000.0, "gpm"),
+            fld("u", "isobaricInhPa", 700, 8.0),
+            fld("u", "isobaricInhPa", 500, 14.0),
+            fld("u", "isobaricInhPa", 300, 26.0),
+            fld("v", "isobaricInhPa", 700, 3.0),
+            fld("v", "isobaricInhPa", 500, 7.0),
+            fld("v", "isobaricInhPa", 300, 15.0),
+        ]
+        derived = derive_diagnostics(surface, pressure, BURKE_BOUNDS)
+        shear = derived["bulk_shear_0_6km"]
+        self.assertGreater(shear["summary"]["max"], 20.0)
+        self.assertIn("pressure-level", shear["method"])
+
     def test_v2_direct_shear_components(self) -> None:
         lat = np.array([[35.75]])
         lon = np.array([[-81.70]])
