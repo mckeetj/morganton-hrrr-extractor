@@ -108,11 +108,11 @@ def build_nomads_url(
         filename = f"hrrr.t{cycle.hour}z.wrfsfcf{forecast_hour:02d}.grib2"
         variables = SURFACE_VARIABLES
         levels = SURFACE_LEVELS
-    elif product == "pressure":
-        script = "filter_hrrr_3d.pl"
-        filename = f"hrrr.t{cycle.hour}z.wrfprsf{forecast_hour:02d}.grib2"
-        variables = PRESSURE_VARIABLES
-        levels = tuple(f"{level} mb" for level in PRESSURE_LEVELS_HPA)
+elif product == "pressure":
+    script = "filter_hrrr_2d.pl"
+    filename = f"hrrr.t{cycle.hour}z.wrfsfcf{forecast_hour:02d}.grib2"
+    variables = PRESSURE_VARIABLES
+    levels = tuple(f"{level} mb" for level in PRESSURE_LEVELS_HPA)
     else:
         raise ValueError(f"unknown product: {product}")
 
