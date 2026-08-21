@@ -1,6 +1,6 @@
 [project]
 name = "burke-hrrr"
-version = "0.2.0"
+version = "0.3.0"
 description = "Burke County HRRR environmental field extractor"
 requires-python = ">=3.11"
 dependencies = [
@@ -13,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 burke-hrrr = "burke_hrrr.cli:main"
+morg-econet = "burke_hrrr.econet:main"
 
 [build-system]
 requires = ["setuptools>=68"]
