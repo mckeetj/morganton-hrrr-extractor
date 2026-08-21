@@ -8,12 +8,20 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from . import __version__
-from .config import BURKE_BOUNDS, Bounds
+from .config import BURKE_BOUNDS, SPECIAL_PRODUCTS
 from .decode import read_fields, summarize_fields
 from .derived import derive_diagnostics
-from .noaa import Cycle, build_nomads_url, discover_latest_complete_cycle, download_subset, forecast_hour_through
+from .noaa import (
+    Cycle,
+    build_nomads_url,
+    discover_latest_complete_cycle,
+    download_subset,
+    forecast_hour_through,
+)
+from .operational import build_key_diagnostics, build_operational_summary
 
 EASTERN = ZoneInfo("America/New_York")
+PRODUCTS = ("surface", "pressure", *SPECIAL_PRODUCTS.keys())
 
 
 def _parse_time(value: str) -> dt.datetime:
@@ -32,7 +40,11 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--cycle", type=_cycle, help="fixed UTC cycle as YYYYMMDDHH")
     result.add_argument("--now", type=_parse_time, help="override current time for reproducibility")
-    result.add_argument("--through", type=_parse_time, help="required ending valid time; default next local midnight")
+    result.add_argument(
+        "--through",
+        type=_parse_time,
+        help="required ending valid time; default next local midnight",
+    )
     result.add_argument("--max-forecast-hour", type=int, help="override terminal forecast hour")
     result.add_argument("--workdir", type=Path, default=Path("hrrr-data"))
     result.add_argument("--output", type=Path, default=Path("burke-hrrr.json"))
@@ -66,21 +78,30 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         cycle = discover_latest_complete_cycle(now=now, required_forecast_hour=terminal_hour)
         terminal_hour = args.max_forecast_hour or forecast_hour_through(cycle.initialized, through)
 
+    if terminal_hour < 0:
+        raise RuntimeError("forecast hour must be nonnegative")
     if terminal_hour > 48:
         raise RuntimeError("requested period exceeds HRRR's 48-hour extended horizon")
 
     manifest: dict[str, object] = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "extractor_version": __version__,
         "generated_at": now.astimezone(dt.UTC).isoformat(),
-        "source": "NOAA NCEP HRRR via NOMADS",
+        "source": "NOAA NCEP HRRR 2D via NOMADS",
         "cycle_initialized": cycle.initialized.astimezone(dt.UTC).isoformat(),
-        "cycle_age_hours": round((now.astimezone(dt.UTC) - cycle.initialized).total_seconds() / 3600, 2),
+        "cycle_age_hours": round(
+            (now.astimezone(dt.UTC) - cycle.initialized).total_seconds() / 3600,
+            2,
+        ),
         "through": through.astimezone(EASTERN).isoformat(),
         "bounds": BURKE_BOUNDS.__dict__,
         "forecast_hours": [],
         "notes": [
             "Direct model fields are guidance, not observations.",
-            "MAXUW and MAXVW are never vector-combined because their maxima may be noncontemporaneous.",
+            "County maxima can represent isolated HRRR grid cells; use county p90 and storm coverage alongside maxima.",
+            "V2 uses HRRR's direct MAXDVV field as the model downdraft diagnostic; DCAPE is not reconstructed from the sparse filtered 2D pressure profile.",
+            "CAPE/CIN layer keys preserve the HRRR GRIB layer labels and are not relabeled as a parcel method.",
+            "MAXUW and MAXVW are not vector-combined because their maxima can be noncontemporaneous.",
         ],
     }
 
@@ -88,12 +109,20 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     for forecast_hour in range(0, terminal_hour + 1):
         record: dict[str, object] = {
             "forecast_hour": forecast_hour,
-            "valid_time": cycle.valid_time(forecast_hour).isoformat(),
+            "valid_time": cycle.valid_time(forecast_hour).astimezone(dt.UTC).isoformat(),
             "products": {},
         }
-        for product in ("surface", "pressure"):
+        products = record["products"]
+        assert isinstance(products, dict)
+
+        for product in PRODUCTS:
             url = build_nomads_url(cycle, forecast_hour, BURKE_BOUNDS, product=product)
             product_record: dict[str, object] = {"url": url}
+            if product in SPECIAL_PRODUCTS:
+                variable, levels = SPECIAL_PRODUCTS[product]
+                product_record["requested_variable"] = variable
+                product_record["requested_levels"] = list(levels)
+
             if not args.dry_run:
                 path = args.workdir / cycle.date / cycle.hour / f"f{forecast_hour:02d}-{product}.grib2"
                 download_subset(cycle, forecast_hour, BURKE_BOUNDS, path, product=product)
@@ -103,13 +132,42 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 product_record["bytes"] = path.stat().st_size
                 if not args.keep_grib:
                     path.unlink(missing_ok=True)
-            record["products"][product] = product_record  # type: ignore[index]
+            products[product] = product_record
+
         if not args.dry_run:
-            surface = record["products"]["surface"].pop("_decoded")  # type: ignore[index,union-attr]
-            pressure = record["products"]["pressure"].pop("_decoded")  # type: ignore[index,union-attr]
-            record["derived_diagnostics"] = derive_diagnostics(surface, pressure)
+            decoded_by_product: dict[str, list[object]] = {}
+            for product in PRODUCTS:
+                product_record = products[product]
+                assert isinstance(product_record, dict)
+                decoded_by_product[product] = product_record.pop("_decoded")  # type: ignore[assignment]
+
+            surface = decoded_by_product["surface"]
+            pressure = decoded_by_product["pressure"]
+            special = {
+                product: decoded_by_product[product]
+                for product in SPECIAL_PRODUCTS
+            }
+
+            # Runtime values are Field lists; the broad object annotations above
+            # keep the JSON-building code straightforward without leaking Field
+            # objects into the serialized manifest.
+            derived = derive_diagnostics(surface, pressure, BURKE_BOUNDS)  # type: ignore[arg-type]
+            record["derived_diagnostics"] = derived
+            record["key_diagnostics"] = build_key_diagnostics(
+                surface,  # type: ignore[arg-type]
+                pressure,  # type: ignore[arg-type]
+                special,  # type: ignore[arg-type]
+                derived,
+                BURKE_BOUNDS,
+            )
+        else:
+            record["derived_diagnostics"] = {}
+            record["key_diagnostics"] = {}
+
         records.append(record)
+
     manifest["forecast_hours"] = records
+    manifest["operational_summary"] = build_operational_summary(records)
     return manifest
 
 

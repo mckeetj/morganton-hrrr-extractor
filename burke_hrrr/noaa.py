@@ -1,15 +1,22 @@
 from __future__ import annotations
 
 import datetime as dt
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-from .config import Bounds, PRESSURE_LEVELS_HPA, PRESSURE_VARIABLES, SURFACE_LEVELS, SURFACE_VARIABLES
+from .config import (
+    Bounds,
+    PRESSURE_LEVELS_HPA,
+    PRESSURE_VARIABLES,
+    SPECIAL_PRODUCTS,
+    SURFACE_LEVELS,
+    SURFACE_VARIABLES,
+)
 
 NOMADS_BASE = "https://nomads.ncep.noaa.gov/cgi-bin"
 NODD_BASE = "https://noaa-hrrr-bdp-pds.s3.amazonaws.com"
@@ -40,49 +47,37 @@ def _request(
     *,
     method: str = "GET",
     timeout: float = 30.0,
-    retries: int = 4,
+    retries: int = 1,
 ) -> bytes:
+    """Retrieve a NOAA resource with bounded retry/backoff for transient errors."""
     retryable_http_codes = {429, 500, 502, 503, 504}
+    last_error: BaseException | None = None
 
-    for attempt in range(retries):
+    for attempt in range(max(1, retries)):
         req = urllib.request.Request(
             url,
             method=method,
-            headers={
-                "User-Agent": "burke-hrrr/0.1 operational-decision-support"
-            },
+            headers={"User-Agent": "burke-hrrr/0.2 operational-decision-support"},
         )
-
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 return response.read()
-
         except urllib.error.HTTPError as exc:
-            if (
-                exc.code not in retryable_http_codes
-                or attempt == retries - 1
-            ):
+            last_error = exc
+            if exc.code not in retryable_http_codes or attempt == retries - 1:
                 raise
-
-            wait_seconds = 2 ** attempt
-            print(
-                f"NOAA returned HTTP {exc.code}; "
-                f"retrying in {wait_seconds}s..."
-            )
-            time.sleep(wait_seconds)
-
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_error = exc
             if attempt == retries - 1:
                 raise
 
-            wait_seconds = 2 ** attempt
-            print(
-                f"NOAA request failed; "
-                f"retrying in {wait_seconds}s..."
-            )
-            time.sleep(wait_seconds)
+        wait_seconds = 2 ** attempt
+        print(f"NOAA request failed; retrying in {wait_seconds}s: {url}")
+        time.sleep(wait_seconds)
 
-    raise RuntimeError("NOAA request failed after retries")
+    if last_error is not None:
+        raise RuntimeError("NOAA request failed after retries") from last_error
+    raise RuntimeError("NOAA request failed")
 
 
 def nodd_index_url(cycle: Cycle, forecast_hour: int, product: str = "wrfsfc") -> str:
@@ -92,8 +87,12 @@ def nodd_index_url(cycle: Cycle, forecast_hour: int, product: str = "wrfsfc") ->
 
 def cycle_has_forecast(cycle: Cycle, forecast_hour: int, *, timeout: float = 10.0) -> bool:
     try:
-        data = _request(nodd_index_url(cycle, forecast_hour), timeout=timeout)
-    except (urllib.error.URLError, TimeoutError):
+        data = _request(
+            nodd_index_url(cycle, forecast_hour),
+            timeout=timeout,
+            retries=2,
+        )
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
         return False
     return b":d=" in data and b":TMP:" in data
 
@@ -145,18 +144,18 @@ def build_nomads_url(
 ) -> str:
     bounds.validate()
 
+    script = "filter_hrrr_2d.pl"
+    filename = f"hrrr.t{cycle.hour}z.wrfsfcf{forecast_hour:02d}.grib2"
+
     if product == "surface":
-        script = "filter_hrrr_2d.pl"
-        filename = f"hrrr.t{cycle.hour}z.wrfsfcf{forecast_hour:02d}.grib2"
         variables = SURFACE_VARIABLES
         levels = SURFACE_LEVELS
-
     elif product == "pressure":
-        script = "filter_hrrr_2d.pl"
-        filename = f"hrrr.t{cycle.hour}z.wrfsfcf{forecast_hour:02d}.grib2"
         variables = PRESSURE_VARIABLES
         levels = tuple(f"{level} mb" for level in PRESSURE_LEVELS_HPA)
-
+    elif product in SPECIAL_PRODUCTS:
+        variable, levels = SPECIAL_PRODUCTS[product]
+        variables = (variable,)
     else:
         raise ValueError(f"unknown product: {product}")
 
@@ -169,10 +168,8 @@ def build_nomads_url(
         "toplat": str(bounds.north),
         "bottomlat": str(bounds.south),
     }
-
     params.update(_query_flags("var", variables))
     params.update(_query_flags("lev", levels))
-
     return f"{NOMADS_BASE}/{script}?{urllib.parse.urlencode(params)}"
 
 
@@ -186,7 +183,7 @@ def download_subset(
     timeout: float = 120.0,
 ) -> str:
     url = build_nomads_url(cycle, forecast_hour, bounds, product=product)
-    payload = _request(url, timeout=timeout)
+    payload = _request(url, timeout=timeout, retries=4)
     if not payload.startswith(b"GRIB"):
         preview = payload[:200].decode("utf-8", errors="replace")
         raise RuntimeError(f"NOAA response was not GRIB2: {preview}")
