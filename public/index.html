@@ -3,35 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Burke County HRRR Extractor</title>
+  <title>Morganton Weather Decision-Support Data</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 820px; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
+    body { font-family: system-ui, sans-serif; max-width: 880px; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
     code { background: #f3f4f6; padding: .15rem .35rem; border-radius: .25rem; }
+    section { margin: 2rem 0; }
     dt { font-weight: 700; margin-top: .8rem; }
     dd { margin-left: 0; }
+    .note { color: #444; }
   </style>
 </head>
 <body>
-  <h1>Burke County HRRR Data</h1>
-  <p>Machine-readable output: <a href="burke-hrrr.json"><code>burke-hrrr.json</code></a>.</p>
-  <p>V2 publishes direct HRRR severe-weather fields plus derived and operational summaries for the Burke County envelope.</p>
-  <dl id="status"><dt>Status</dt><dd>Loading current metadata…</dd></dl>
+  <h1>Morganton Weather Decision-Support Data</h1>
+
+  <section>
+    <h2>Burke County HRRR</h2>
+    <p>Machine-readable model output: <a href="burke-hrrr.json"><code>burke-hrrr.json</code></a>.</p>
+    <dl id="hrrr-status"><dt>Status</dt><dd>Loading current metadata…</dd></dl>
+  </section>
+
+  <section>
+    <h2>MORG ECONet</h2>
+    <p>Derived rainfall and soil-moisture context: <a href="morg-econet.json"><code>morg-econet.json</code></a>.</p>
+    <p class="note">The public ECONet file contains derived operational context rather than the raw seven-day observation series or exact current soil-moisture readings.</p>
+    <p class="note">Data provided by the <a href="https://climate.ncsu.edu/">North Carolina State Climate Office</a>.</p>
+    <dl id="econet-status"><dt>Status</dt><dd>Loading current metadata…</dd></dl>
+  </section>
+
   <script>
     fetch('burke-hrrr.json', {cache: 'no-store'})
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then(d => {
         const metricCount = Object.keys(d.operational_summary?.metrics ?? {}).length;
-        document.getElementById('status').innerHTML = `
-          <dt>Schema</dt><dd>${d.schema_version ?? 'unknown'}</dd>
+        document.getElementById('hrrr-status').innerHTML = `
           <dt>Extractor</dt><dd>${d.extractor_version ?? 'unknown'}</dd>
           <dt>Generated</dt><dd>${d.generated_at ?? 'unknown'}</dd>
           <dt>HRRR cycle initialized</dt><dd>${d.cycle_initialized ?? 'unknown'}</dd>
           <dt>Forecast through</dt><dd>${d.through ?? 'unknown'}</dd>
-          <dt>Forecast hours</dt><dd>${Array.isArray(d.forecast_hours) ? d.forecast_hours.length : 'unknown'}</dd>
           <dt>Operational metrics</dt><dd>${metricCount}</dd>`;
       })
       .catch(err => {
-        document.getElementById('status').innerHTML = `<dt>Status</dt><dd>JSON not available: ${err.message}</dd>`;
+        document.getElementById('hrrr-status').innerHTML = `<dt>Status</dt><dd>JSON not available: ${err.message}</dd>`;
+      });
+
+    fetch('morg-econet.json', {cache: 'no-store'})
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(d => {
+        const rain = d.rainfall ?? {};
+        document.getElementById('econet-status').innerHTML = `
+          <dt>Status</dt><dd>${d.status ?? 'unknown'}</dd>
+          <dt>Generated</dt><dd>${d.generated_at ?? 'unknown'}</dd>
+          <dt>Latest accepted observation</dt><dd>${d.freshness?.latest_accepted_observation_time ?? 'unavailable'}</dd>
+          <dt>24-hour rainfall</dt><dd>${rain['24h']?.total_inches ?? 'unavailable'} in</dd>
+          <dt>72-hour rainfall</dt><dd>${rain['72h']?.total_inches ?? 'unavailable'} in</dd>
+          <dt>168-hour rainfall</dt><dd>${rain['168h']?.total_inches ?? 'unavailable'} in</dd>`;
+      })
+      .catch(err => {
+        document.getElementById('econet-status').innerHTML = `<dt>Status</dt><dd>JSON not available: ${err.message}</dd>`;
       });
   </script>
 </body>
