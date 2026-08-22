@@ -3,7 +3,9 @@ name: Update Burke County HRRR and MORG ECONet Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "45 9 * * *"
+    # Start early enough to absorb GitHub schedule delays, then wait for the
+    # current-day 12Z HRRR to contain the forecast hour that reaches local midnight.
+    - cron: "45 8 * * *"
       timezone: "America/New_York"
 
 permissions:
@@ -18,7 +20,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
 
     steps:
       - name: Check out repository
@@ -42,10 +44,61 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
+      - name: Wait for current-day 12Z HRRR through local midnight
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import os
+          import time
+          from zoneinfo import ZoneInfo
+
+          from burke_hrrr.noaa import Cycle, cycle_has_forecast, forecast_hour_through
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC)
+          local_now = now.astimezone(eastern)
+          cycle_time = dt.datetime.combine(local_now.date(), dt.time(12), tzinfo=dt.UTC)
+          through = (local_now + dt.timedelta(days=1)).replace(
+              hour=0, minute=0, second=0, microsecond=0
+          )
+          required_fhr = forecast_hour_through(cycle_time, through)
+          cycle = Cycle(cycle_time)
+
+          if required_fhr < 0 or required_fhr > 48:
+              raise SystemExit(f"invalid required forecast hour: f{required_fhr:02d}")
+
+          print(
+              f"Waiting for {cycle_time:%Y%m%d%H} HRRR f{required_fhr:02d} "
+              f"to cover {through.isoformat()}"
+          )
+
+          attempts = 19  # immediate check plus up to ~90 minutes of waiting
+          for attempt in range(1, attempts + 1):
+              if cycle_has_forecast(cycle, required_fhr, timeout=20.0):
+                  print(f"12Z HRRR terminal hour f{required_fhr:02d} is available")
+                  break
+              if attempt == attempts:
+                  raise SystemExit(
+                      f"12Z HRRR f{required_fhr:02d} was not available after ~90 minutes"
+                  )
+              print(
+                  f"12Z HRRR f{required_fhr:02d} not ready "
+                  f"(attempt {attempt}/{attempts}); retrying in 5 minutes"
+              )
+              time.sleep(300)
+
+          env_path = os.environ["GITHUB_ENV"]
+          with open(env_path, "a", encoding="utf-8") as env:
+              env.write(f"HRRR_CYCLE={cycle_time:%Y%m%d%H}\n")
+              env.write(f"HRRR_REQUIRED_FHR={required_fhr}\n")
+              env.write(f"HRRR_EXPECTED_THROUGH={through.isoformat()}\n")
+          PY
+
       - name: Run Burke County HRRR extractor
         run: |
           mkdir -p public
           burke-hrrr \
+            --cycle "${HRRR_CYCLE}" \
             --workdir "${RUNNER_TEMP}/hrrr-data" \
             --output public/burke-hrrr.json
 
@@ -55,12 +108,22 @@ jobs:
         run: |
           morg-econet --output public/morg-econet.json
 
-      - name: Validate generated HRRR V2 JSON
+      - name: Validate generated current-day HRRR JSON
         run: |
           python - <<'PY'
           import datetime as dt
           import json
+          import math
           from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC)
+          local_now = now.astimezone(eastern)
+          expected_cycle = dt.datetime.combine(local_now.date(), dt.time(12), tzinfo=dt.UTC)
+          expected_through = (local_now + dt.timedelta(days=1)).replace(
+              hour=0, minute=0, second=0, microsecond=0
+          )
 
           path = Path("public/burke-hrrr.json")
           data = json.loads(path.read_text(encoding="utf-8"))
@@ -79,36 +142,86 @@ jobs:
               raise SystemExit(f"missing required HRRR JSON fields: {missing}")
           if data["schema_version"] != 2:
               raise SystemExit(f"expected HRRR schema_version 2, got {data['schema_version']!r}")
+          if data.get("extractor_version") != "0.3.2":
+              raise SystemExit(
+                  f"expected extractor_version 0.3.2, got {data.get('extractor_version')!r}"
+              )
           if not data["forecast_hours"]:
               raise SystemExit("HRRR forecast_hours is empty")
 
           generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
-          age_minutes = (
-              dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
-          ).total_seconds() / 60
+          age_minutes = (now - generated.astimezone(dt.UTC)).total_seconds() / 60
           if age_minutes < -5 or age_minutes > 45:
               raise SystemExit(
                   f"HRRR generated_at is unexpectedly stale: {age_minutes:.1f} minutes"
               )
 
-          key_sets = [
-              set(hour.get("key_diagnostics", {}))
+          cycle = dt.datetime.fromisoformat(
+              data["cycle_initialized"].replace("Z", "+00:00")
+          ).astimezone(dt.UTC)
+          if cycle != expected_cycle:
+              raise SystemExit(
+                  f"wrong HRRR cycle: expected {expected_cycle.isoformat()}, got {cycle.isoformat()}"
+              )
+
+          through = dt.datetime.fromisoformat(data["through"].replace("Z", "+00:00"))
+          if through.astimezone(dt.UTC) < expected_through.astimezone(dt.UTC):
+              raise SystemExit(
+                  f"HRRR coverage ends too early: {through.isoformat()} < "
+                  f"{expected_through.isoformat()}"
+              )
+
+          valid_times = [
+              dt.datetime.fromisoformat(str(hour["valid_time"]).replace("Z", "+00:00"))
               for hour in data["forecast_hours"]
-              if isinstance(hour.get("key_diagnostics"), dict)
+              if hour.get("valid_time")
           ]
-          present = set().union(*key_sets) if key_sets else set()
+          if not valid_times or max(t.astimezone(dt.UTC) for t in valid_times) < expected_through.astimezone(dt.UTC):
+              raise SystemExit("HRRR forecast_hours do not actually reach local midnight")
+
           required_diagnostics = {
               "surface_gust_mph",
               "max_downdraft_magnitude_ms",
               "cape_90_0mb_jkg",
               "lapse_rate_700_500mb_k_per_km",
-              "bulk_shear_0_6km_kt",
+              "bulk_shear_sfc_500mb_kt",
           }
-          missing_diagnostics = sorted(required_diagnostics - present)
-          if missing_diagnostics:
+
+          def usable_metric(key: str) -> bool:
+              for hour in data["forecast_hours"]:
+                  diagnostics = hour.get("key_diagnostics")
+                  if not isinstance(diagnostics, dict):
+                      continue
+                  metric = diagnostics.get(key)
+                  if not isinstance(metric, dict):
+                      continue
+                  summary = metric.get("summary")
+                  if not isinstance(summary, dict) or int(summary.get("count") or 0) <= 0:
+                      continue
+                  values = [summary.get("p90"), summary.get("max")]
+                  if any(isinstance(v, (int, float)) and math.isfinite(float(v)) for v in values):
+                      return True
+              return False
+
+          unusable = sorted(key for key in required_diagnostics if not usable_metric(key))
+          if unusable:
               raise SystemExit(
-                  "HRRR core diagnostics missing from all forecast hours: "
-                  + ", ".join(missing_diagnostics)
+                  "HRRR core diagnostics have no finite populated values: "
+                  + ", ".join(unusable)
+              )
+
+          # Sanity-check the deep-layer shear proxy to catch unit/decoding errors.
+          shear_values = []
+          for hour in data["forecast_hours"]:
+              metric = (hour.get("key_diagnostics") or {}).get("bulk_shear_sfc_500mb_kt")
+              if isinstance(metric, dict) and isinstance(metric.get("summary"), dict):
+                  for stat in ("p90", "max"):
+                      value = metric["summary"].get(stat)
+                      if isinstance(value, (int, float)) and math.isfinite(float(value)):
+                          shear_values.append(float(value))
+          if not shear_values or min(shear_values) < 0 or max(shear_values) > 200:
+              raise SystemExit(
+                  f"deep-layer shear proxy failed sanity check: {shear_values[:5]} ..."
               )
 
           metrics = data["operational_summary"].get("metrics", {})
@@ -120,7 +233,7 @@ jobs:
           print(f"HRRR cycle: {data['cycle_initialized']}")
           print(f"HRRR through: {data['through']}")
           print(f"HRRR forecast hours: {len(data['forecast_hours'])}")
-          print(f"HRRR key diagnostics present: {len(present)}")
+          print(f"Deep-layer shear proxy max: {max(shear_values):.1f} kt")
           PY
 
       - name: Validate generated MORG ECONet JSON
