@@ -92,7 +92,7 @@ class DiagnosticTests(unittest.TestCase):
         rh = derived["relative_humidity_700mb"]["summary"]["max"]
         self.assertTrue(45.0 < rh < 55.0)
 
-    def test_v2_pressure_profile_shear_fallback(self) -> None:
+    def test_v32_surface_to_500mb_shear_proxy(self) -> None:
         lat = np.array([[35.75]])
         lon = np.array([[-81.70]])
 
@@ -103,56 +103,19 @@ class DiagnosticTests(unittest.TestCase):
             )
 
         surface = [
-            fld("orog", "surface", 0, 500.0, "m"),
             fld("10u", "heightAboveGround", 10, 2.0),
             fld("10v", "heightAboveGround", 10, 1.0),
         ]
         pressure = [
-            fld("gh", "isobaricInhPa", 700, 3000.0, "gpm"),
-            fld("gh", "isobaricInhPa", 500, 5600.0, "gpm"),
-            fld("gh", "isobaricInhPa", 300, 9000.0, "gpm"),
-            fld("u", "isobaricInhPa", 700, 8.0),
             fld("u", "isobaricInhPa", 500, 14.0),
-            fld("u", "isobaricInhPa", 300, 26.0),
-            fld("v", "isobaricInhPa", 700, 3.0),
             fld("v", "isobaricInhPa", 500, 7.0),
-            fld("v", "isobaricInhPa", 300, 15.0),
         ]
         derived = derive_diagnostics(surface, pressure, BURKE_BOUNDS)
-        shear = derived["bulk_shear_0_6km"]
-        self.assertGreater(shear["summary"]["max"], 20.0)
-        self.assertIn("pressure-level", shear["method"])
-
-    def test_v2_direct_shear_components(self) -> None:
-        lat = np.array([[35.75]])
-        lon = np.array([[-81.70]])
-
-        def shear_field(name: str, value: float, depth: float) -> Field:
-            return Field(
-                name,
-                "heightAboveGroundLayer",
-                depth,
-                "instant",
-                "s^-1",
-                np.array([[value]], dtype=float),
-                lat,
-                lon,
-                # Simulate cfgrib grouping behavior: top/bottom metadata can
-                # reflect the first layer even when the split coordinate is
-                # the 6000-m layer. Field.level must therefore take priority.
-                top_level=0.0,
-                bottom_level=1000.0,
-            )
-
-        # Components 0.005 and 0.010 s^-1 over 6 km imply a vector difference
-        # of about 67.1 m/s = 130.4 kt.
-        surface = [
-            shear_field("vucsh", 0.005, 6000.0),
-            shear_field("vvcsh", 0.010, 6000.0),
-        ]
-        derived = derive_diagnostics(surface, [], BURKE_BOUNDS)
-        shear = derived["bulk_shear_0_6km"]["summary"]["max"]
-        self.assertAlmostEqual(shear, 130.4, places=1)
+        metric = derived["bulk_shear_sfc_500mb"]
+        expected_kt = ((12.0 ** 2 + 6.0 ** 2) ** 0.5) * 1.943844
+        self.assertAlmostEqual(metric["summary"]["max"], expected_kt, places=3)
+        self.assertIn("proxy", metric["method"])
+        self.assertNotIn("bulk_shear_0_6km", derived)
 
 
 if __name__ == "__main__":

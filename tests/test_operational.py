@@ -73,7 +73,12 @@ class OperationalTests(unittest.TestCase):
                 "units": "K/km",
                 "method": "test",
                 "summary": {"count": 4, "min": 5.0, "median": 6.0, "p90": 7.0, "max": 7.5},
-            }
+            },
+            "bulk_shear_sfc_500mb": {
+                "units": "kt",
+                "method": "deep-layer proxy",
+                "summary": {"count": 4, "min": 10.0, "median": 20.0, "p90": 30.0, "max": 35.0},
+            },
         }
         result = build_key_diagnostics(surface, [], specials, derived, BURKE_BOUNDS)
 
@@ -84,6 +89,7 @@ class OperationalTests(unittest.TestCase):
         self.assertEqual(result["max_downdraft_magnitude_ms"]["summary"]["max"], 8.0)
         self.assertEqual(result["updraft_helicity_2_5km_m2s2"]["summary"]["max"], 100.0)
         self.assertEqual(result["lapse_rate_700_500mb_k_per_km"]["summary"]["max"], 7.5)
+        self.assertEqual(result["bulk_shear_sfc_500mb_kt"]["summary"]["max"], 35.0)
 
     def test_operational_summary_keeps_peak_time_and_p90(self) -> None:
         def metric(maximum: float, p90: float):

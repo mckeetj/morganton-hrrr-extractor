@@ -24,10 +24,9 @@ class NoaaTests(unittest.TestCase):
         self.assertIn("hrrr.t12z.wrfsfcf05.grib2", url)
         self.assertIn("var_GUST=on", url)
         self.assertIn("var_HLCY=on", url)
-        self.assertIn("var_VUCSH=on", url)
+        self.assertNotIn("var_VUCSH=on", url)
         self.assertIn("var_REFC=on", url)
         self.assertIn("lev_90-0_mb_above_ground=on", url)
-        self.assertIn("lev_0-6000_m_above_ground=on", url)
         self.assertIn("leftlon=-82.1", url)
 
     def test_pressure_url_uses_supported_hrrr_2d_levels(self) -> None:
