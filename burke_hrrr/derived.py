@@ -286,56 +286,27 @@ def derive_diagnostics(
             bounds,
         )
 
-    # Bulk shear: prefer HRRR's direct VUCSH/VVCSH layer components when cfgrib
-    # exposes the requested layer unambiguously. If not, derive the vector wind
-    # difference from 10-m winds and pressure-level winds interpolated to the
-    # requested AGL height. The fallback is independent of the fragile GRIB
-    # layer-coordinate metadata that caused the V2 validation failure.
-    terrain_for_shear = terrain if terrain is not None else _terrain_height(surface_fields)
+    # Deep-layer shear proxy.  The filtered CONUS HRRR 2D file provides
+    # 10-m winds plus 500-mb U/V, but not enough geopotential-height levels
+    # above 500 mb to interpolate a defensible exact 6-km-AGL wind everywhere
+    # in Burke County.  Use the direct vector difference to 500 mb instead and
+    # label it explicitly as a proxy rather than mislabeling it as 0-6 km shear.
     u10 = _surface_field(surface_fields, {"10u", "u10", "u", "ugrd"}, 10)
     v10 = _surface_field(surface_fields, {"10v", "v10", "v", "vgrd"}, 10)
-    wind_profile = _common_wind_profile(pressure_fields)
-
-    for depth_m, label in ((1000.0, "0_1km"), (6000.0, "0_6km")):
-        u_shear = _find_shear_component(surface_fields, "vucsh", depth_m)
-        v_shear = _find_shear_component(surface_fields, "vvcsh", depth_m)
-        if u_shear is not None and v_shear is not None:
-            shear_ms = np.hypot(
-                np.asarray(u_shear.values, dtype=float) * depth_m,
-                np.asarray(v_shear.values, dtype=float) * depth_m,
-            )
-            output[f"bulk_shear_{label}"] = _metric(
-                shear_ms * 1.943844,
-                u_shear,
-                "kt",
-                f"HRRR-derived from VUCSH/VVCSH over the {int(depth_m / 1000)}-km layer",
-                bounds,
-            )
-            continue
-
-        if (
-            terrain_for_shear is None
-            or u10 is None
-            or v10 is None
-            or wind_profile is None
-        ):
-            continue
-
-        heights, u_profile, v_profile = wind_profile
-        target_height = np.asarray(terrain_for_shear.values, dtype=float) + depth_m
-        upper_u = interpolate_at_height(heights, u_profile, target_height)
-        upper_v = interpolate_at_height(heights, v_profile, target_height)
+    u500 = _pressure_field(pressure_fields, {"u", "ugrd"}, 500)
+    v500 = _pressure_field(pressure_fields, {"v", "vgrd"}, 500)
+    if all(field is not None for field in (u10, v10, u500, v500)):
         shear_ms = np.hypot(
-            upper_u - np.asarray(u10.values, dtype=float),
-            upper_v - np.asarray(v10.values, dtype=float),
+            np.asarray(u500.values, dtype=float) - np.asarray(u10.values, dtype=float),  # type: ignore[union-attr]
+            np.asarray(v500.values, dtype=float) - np.asarray(v10.values, dtype=float),  # type: ignore[union-attr]
         )
-        output[f"bulk_shear_{label}"] = _metric(
+        output["bulk_shear_sfc_500mb"] = _metric(
             shear_ms * 1.943844,
-            u10,
+            u10,  # type: ignore[arg-type]
             "kt",
             (
-                f"HRRR-derived vector wind difference from 10 m AGL to {int(depth_m / 1000)} km AGL; "
-                "upper wind linearly interpolated from pressure-level U/V and geopotential height"
+                "HRRR-derived vector wind difference from 10 m AGL to 500 mb; "
+                "deep-layer shear proxy, not an exact 0-6 km AGL calculation"
             ),
             bounds,
         )

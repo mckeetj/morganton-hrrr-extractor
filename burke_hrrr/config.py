@@ -47,8 +47,6 @@ SURFACE_VARIABLES = (
     "VGRD",
     "HGT",
     "HLCY",
-    "VUCSH",
-    "VVCSH",
     "LTNG",
 )
 
@@ -73,8 +71,6 @@ SURFACE_LEVELS = (
     "1000 m above ground",
     "3000-0 m above ground",
     "1000-0 m above ground",
-    "0-1000 m above ground",
-    "0-6000 m above ground",
 )
 
 # Small, dedicated requests for local-table storm diagnostics whose shortName

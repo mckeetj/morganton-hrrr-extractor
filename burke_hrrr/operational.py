@@ -326,8 +326,7 @@ def build_key_diagnostics(
         "lapse_rate_0_3km_agl": "lapse_rate_0_3km_agl_k_per_km",
         "dewpoint_depression_700mb": "dewpoint_depression_700mb_k",
         "relative_humidity_700mb": "relative_humidity_700mb_percent",
-        "bulk_shear_0_1km": "bulk_shear_0_1km_kt",
-        "bulk_shear_0_6km": "bulk_shear_0_6km_kt",
+        "bulk_shear_sfc_500mb": "bulk_shear_sfc_500mb_kt",
     }
     for source_key, target_key in derived_key_map.items():
         if source_key in derived:
@@ -357,8 +356,7 @@ PEAK_METRICS = (
     "srh_0_1km_m2s2",
     "srh_0_3km_m2s2",
     "updraft_helicity_2_5km_m2s2",
-    "bulk_shear_0_1km_kt",
-    "bulk_shear_0_6km_kt",
+    "bulk_shear_sfc_500mb_kt",
     "lapse_rate_0_3km_agl_k_per_km",
     "lapse_rate_700_500mb_k_per_km",
     "dewpoint_depression_700mb_k",
