@@ -3,7 +3,9 @@ name: Update MORG ECONet Morning Context
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 8 * * *"
+    # Trigger early to absorb GitHub scheduler delays, then wait until just
+    # before the 8:30 AM briefing before querying MORG.
+    - cron: "53 5 * * *"
       timezone: "America/New_York"
 
 permissions:
@@ -12,14 +14,13 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "econet-morning"
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
-
+    timeout-minutes: 180
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -29,19 +30,74 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Preserve current HRRR JSON
+      - name: Wait until 8:05 AM Eastern if triggered early
         run: |
-          mkdir -p public
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            --location \
-            --retry 3 \
-            --retry-all-errors \
-            "https://mckeetj.github.io/morganton-hrrr-extractor/burke-hrrr.json" \
-            --output public/burke-hrrr.json
+          python - <<'PY'
+          import datetime as dt
+          import time
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          target = now.replace(hour=8, minute=5, second=0, microsecond=0)
+          if now < target:
+              wait_seconds = (target - now).total_seconds()
+              print(f"Waiting {wait_seconds / 60:.1f} minutes until {target.isoformat()}")
+              time.sleep(wait_seconds)
+          else:
+              print(f"Already past 8:05 AM Eastern ({now.isoformat()}); continuing immediately")
+          PY
+
+      - name: Set current local date tag
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import os
+          from zoneinfo import ZoneInfo
+
+          local_now = dt.datetime.now(dt.UTC).astimezone(ZoneInfo("America/New_York"))
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"LOCAL_DATE_TAG={local_now:%Y%m%d}\n")
+          PY
+
+      - name: Preserve current HRRR JSON and any current-day versioned files
+        run: |
+          mkdir -p public/hrrr public/econet
+          CB="$(date +%s)"
+
+          # Prefer the current-day immutable HRRR path if it already exists.
+          if curl \
+            --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors \
+            -H "Cache-Control: no-cache" \
+            "https://mckeetj.github.io/morganton-hrrr-extractor/hrrr/${LOCAL_DATE_TAG}-12z.json?cb=${CB}" \
+            --output "public/hrrr/${LOCAL_DATE_TAG}-12z.json"; then
+            cp "public/hrrr/${LOCAL_DATE_TAG}-12z.json" public/burke-hrrr.json
+            echo "Preserved current-day versioned HRRR JSON"
+          else
+            rm -f "public/hrrr/${LOCAL_DATE_TAG}-12z.json"
+            curl \
+              --fail --silent --show-error --location \
+              --retry 3 --retry-all-errors \
+              -H "Cache-Control: no-cache" \
+              "https://mckeetj.github.io/morganton-hrrr-extractor/burke-hrrr.json?cb=${CB}" \
+              --output public/burke-hrrr.json
+            echo "Current-day HRRR not published yet; preserved latest stable HRRR JSON"
+          fi
           python -m json.tool public/burke-hrrr.json > /dev/null
+
+          # If the late-morning ECONet slot already exists because this run was delayed,
+          # preserve it so this deployment cannot erase the later combined refresh.
+          if curl \
+            --fail --silent --show-error --location \
+            --retry 2 --retry-all-errors \
+            -H "Cache-Control: no-cache" \
+            "https://mckeetj.github.io/morganton-hrrr-extractor/econet/${LOCAL_DATE_TAG}-1030.json?cb=${CB}" \
+            --output "public/econet/${LOCAL_DATE_TAG}-1030.json"; then
+            echo "Preserved current-day late-morning ECONet slot"
+          else
+            rm -f "public/econet/${LOCAL_DATE_TAG}-1030.json"
+          fi
 
       - name: Run MORG ECONet extractor
         env:
@@ -63,14 +119,15 @@ jobs:
               raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
 
           generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
-          age_minutes = (dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)).total_seconds() / 60
+          age_minutes = (
+              dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
+          ).total_seconds() / 60
           if age_minutes < -5 or age_minutes > 20:
               raise SystemExit(f"ECONet generated_at is unexpectedly stale: {age_minutes:.1f} minutes")
 
           status = data.get("status")
           if status not in {"current", "stale", "unavailable"}:
               raise SystemExit(f"unexpected ECONet status: {status!r}")
-
           if status != "unavailable":
               rainfall = data.get("rainfall", {})
               soil = data.get("soil_moisture", {})
@@ -84,10 +141,15 @@ jobs:
                       raise SystemExit(f"unacceptable current QC score for {depth}")
                   if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
                       raise SystemExit("public ECONet summary must not republish raw soil-moisture values")
-
           print(f"MORG ECONet status: {status}")
           print(f"Generated: {data['generated_at']}")
           PY
+
+      - name: Create date-versioned morning ECONet path
+        run: |
+          mkdir -p public/econet
+          cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-0830.json"
+          echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-0830.json"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
@@ -106,7 +168,9 @@ jobs:
     permissions:
       pages: write
       id-token: write
-
+    concurrency:
+      group: "pages-deploy"
+      cancel-in-progress: false
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
