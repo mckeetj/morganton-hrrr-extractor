@@ -151,6 +151,12 @@ jobs:
           cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-0830.json"
           echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-0830.json"
 
+      - name: Save 8:30 AM ECONet snapshot for late-morning workflow
+        uses: actions/cache/save@v4
+        with:
+          path: public/econet/${{ env.LOCAL_DATE_TAG }}-0830.json
+          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
