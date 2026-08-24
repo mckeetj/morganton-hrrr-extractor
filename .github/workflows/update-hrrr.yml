@@ -103,17 +103,18 @@ jobs:
             --output public/burke-hrrr.json
 
       - name: Prepare 8:30 AM ECONet restore location
-        run: mkdir -p public/econet
+        run: mkdir -p handoff public/econet
 
       - name: Restore current-day 8:30 AM ECONet snapshot
         uses: actions/cache/restore@v4
         with:
-          path: public/econet/${{ env.LOCAL_DATE_TAG }}-0830.json
-          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}
+          path: handoff/morg-econet-0830.json
+          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}-v36
           fail-on-cache-miss: true
 
-      - name: Validate restored 8:30 AM ECONet snapshot
+      - name: Validate and stage restored 8:30 AM ECONet snapshot
         run: |
+          test -s handoff/morg-econet-0830.json
           python - <<'PY'
           import datetime as dt
           import json
@@ -122,10 +123,8 @@ jobs:
           from zoneinfo import ZoneInfo
 
           tag = os.environ["LOCAL_DATE_TAG"]
-          path = Path(f"public/econet/{tag}-0830.json")
-          if not path.exists():
-              raise SystemExit(f"missing restored morning ECONet snapshot: {path}")
-          data = json.loads(path.read_text(encoding="utf-8"))
+          source = Path("handoff/morg-econet-0830.json")
+          data = json.loads(source.read_text(encoding="utf-8"))
           if data.get("station", {}).get("id") != "MORG":
               raise SystemExit("restored ECONet file is not for MORG")
           if data.get("schema_version") != 1:
@@ -137,7 +136,10 @@ jobs:
               raise SystemExit(
                   f"restored ECONet snapshot is from {generated:%Y%m%d}, expected {tag}"
               )
-          print(f"Restored required 0830 ECONet snapshot generated {generated.isoformat()}")
+          target = Path(f"public/econet/{tag}-0830.json")
+          target.write_bytes(source.read_bytes())
+          print(f"Restored and staged required 0830 ECONet snapshot: {target}")
+          print(f"Snapshot generated: {generated.isoformat()}")
           PY
 
       - name: Run MORG ECONet extractor
