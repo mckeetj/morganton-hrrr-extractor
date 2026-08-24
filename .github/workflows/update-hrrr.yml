@@ -3,9 +3,9 @@ name: Update Burke County HRRR and MORG ECONet Data
 on:
   workflow_dispatch:
   schedule:
-    # Start early enough to absorb GitHub schedule delays, then wait for the
-    # current-day 12Z HRRR to contain the forecast hour that reaches local midnight.
-    - cron: "45 8 * * *"
+    # Start very early to absorb GitHub scheduler delays. The job then waits
+    # for the current-day 12Z HRRR terminal forecast hour needed through local midnight.
+    - cron: "47 5 * * *"
       timezone: "America/New_York"
 
 permissions:
@@ -14,14 +14,13 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "hrrr-refresh"
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
-
+    timeout-minutes: 330
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -63,7 +62,6 @@ jobs:
           )
           required_fhr = forecast_hour_through(cycle_time, through)
           cycle = Cycle(cycle_time)
-
           if required_fhr < 0 or required_fhr > 48:
               raise SystemExit(f"invalid required forecast hour: f{required_fhr:02d}")
 
@@ -71,15 +69,14 @@ jobs:
               f"Waiting for {cycle_time:%Y%m%d%H} HRRR f{required_fhr:02d} "
               f"to cover {through.isoformat()}"
           )
-
-          attempts = 19  # immediate check plus up to ~90 minutes of waiting
+          attempts = 61  # immediate check plus up to ~5 hours of waiting
           for attempt in range(1, attempts + 1):
               if cycle_has_forecast(cycle, required_fhr, timeout=20.0):
                   print(f"12Z HRRR terminal hour f{required_fhr:02d} is available")
                   break
               if attempt == attempts:
                   raise SystemExit(
-                      f"12Z HRRR f{required_fhr:02d} was not available after ~90 minutes"
+                      f"12Z HRRR f{required_fhr:02d} was not available after ~5 hours"
                   )
               print(
                   f"12Z HRRR f{required_fhr:02d} not ready "
@@ -92,6 +89,7 @@ jobs:
               env.write(f"HRRR_CYCLE={cycle_time:%Y%m%d%H}\n")
               env.write(f"HRRR_REQUIRED_FHR={required_fhr}\n")
               env.write(f"HRRR_EXPECTED_THROUGH={through.isoformat()}\n")
+              env.write(f"LOCAL_DATE_TAG={local_now:%Y%m%d}\n")
           PY
 
       - name: Run Burke County HRRR extractor
@@ -127,7 +125,6 @@ jobs:
 
           path = Path("public/burke-hrrr.json")
           data = json.loads(path.read_text(encoding="utf-8"))
-
           required_top_level = [
               "schema_version",
               "extractor_version",
@@ -210,7 +207,6 @@ jobs:
                   + ", ".join(unusable)
               )
 
-          # Sanity-check the deep-layer shear proxy to catch unit/decoding errors.
           shear_values = []
           for hour in data["forecast_hours"]:
               metric = (hour.get("key_diagnostics") or {}).get("bulk_shear_sfc_500mb_kt")
@@ -245,7 +241,6 @@ jobs:
 
           path = Path("public/morg-econet.json")
           data = json.loads(path.read_text(encoding="utf-8"))
-
           if data.get("station", {}).get("id") != "MORG":
               raise SystemExit("ECONet output is not for MORG")
           if data.get("schema_version") != 1:
@@ -263,9 +258,6 @@ jobs:
           status = data.get("status")
           if status not in {"current", "stale", "unavailable"}:
               raise SystemExit(f"unexpected ECONet status: {status!r}")
-
-          # A transient MORG/API outage is allowed to publish an explicit unavailable
-          # state so the downstream briefing can use nearby rainfall only as context.
           if status == "unavailable":
               print(f"MORG ECONet unavailable: {data.get('reason', 'unspecified')}")
           else:
@@ -281,7 +273,6 @@ jobs:
                       raise SystemExit(f"unacceptable current QC score for {depth}")
                   if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
                       raise SystemExit("public ECONet summary must not republish raw soil-moisture values")
-
               print(f"MORG ECONet status: {status}")
               print(f"Latest accepted observation: {data.get('freshness', {}).get('latest_accepted_observation_time')}")
               print(f"24h rain: {rainfall['24h'].get('total_inches')} in")
@@ -290,6 +281,14 @@ jobs:
               print(f"10cm soil 24h change: {soil['10cm'].get('change_24h_m3m3')}")
               print(f"20cm soil 24h change: {soil['20cm'].get('change_24h_m3m3')}")
           PY
+
+      - name: Create date-versioned decision-support paths
+        run: |
+          mkdir -p public/hrrr public/econet
+          cp public/burke-hrrr.json "public/hrrr/${LOCAL_DATE_TAG}-12z.json"
+          cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-1030.json"
+          echo "Published HRRR path: hrrr/${LOCAL_DATE_TAG}-12z.json"
+          echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-1030.json"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
@@ -308,7 +307,9 @@ jobs:
     permissions:
       pages: write
       id-token: write
-
+    concurrency:
+      group: "pages-deploy"
+      cancel-in-progress: false
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
