@@ -151,11 +151,19 @@ jobs:
           cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-0830.json"
           echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-0830.json"
 
+      - name: Prepare deterministic 8:30 AM ECONet handoff
+        run: |
+          mkdir -p handoff
+          test -s "public/econet/${LOCAL_DATE_TAG}-0830.json"
+          cp "public/econet/${LOCAL_DATE_TAG}-0830.json" handoff/morg-econet-0830.json
+          python -m json.tool handoff/morg-econet-0830.json > /dev/null
+          echo "Prepared cache handoff for ${LOCAL_DATE_TAG}"
+
       - name: Save 8:30 AM ECONet snapshot for late-morning workflow
         uses: actions/cache/save@v4
         with:
-          path: public/econet/${{ env.LOCAL_DATE_TAG }}-0830.json
-          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}
+          path: handoff/morg-econet-0830.json
+          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}-v36
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
