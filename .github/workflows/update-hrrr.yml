@@ -1,5 +1,7 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
+# V3.4: preserve the current-day 08:30 ECONet snapshot before the later Pages deployment.
+
 on:
   workflow_dispatch:
   schedule:
@@ -99,6 +101,71 @@ jobs:
             --cycle "${HRRR_CYCLE}" \
             --workdir "${RUNNER_TEMP}/hrrr-data" \
             --output public/burke-hrrr.json
+
+      - name: Preserve current-day 8:30 AM ECONet snapshot
+        run: |
+          mkdir -p public/econet
+          CB="$(date +%s)"
+          TMP="${RUNNER_TEMP}/econet-0830-preserve.json"
+          TARGET="public/econet/${LOCAL_DATE_TAG}-0830.json"
+          VERSIONED_URL="https://mckeetj.github.io/morganton-hrrr-extractor/econet/${LOCAL_DATE_TAG}-0830.json?cb=${CB}"
+          STABLE_URL="https://mckeetj.github.io/morganton-hrrr-extractor/morg-econet.json?cb=${CB}"
+
+          PRESERVED_SOURCE=""
+          if curl \
+            --fail --silent --show-error --location \
+            --retry 4 --retry-all-errors \
+            -H "Cache-Control: no-cache" \
+            "$VERSIONED_URL" \
+            --output "$TMP"; then
+            PRESERVED_SOURCE="date-versioned 0830 path"
+          else
+            rm -f "$TMP"
+            echo "Date-versioned 0830 snapshot was not directly retrievable; trying the still-live stable ECONet file."
+            if curl \
+              --fail --silent --show-error --location \
+              --retry 4 --retry-all-errors \
+              -H "Cache-Control: no-cache" \
+              "$STABLE_URL" \
+              --output "$TMP"; then
+              PRESERVED_SOURCE="stable ECONet fallback"
+            fi
+          fi
+
+          if [ -z "$PRESERVED_SOURCE" ]; then
+            echo "::warning::Could not retrieve the current-day 8:30 AM ECONet snapshot. HRRR/10:30 products will still deploy, but the 0830 historical path will not be retained by this deployment."
+            rm -f "$TMP"
+          elif python - "$TMP" "$LOCAL_DATE_TAG" <<'PY'
+          import datetime as dt
+          import json
+          import sys
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          path = Path(sys.argv[1])
+          expected_tag = sys.argv[2]
+          data = json.loads(path.read_text(encoding="utf-8"))
+          if data.get("station", {}).get("id") != "MORG":
+              raise SystemExit("preserved ECONet file is not for MORG")
+          if data.get("schema_version") != 1:
+              raise SystemExit(f"unexpected preserved ECONet schema: {data.get('schema_version')!r}")
+          generated = dt.datetime.fromisoformat(
+              str(data["generated_at"]).replace("Z", "+00:00")
+          ).astimezone(ZoneInfo("America/New_York"))
+          if generated.strftime("%Y%m%d") != expected_tag:
+              raise SystemExit(
+                  f"preserved ECONet snapshot is from {generated:%Y%m%d}, expected {expected_tag}"
+              )
+          print(f"Validated preserved 0830 ECONet snapshot generated {generated.isoformat()}")
+          PY
+          then
+            cp "$TMP" "$TARGET"
+            echo "Preserved ${TARGET} from ${PRESERVED_SOURCE}"
+            rm -f "$TMP"
+          else
+            echo "::warning::Retrieved ECONet fallback did not validate as today's MORG snapshot; it will not be preserved."
+            rm -f "$TMP"
+          fi
 
       - name: Run MORG ECONet extractor
         env:
