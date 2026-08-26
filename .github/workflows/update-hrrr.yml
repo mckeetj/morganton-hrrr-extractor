@@ -1,6 +1,8 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.5: persist/restore the current-day 08:30 ECONet snapshot through GitHub Actions cache.
+# V3.7: keep the V3.6 Pages/cache workflow, and also publish compact "current"
+# decision-support snapshots back to the GitHub repository. ChatGPT scheduled
+# runs can read fixed github.com/blob URLs instead of constructing Pages URLs.
 
 on:
   workflow_dispatch:
@@ -11,7 +13,7 @@ on:
       timezone: "America/New_York"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -331,6 +333,59 @@ jobs:
           cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-1030.json"
           echo "Published HRRR path: hrrr/${LOCAL_DATE_TAG}-12z.json"
           echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-1030.json"
+
+
+      - name: Build compact fixed-path repository snapshots
+        run: |
+          mkdir -p current
+          python - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+
+          src = json.loads(Path("public/burke-hrrr.json").read_text(encoding="utf-8"))
+          compact = {
+              "schema_version": 1,
+              "snapshot_type": "burke_hrrr_12z_decision_support",
+              "snapshot_published_at": dt.datetime.now(dt.UTC).isoformat(),
+              "extractor_version": src.get("extractor_version"),
+              "generated_at": src.get("generated_at"),
+              "cycle_initialized": src.get("cycle_initialized"),
+              "through": src.get("through"),
+              "domain": src.get("domain"),
+              "forecast_hour_count": len(src.get("forecast_hours") or []),
+              "operational_summary": src.get("operational_summary") or {},
+              "forecast_hours": [
+                  {
+                      "forecast_hour": hour.get("forecast_hour"),
+                      "valid_time": hour.get("valid_time"),
+                      "key_diagnostics": hour.get("key_diagnostics") or {},
+                  }
+                  for hour in (src.get("forecast_hours") or [])
+              ],
+          }
+          Path("current/burke-hrrr-12z.json").write_text(
+              json.dumps(compact, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          Path("current/morg-econet-1030.json").write_bytes(
+              Path("public/morg-econet.json").read_bytes()
+          )
+          PY
+          python -m json.tool current/burke-hrrr-12z.json > /dev/null
+          python -m json.tool current/morg-econet-1030.json > /dev/null
+
+      - name: Commit fixed-path repository snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current/burke-hrrr-12z.json current/morg-econet-1030.json
+          if git diff --cached --quiet; then
+            echo "No repository snapshot changes to commit"
+          else
+            git commit -m "Update late-morning decision-support snapshots [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
