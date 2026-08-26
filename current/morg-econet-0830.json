@@ -1,0 +1,115 @@
+{
+  "extractor_version": "0.3.2",
+  "fallback_policy": {
+    "if_morg_unavailable": "Nearby rainfall observations may be used as context only.",
+    "soil_moisture_substitution": "Do not substitute another station's soil moisture for MORG."
+  },
+  "freshness": {
+    "age_minutes": 60.2,
+    "latest_accepted_observation_time": "2026-08-26T11:11:00-04:00",
+    "maximum_current_age_minutes": 90.0,
+    "within_limit": true
+  },
+  "generated_at": "2026-08-26T16:11:13.012471+00:00",
+  "notes": [
+    "Only CLOUDS observations with QC score 0 or 1 are used.",
+    "Current MORG soil-moisture context is considered usable only when the latest accepted observation is no more than 90 minutes old.",
+    "Rolling rainfall totals and 24-hour soil-moisture changes are derived from accepted hourly observations.",
+    "The public JSON does not redistribute raw hourly observations or exact current soil-moisture values; it publishes derived context, freshness, depth, units, and QC status.",
+    "MORG sensor inventory identifies soil-moisture sensors at 10 cm and 20 cm; this extractor maps soilmoist to 10 cm and soilmoist20cm to 20 cm for MORG."
+  ],
+  "quality_control": {
+    "accepted_scores": [
+      0,
+      1
+    ],
+    "api_qclimit": 1,
+    "flag_metadata_verified": true,
+    "rejected_scores": [
+      -1,
+      2,
+      3
+    ]
+  },
+  "rainfall": {
+    "168h": {
+      "accepted_hourly_observations": 167,
+      "coverage_percent": 99.4,
+      "expected_hourly_observations": 168,
+      "qc_rule": "scores 0-1 only",
+      "through_observation_time": "2026-08-26T11:11:00-04:00",
+      "total_inches": 0.58,
+      "window_end": "2026-08-26T16:11:13.012471+00:00",
+      "window_hours": 168,
+      "window_start": "2026-08-19T16:11:13.012471+00:00"
+    },
+    "24h": {
+      "accepted_hourly_observations": 23,
+      "coverage_percent": 95.8,
+      "expected_hourly_observations": 24,
+      "qc_rule": "scores 0-1 only",
+      "through_observation_time": "2026-08-26T11:11:00-04:00",
+      "total_inches": 0.0,
+      "window_end": "2026-08-26T16:11:13.012471+00:00",
+      "window_hours": 24,
+      "window_start": "2026-08-25T16:11:13.012471+00:00"
+    },
+    "72h": {
+      "accepted_hourly_observations": 71,
+      "coverage_percent": 98.6,
+      "expected_hourly_observations": 72,
+      "qc_rule": "scores 0-1 only",
+      "through_observation_time": "2026-08-26T11:11:00-04:00",
+      "total_inches": 0.0,
+      "window_end": "2026-08-26T16:11:13.012471+00:00",
+      "window_hours": 72,
+      "window_start": "2026-08-23T16:11:13.012471+00:00"
+    },
+    "units": "in"
+  },
+  "schema_version": 1,
+  "soil_moisture": {
+    "10cm": {
+      "age_minutes": 71.2,
+      "change_24h_m3m3": 0.0,
+      "change_reference_time": "2026-08-25T11:00:00-04:00",
+      "current_value_published": false,
+      "depth_cm": 10,
+      "observation_time": "2026-08-26T11:00:00-04:00",
+      "qc_flag": "R0",
+      "qc_score": 0,
+      "qc_status": "good",
+      "seven_day_percentile": 36.0,
+      "status": "current",
+      "units": "m3/m3"
+    },
+    "20cm": {
+      "age_minutes": 71.2,
+      "change_24h_m3m3": 0.0,
+      "change_reference_time": "2026-08-25T11:00:00-04:00",
+      "current_value_published": false,
+      "depth_cm": 20,
+      "observation_time": "2026-08-26T11:00:00-04:00",
+      "qc_flag": "R0",
+      "qc_score": 0,
+      "qc_status": "good",
+      "seven_day_percentile": 36.0,
+      "status": "current",
+      "units": "m3/m3"
+    }
+  },
+  "source": {
+    "api": "CLOUDS",
+    "api_endpoint": "https://api.climate.ncsu.edu/data.php",
+    "attribution": "Data provided by the North Carolina State Climate Office",
+    "network": "ECONet",
+    "provider": "North Carolina State Climate Office"
+  },
+  "station": {
+    "county": "Burke",
+    "id": "MORG",
+    "name": "North Carolina School of Science and Math - Morganton",
+    "state": "NC"
+  },
+  "status": "current"
+}
