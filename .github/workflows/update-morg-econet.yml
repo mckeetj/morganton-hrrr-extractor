@@ -1,5 +1,7 @@
 name: Update MORG ECONet Morning Context
 
+# V3.7: also commit a fixed current 08:30 ECONet snapshot to the repository.
+
 on:
   workflow_dispatch:
   schedule:
@@ -9,7 +11,7 @@ on:
       timezone: "America/New_York"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -164,6 +166,26 @@ jobs:
         with:
           path: handoff/morg-econet-0830.json
           key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}-v36
+
+
+      - name: Build fixed-path repository morning snapshot
+        run: |
+          mkdir -p current
+          cp public/morg-econet.json current/morg-econet-0830.json
+          python -m json.tool current/morg-econet-0830.json > /dev/null
+
+      - name: Commit fixed-path repository morning snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current/morg-econet-0830.json
+          if git diff --cached --quiet; then
+            echo "No repository snapshot changes to commit"
+          else
+            git commit -m "Update 0830 ECONet decision-support snapshot [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
