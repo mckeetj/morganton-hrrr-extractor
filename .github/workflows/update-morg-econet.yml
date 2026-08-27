@@ -1,13 +1,23 @@
 name: Update MORG ECONet Morning Context
 
-# V3.7: also commit a fixed current 08:30 ECONet snapshot to the repository.
+# V3.8: resilient 08:30 snapshot publishing with redundant schedule attempts,
+# slot protection, repository/Page verification, and a current health manifest.
 
 on:
   workflow_dispatch:
   schedule:
-    # Trigger early to absorb GitHub scheduler delays, then wait until just
-    # before the 8:30 AM briefing before querying MORG.
-    - cron: "53 5 * * *"
+    # Multiple independent opportunities reduce the chance that a dropped or
+    # delayed GitHub scheduler event causes the 08:30 snapshot to be missed.
+    # Early attempts exit quickly unless GitHub delay lands them in the valid slot.
+    - cron: "43 6 * * *"
+      timezone: "America/New_York"
+    - cron: "23 7 * * *"
+      timezone: "America/New_York"
+    - cron: "53 7 * * *"
+      timezone: "America/New_York"
+    - cron: "13 8 * * *"
+      timezone: "America/New_York"
+    - cron: "27 8 * * *"
       timezone: "America/New_York"
 
 permissions:
@@ -22,7 +32,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 45
+    outputs:
+      deploy_needed: ${{ steps.decide.outputs.deploy_needed }}
+      local_date_tag: ${{ steps.meta.outputs.local_date_tag }}
+      expected_path: ${{ steps.meta.outputs.expected_path }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -32,170 +46,480 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Wait until 8:05 AM Eastern if triggered early
-        run: |
-          python - <<'PY'
-          import datetime as dt
-          import time
-          from zoneinfo import ZoneInfo
-
-          eastern = ZoneInfo("America/New_York")
-          now = dt.datetime.now(dt.UTC).astimezone(eastern)
-          target = now.replace(hour=8, minute=5, second=0, microsecond=0)
-          if now < target:
-              wait_seconds = (target - now).total_seconds()
-              print(f"Waiting {wait_seconds / 60:.1f} minutes until {target.isoformat()}")
-              time.sleep(wait_seconds)
-          else:
-              print(f"Already past 8:05 AM Eastern ({now.isoformat()}); continuing immediately")
-          PY
-
-      - name: Set current local date tag
+      - name: Determine Eastern date and 08:30 slot eligibility
+        id: meta
         run: |
           python - <<'PY'
           import datetime as dt
           import os
           from zoneinfo import ZoneInfo
 
-          local_now = dt.datetime.now(dt.UTC).astimezone(ZoneInfo("America/New_York"))
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          tag = now.strftime("%Y%m%d")
+          minutes = now.hour * 60 + now.minute
+          # Do not create an 08:30-labeled snapshot outside this window.
+          slot_start = 7 * 60 + 40
+          slot_end = 8 * 60 + 50
+          if minutes < slot_start:
+              slot_state = "before"
+          elif minutes <= slot_end:
+              slot_state = "in"
+          else:
+              slot_state = "after"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"local_date_tag={tag}\n")
+              out.write(f"slot_state={slot_state}\n")
+              out.write(f"expected_path=econet/{tag}-0830.json\n")
+
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
-              env.write(f"LOCAL_DATE_TAG={local_now:%Y%m%d}\n")
+              env.write(f"LOCAL_DATE_TAG={tag}\n")
+
+          print(f"Eastern now: {now.isoformat()}")
+          print(f"08:30 slot state: {slot_state}")
           PY
 
-      - name: Preserve current HRRR JSON and any current-day versioned files
+      - name: Validate repository 08:30 snapshot
+        id: repo_check
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          tag = os.environ["LOCAL_DATE_TAG"]
+          path = Path("current/morg-econet-0830.json")
+          valid = False
+          reason = "missing"
+
+          try:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              generated = dt.datetime.fromisoformat(
+                  str(data["generated_at"]).replace("Z", "+00:00")
+              ).astimezone(eastern)
+              minutes = generated.hour * 60 + generated.minute
+              checks = {
+                  "station": data.get("station", {}).get("id") == "MORG",
+                  "date": generated.strftime("%Y%m%d") == tag,
+                  "slot": (7 * 60 + 40) <= minutes <= (8 * 60 + 50),
+                  "status": data.get("status") == "current",
+                  "freshness": data.get("freshness", {}).get("within_limit") is True,
+                  "qc_metadata": data.get("quality_control", {}).get(
+                      "flag_metadata_verified"
+                  ) is True,
+              }
+              valid = all(checks.values())
+              reason = "valid" if valid else ", ".join(
+                  key for key, value in checks.items() if not value
+              )
+          except Exception as exc:
+              reason = f"{type(exc).__name__}: {exc}"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"valid={'true' if valid else 'false'}\n")
+          print(f"Repository 08:30 snapshot valid: {valid} ({reason})")
+          PY
+
+      - name: Validate published 08:30 Pages snapshot
+        id: pages_check
+        run: |
+          set +e
+          mkdir -p /tmp/morg-check
+          CB="$(date +%s%N)"
+          URL="https://mckeetj.github.io/morganton-hrrr-extractor/econet/${LOCAL_DATE_TAG}-0830.json?cb=${CB}"
+          curl \
+            --fail --silent --show-error --location \
+            --retry 2 --retry-all-errors \
+            -H "Cache-Control: no-cache" \
+            "${URL}" \
+            --output /tmp/morg-check/0830.json
+          CURL_RC=$?
+          set -e
+
+          PAGES_FETCHED="${CURL_RC}" python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          valid = False
+          reason = f"curl rc={os.environ['PAGES_FETCHED']}"
+          if os.environ["PAGES_FETCHED"] == "0":
+              try:
+                  eastern = ZoneInfo("America/New_York")
+                  tag = os.environ["LOCAL_DATE_TAG"]
+                  data = json.loads(
+                      Path("/tmp/morg-check/0830.json").read_text(encoding="utf-8")
+                  )
+                  generated = dt.datetime.fromisoformat(
+                      str(data["generated_at"]).replace("Z", "+00:00")
+                  ).astimezone(eastern)
+                  minutes = generated.hour * 60 + generated.minute
+                  checks = {
+                      "station": data.get("station", {}).get("id") == "MORG",
+                      "date": generated.strftime("%Y%m%d") == tag,
+                      "slot": (7 * 60 + 40) <= minutes <= (8 * 60 + 50),
+                      "status": data.get("status") == "current",
+                      "freshness": data.get("freshness", {}).get("within_limit") is True,
+                      "qc_metadata": data.get("quality_control", {}).get(
+                          "flag_metadata_verified"
+                      ) is True,
+                  }
+                  valid = all(checks.values())
+                  reason = "valid" if valid else ", ".join(
+                      key for key, value in checks.items() if not value
+                  )
+              except Exception as exc:
+                  reason = f"{type(exc).__name__}: {exc}"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"valid={'true' if valid else 'false'}\n")
+          print(f"Pages 08:30 snapshot valid: {valid} ({reason})")
+          PY
+
+      - name: Decide whether to extract, redeploy, skip, or mark missed
+        id: decide
+        env:
+          REPO_VALID: ${{ steps.repo_check.outputs.valid }}
+          PAGES_VALID: ${{ steps.pages_check.outputs.valid }}
+          SLOT_STATE: ${{ steps.meta.outputs.slot_state }}
+        run: |
+          if [[ "${REPO_VALID}" == "true" && "${PAGES_VALID}" == "true" ]]; then
+            MODE="skip"
+            DEPLOY="false"
+            RECORD_STATUS="false"
+          elif [[ "${REPO_VALID}" != "true" && "${PAGES_VALID}" == "true" ]]; then
+            MODE="recover_repo"
+            DEPLOY="false"
+            RECORD_STATUS="true"
+          elif [[ "${REPO_VALID}" == "true" ]]; then
+            MODE="redeploy"
+            DEPLOY="true"
+            RECORD_STATUS="true"
+          elif [[ "${SLOT_STATE}" == "in" ]]; then
+            MODE="extract"
+            DEPLOY="true"
+            RECORD_STATUS="true"
+          elif [[ "${SLOT_STATE}" == "before" ]]; then
+            MODE="too_early"
+            DEPLOY="false"
+            RECORD_STATUS="false"
+          else
+            MODE="missed"
+            DEPLOY="false"
+            RECORD_STATUS="true"
+          fi
+
+          echo "mode=${MODE}" >> "${GITHUB_OUTPUT}"
+          echo "deploy_needed=${DEPLOY}" >> "${GITHUB_OUTPUT}"
+          echo "record_status=${RECORD_STATUS}" >> "${GITHUB_OUTPUT}"
+          echo "Decision: ${MODE}; deploy=${DEPLOY}; record_status=${RECORD_STATUS}"
+
+      - name: Preserve existing Pages products before deployment
+        if: steps.decide.outputs.deploy_needed == 'true'
         run: |
           mkdir -p public/hrrr public/econet
-          CB="$(date +%s)"
+          CB="$(date +%s%N)"
 
-          # Prefer the current-day immutable HRRR path if it already exists.
-          if curl \
+          curl \
             --fail --silent --show-error --location \
             --retry 3 --retry-all-errors \
             -H "Cache-Control: no-cache" \
-            "https://mckeetj.github.io/morganton-hrrr-extractor/hrrr/${LOCAL_DATE_TAG}-12z.json?cb=${CB}" \
-            --output "public/hrrr/${LOCAL_DATE_TAG}-12z.json"; then
-            cp "public/hrrr/${LOCAL_DATE_TAG}-12z.json" public/burke-hrrr.json
-            echo "Preserved current-day versioned HRRR JSON"
-          else
-            rm -f "public/hrrr/${LOCAL_DATE_TAG}-12z.json"
-            curl \
-              --fail --silent --show-error --location \
-              --retry 3 --retry-all-errors \
-              -H "Cache-Control: no-cache" \
-              "https://mckeetj.github.io/morganton-hrrr-extractor/burke-hrrr.json?cb=${CB}" \
-              --output public/burke-hrrr.json
-            echo "Current-day HRRR not published yet; preserved latest stable HRRR JSON"
-          fi
+            "https://mckeetj.github.io/morganton-hrrr-extractor/burke-hrrr.json?cb=${CB}" \
+            --output public/burke-hrrr.json
           python -m json.tool public/burke-hrrr.json > /dev/null
 
-          # If the late-morning ECONet slot already exists because this run was delayed,
-          # preserve it so this deployment cannot erase the later combined refresh.
+          if curl \
+            --fail --silent --show-error --location \
+            --retry 2 --retry-all-errors \
+            -H "Cache-Control: no-cache" \
+            "https://mckeetj.github.io/morganton-hrrr-extractor/hrrr/${LOCAL_DATE_TAG}-12z.json?cb=${CB}" \
+            --output "public/hrrr/${LOCAL_DATE_TAG}-12z.json"; then
+            echo "Preserved current-day HRRR date path"
+          else
+            rm -f "public/hrrr/${LOCAL_DATE_TAG}-12z.json"
+          fi
+
           if curl \
             --fail --silent --show-error --location \
             --retry 2 --retry-all-errors \
             -H "Cache-Control: no-cache" \
             "https://mckeetj.github.io/morganton-hrrr-extractor/econet/${LOCAL_DATE_TAG}-1030.json?cb=${CB}" \
             --output "public/econet/${LOCAL_DATE_TAG}-1030.json"; then
-            echo "Preserved current-day late-morning ECONet slot"
+            echo "Preserved current-day 10:30 ECONet date path"
           else
             rm -f "public/econet/${LOCAL_DATE_TAG}-1030.json"
           fi
 
       - name: Run MORG ECONet extractor
+        if: steps.decide.outputs.mode == 'extract'
         env:
           NCSCO_CLOUDS_HASH: ${{ secrets.NCSCO_CLOUDS_HASH }}
         run: |
           PYTHONPATH=. python -m burke_hrrr.econet --output public/morg-econet.json
 
-      - name: Validate generated MORG ECONet JSON
+      - name: Validate newly generated 08:30 ECONet snapshot
+        if: steps.decide.outputs.mode == 'extract'
         run: |
           python - <<'PY'
           import datetime as dt
           import json
+          import os
           from pathlib import Path
+          from zoneinfo import ZoneInfo
 
+          eastern = ZoneInfo("America/New_York")
           data = json.loads(Path("public/morg-econet.json").read_text(encoding="utf-8"))
+
           if data.get("station", {}).get("id") != "MORG":
               raise SystemExit("ECONet output is not for MORG")
           if data.get("schema_version") != 1:
               raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
+          if data.get("status") != "current":
+              raise SystemExit(f"ECONet status is not current: {data.get('status')!r}")
+          if data.get("freshness", {}).get("within_limit") is not True:
+              raise SystemExit("ECONet freshness.within_limit is not true")
+          if data.get("quality_control", {}).get("flag_metadata_verified") is not True:
+              raise SystemExit("ECONet QC flag metadata is not verified")
 
-          generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
-          age_minutes = (
-              dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
-          ).total_seconds() / 60
-          if age_minutes < -5 or age_minutes > 20:
-              raise SystemExit(f"ECONet generated_at is unexpectedly stale: {age_minutes:.1f} minutes")
+          generated = dt.datetime.fromisoformat(
+              str(data["generated_at"]).replace("Z", "+00:00")
+          ).astimezone(eastern)
+          tag = os.environ["LOCAL_DATE_TAG"]
+          minutes = generated.hour * 60 + generated.minute
+          if generated.strftime("%Y%m%d") != tag:
+              raise SystemExit(
+                  f"ECONet generated on {generated:%Y%m%d}, expected {tag}"
+              )
+          if not ((7 * 60 + 40) <= minutes <= (8 * 60 + 50)):
+              raise SystemExit(
+                  f"ECONet generated outside 08:30 slot: {generated.isoformat()}"
+              )
 
-          status = data.get("status")
-          if status not in {"current", "stale", "unavailable"}:
-              raise SystemExit(f"unexpected ECONet status: {status!r}")
-          if status != "unavailable":
-              rainfall = data.get("rainfall", {})
-              soil = data.get("soil_moisture", {})
-              for period in ("24h", "72h", "168h"):
-                  if period not in rainfall:
-                      raise SystemExit(f"missing ECONet rainfall period: {period}")
-              for depth in ("10cm", "20cm"):
-                  if depth not in soil:
-                      raise SystemExit(f"missing ECONet soil depth: {depth}")
-                  if soil[depth].get("qc_score") not in {0, 1}:
-                      raise SystemExit(f"unacceptable current QC score for {depth}")
-                  if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
-                      raise SystemExit("public ECONet summary must not republish raw soil-moisture values")
-          print(f"MORG ECONet status: {status}")
-          print(f"Generated: {data['generated_at']}")
+          rainfall = data.get("rainfall", {})
+          soil = data.get("soil_moisture", {})
+          for period in ("24h", "72h", "168h"):
+              if period not in rainfall:
+                  raise SystemExit(f"missing ECONet rainfall period: {period}")
+          for depth in ("10cm", "20cm"):
+              if depth not in soil:
+                  raise SystemExit(f"missing ECONet soil depth: {depth}")
+              if soil[depth].get("qc_score") not in {0, 1}:
+                  raise SystemExit(f"unacceptable current QC score for {depth}")
+              if "value" in soil[depth] or "current_value_m3m3" in soil[depth]:
+                  raise SystemExit(
+                      "public ECONet summary must not republish raw soil-moisture values"
+                  )
+
+          print(f"Validated MORG 08:30 snapshot generated {generated.isoformat()}")
           PY
 
-      - name: Create date-versioned morning ECONet path
+      - name: Stage new 08:30 snapshot
+        if: steps.decide.outputs.mode == 'extract'
         run: |
-          mkdir -p public/econet
+          mkdir -p public/econet current
           cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-0830.json"
-          echo "Published ECONet path: econet/${LOCAL_DATE_TAG}-0830.json"
-
-      - name: Prepare deterministic 8:30 AM ECONet handoff
-        run: |
-          mkdir -p handoff
-          test -s "public/econet/${LOCAL_DATE_TAG}-0830.json"
-          cp "public/econet/${LOCAL_DATE_TAG}-0830.json" handoff/morg-econet-0830.json
-          python -m json.tool handoff/morg-econet-0830.json > /dev/null
-          echo "Prepared cache handoff for ${LOCAL_DATE_TAG}"
-
-      - name: Save 8:30 AM ECONet snapshot for late-morning workflow
-        uses: actions/cache/save@v4
-        with:
-          path: handoff/morg-econet-0830.json
-          key: morg-econet-0830-${{ env.LOCAL_DATE_TAG }}-v36
-
-
-      - name: Build fixed-path repository morning snapshot
-        run: |
-          mkdir -p current
           cp public/morg-econet.json current/morg-econet-0830.json
+          python -m json.tool "public/econet/${LOCAL_DATE_TAG}-0830.json" > /dev/null
           python -m json.tool current/morg-econet-0830.json > /dev/null
 
-      - name: Commit fixed-path repository morning snapshot
+      - name: Recover repository 08:30 snapshot from valid Pages copy
+        if: steps.decide.outputs.mode == 'recover_repo'
+        run: |
+          mkdir -p current
+          cp /tmp/morg-check/0830.json current/morg-econet-0830.json
+          python -m json.tool current/morg-econet-0830.json > /dev/null
+
+      - name: Stage existing repository 08:30 snapshot for Pages recovery
+        if: steps.decide.outputs.mode == 'redeploy'
+        run: |
+          mkdir -p public/econet
+          cp current/morg-econet-0830.json public/morg-econet.json
+          cp current/morg-econet-0830.json "public/econet/${LOCAL_DATE_TAG}-0830.json"
+          python -m json.tool "public/econet/${LOCAL_DATE_TAG}-0830.json" > /dev/null
+
+      - name: Build current health manifest
+        if: steps.decide.outputs.record_status == 'true'
+        run: |
+          mkdir -p current
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          tag = os.environ["LOCAL_DATE_TAG"]
+          today = dt.datetime.strptime(tag, "%Y%m%d").date()
+
+          def parse_time(value):
+              return dt.datetime.fromisoformat(
+                  str(value).replace("Z", "+00:00")
+              )
+
+          def econet_state(path, start_minute, end_minute):
+              p = Path(path)
+              if not p.exists():
+                  return {"status": "missing", "path": path}
+              try:
+                  data = json.loads(p.read_text(encoding="utf-8"))
+                  generated = parse_time(data["generated_at"]).astimezone(eastern)
+                  minute = generated.hour * 60 + generated.minute
+                  valid = (
+                      data.get("station", {}).get("id") == "MORG"
+                      and generated.date() == today
+                      and start_minute <= minute <= end_minute
+                      and data.get("status") == "current"
+                      and data.get("freshness", {}).get("within_limit") is True
+                      and data.get("quality_control", {}).get(
+                          "flag_metadata_verified"
+                      ) is True
+                  )
+                  return {
+                      "status": "valid" if valid else "not_current_for_today",
+                      "path": path,
+                      "generated_at": data.get("generated_at"),
+                  }
+              except Exception as exc:
+                  return {
+                      "status": "invalid",
+                      "path": path,
+                      "reason": f"{type(exc).__name__}: {exc}",
+                  }
+
+          def hrrr_state(path):
+              p = Path(path)
+              if not p.exists():
+                  return {"status": "missing", "path": path}
+              try:
+                  data = json.loads(p.read_text(encoding="utf-8"))
+                  cycle = parse_time(data["cycle_initialized"]).astimezone(dt.UTC)
+                  through = parse_time(data["through"]).astimezone(dt.UTC)
+                  expected_cycle = dt.datetime.combine(
+                      today, dt.time(12), tzinfo=dt.UTC
+                  )
+                  local_midnight = dt.datetime.combine(
+                      today + dt.timedelta(days=1),
+                      dt.time(0),
+                      tzinfo=eastern,
+                  ).astimezone(dt.UTC)
+                  valid = cycle == expected_cycle and through >= local_midnight
+                  return {
+                      "status": "valid" if valid else "not_current_for_today",
+                      "path": path,
+                      "generated_at": data.get("generated_at"),
+                      "cycle_initialized": data.get("cycle_initialized"),
+                      "through": data.get("through"),
+                  }
+              except Exception as exc:
+                  return {
+                      "status": "invalid",
+                      "path": path,
+                      "reason": f"{type(exc).__name__}: {exc}",
+                  }
+
+          manifest = {
+              "schema_version": 1,
+              "date_eastern": today.isoformat(),
+              "updated_at": dt.datetime.now(dt.UTC).isoformat(),
+              "econet_0830": econet_state(
+                  "current/morg-econet-0830.json", 7 * 60 + 40, 8 * 60 + 50
+              ),
+              "econet_1030": econet_state(
+                  "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
+              ),
+              "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
+          }
+          Path("current/status.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(manifest, indent=2, sort_keys=True))
+          PY
+
+      - name: Commit current snapshot and health manifest
+        if: steps.decide.outputs.record_status == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add current/morg-econet-0830.json
+          git add current/status.json
+          if [[ "${{ steps.decide.outputs.mode }}" == "extract" || "${{ steps.decide.outputs.mode }}" == "recover_repo" ]]; then
+            git add current/morg-econet-0830.json
+          fi
+
           if git diff --cached --quiet; then
-            echo "No repository snapshot changes to commit"
+            echo "No repository health/snapshot changes to commit"
           else
-            git commit -m "Update 0830 ECONet decision-support snapshot [skip ci]"
+            git commit -m "Harden 0830 ECONet decision-support snapshot [skip ci]"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
 
+      - name: Verify repository copy after push
+        if: steps.decide.outputs.mode == 'extract' || steps.decide.outputs.mode == 'redeploy' || steps.decide.outputs.mode == 'recover_repo'
+        run: |
+          git fetch origin main
+          mkdir -p /tmp/morg-verify
+          git show origin/main:current/morg-econet-0830.json > /tmp/morg-verify/current-0830.json
+          git show origin/main:current/status.json > /tmp/morg-verify/status.json
+
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          tag = os.environ["LOCAL_DATE_TAG"]
+          data = json.loads(
+              Path("/tmp/morg-verify/current-0830.json").read_text(encoding="utf-8")
+          )
+          generated = dt.datetime.fromisoformat(
+              str(data["generated_at"]).replace("Z", "+00:00")
+          ).astimezone(eastern)
+          minute = generated.hour * 60 + generated.minute
+          if data.get("station", {}).get("id") != "MORG":
+              raise SystemExit("origin/main current 08:30 snapshot is not MORG")
+          if generated.strftime("%Y%m%d") != tag:
+              raise SystemExit("origin/main current 08:30 snapshot is wrong date")
+          if not ((7 * 60 + 40) <= minute <= (8 * 60 + 50)):
+              raise SystemExit("origin/main current 08:30 snapshot is outside slot")
+          if data.get("status") != "current":
+              raise SystemExit("origin/main current 08:30 snapshot is not current")
+          if data.get("freshness", {}).get("within_limit") is not True:
+              raise SystemExit("origin/main current 08:30 snapshot freshness failed")
+          if data.get("quality_control", {}).get("flag_metadata_verified") is not True:
+              raise SystemExit("origin/main current 08:30 QC metadata failed")
+
+          status = json.loads(
+              Path("/tmp/morg-verify/status.json").read_text(encoding="utf-8")
+          )
+          if status.get("date_eastern", "").replace("-", "") != tag:
+              raise SystemExit("origin/main status.json is not for today")
+          if status.get("econet_0830", {}).get("status") != "valid":
+              raise SystemExit("origin/main status.json does not mark 08:30 valid")
+          print("Verified origin/main 08:30 snapshot and status manifest")
+          PY
+
       - name: Configure GitHub Pages
+        if: steps.decide.outputs.deploy_needed == 'true'
         uses: actions/configure-pages@v6
 
       - name: Upload GitHub Pages artifact
+        if: steps.decide.outputs.deploy_needed == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: "./public"
 
   deploy:
+    if: needs.build.outputs.deploy_needed == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -211,3 +535,50 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Verify published 08:30 snapshot
+        env:
+          LOCAL_DATE_TAG: ${{ needs.build.outputs.local_date_tag }}
+        run: |
+          for attempt in $(seq 1 12); do
+            CB="$(date +%s%N)"
+            URL="https://mckeetj.github.io/morganton-hrrr-extractor/econet/${LOCAL_DATE_TAG}-0830.json?cb=${CB}"
+            if curl \
+              --fail --silent --show-error --location \
+              -H "Cache-Control: no-cache" \
+              "${URL}" \
+              --output /tmp/0830-published.json; then
+              if python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          tag = os.environ["LOCAL_DATE_TAG"]
+          data = json.loads(Path("/tmp/0830-published.json").read_text(encoding="utf-8"))
+          generated = dt.datetime.fromisoformat(
+              str(data["generated_at"]).replace("Z", "+00:00")
+          ).astimezone(eastern)
+          minute = generated.hour * 60 + generated.minute
+          valid = (
+              data.get("station", {}).get("id") == "MORG"
+              and generated.strftime("%Y%m%d") == tag
+              and (7 * 60 + 40) <= minute <= (8 * 60 + 50)
+              and data.get("status") == "current"
+              and data.get("freshness", {}).get("within_limit") is True
+              and data.get("quality_control", {}).get("flag_metadata_verified") is True
+          )
+          raise SystemExit(0 if valid else 1)
+          PY
+              then
+                echo "Verified published ${LOCAL_DATE_TAG}-0830.json"
+                exit 0
+              fi
+            fi
+            echo "Published snapshot not ready/valid yet (attempt ${attempt}/12)"
+            sleep 15
+          done
+          echo "Published 08:30 snapshot failed post-deploy verification"
+          exit 1
