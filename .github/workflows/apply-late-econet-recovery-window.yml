@@ -1,0 +1,85 @@
+name: Apply Late ECONet Recovery Window
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "triggers/maintenance-late-econet-recovery.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Extend late ECONet recovery window through noon Eastern
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path(".github/workflows/update-hrrr.yml")
+          text = path.read_text(encoding="utf-8")
+
+          if "# V3.8: resilient late-morning publishing." not in text:
+              raise SystemExit("Expected V3.8 workflow marker not found; refusing automatic patch")
+
+          old_window = "11 * 60 + 20"
+          expected_count = 7
+          actual_count = text.count(old_window)
+          if actual_count != expected_count:
+              raise SystemExit(
+                  f"Expected {expected_count} 11:20 window checks, found {actual_count}; refusing automatic patch"
+              )
+
+          text = text.replace(
+              "# V3.8: resilient late-morning publishing. HRRR, 10:30 ECONet, and the\n"
+              "# morning 08:30 snapshot are independent: a missed 08:30 run can no longer\n"
+              "# prevent current-day HRRR or 10:30 ECONet products from publishing.\n",
+              "# V3.9: resilient late-morning publishing with same-day ECONet recovery.\n"
+              "# HRRR, 10:30 ECONet, and the morning 08:30 snapshot are independent.\n"
+              "# The 10:30 ECONet product may recover through noon Eastern after delayed\n"
+              "# or manual dispatch while retaining its actual generated_at timestamp.\n",
+          )
+
+          text = text.replace(
+              "          slot_start = 10 * 60\n"
+              "          slot_end = 11 * 60 + 20\n",
+              "          slot_start = 10 * 60\n"
+              "          # Normal production is targeted near 10:30; allow delayed/manual\n"
+              "          # same-day recovery through noon Eastern.\n"
+              "          slot_end = 12 * 60\n",
+          )
+
+          # Keep every downstream validator aligned with the new recovery window.
+          text = text.replace(old_window, "12 * 60")
+          text = text.replace(
+              '                  f"ECONet generated outside 10:30 slot: {generated.isoformat()}"',
+              '                  f"ECONet generated outside late-morning recovery window: {generated.isoformat()}"',
+          )
+
+          path.write_text(text, encoding="utf-8")
+          print("Updated V3.8 -> V3.9 and extended all seven late ECONet checks through 12:00 PM Eastern")
+          PY
+
+      - name: Show guarded patch
+        run: |
+          git diff -- .github/workflows/update-hrrr.yml
+
+      - name: Commit V3.9 recovery-window improvement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/update-hrrr.yml
+          if git diff --cached --quiet; then
+            echo "No workflow changes required"
+          else
+            git commit -m "Extend late ECONet recovery window through noon"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
