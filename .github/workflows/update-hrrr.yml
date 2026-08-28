@@ -1,8 +1,9 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.8: resilient late-morning publishing. HRRR, 10:30 ECONet, and the
-# morning 08:30 snapshot are independent: a missed 08:30 run can no longer
-# prevent current-day HRRR or 10:30 ECONet products from publishing.
+# V3.9: resilient late-morning publishing with same-day ECONet recovery.
+# HRRR, 10:30 ECONet, and the morning 08:30 snapshot are independent.
+# The 10:30 ECONet product may recover through noon Eastern after delayed
+# or manual dispatch while retaining its actual generated_at timestamp.
 
 on:
   workflow_dispatch:
@@ -71,7 +72,9 @@ jobs:
           minutes = local_now.hour * 60 + local_now.minute
 
           slot_start = 10 * 60
-          slot_end = 11 * 60 + 20
+          # Normal production is targeted near 10:30; allow delayed/manual
+          # same-day recovery through noon Eastern.
+          slot_end = 12 * 60
           if minutes < slot_start:
               slot_state = "before"
           elif minutes <= slot_end:
@@ -172,7 +175,7 @@ jobs:
               "econet_1030_valid": econet_valid(
                   "current/morg-econet-1030.json",
                   10 * 60,
-                  11 * 60 + 20,
+                  12 * 60,
               ),
               "hrrr_valid": hrrr_valid("current/burke-hrrr-12z.json"),
           }
@@ -232,7 +235,7 @@ jobs:
                   econet_valid = (
                       data.get("station", {}).get("id") == "MORG"
                       and generated.date() == today
-                      and (10 * 60) <= minute <= (11 * 60 + 20)
+                      and (10 * 60) <= minute <= (12 * 60)
                       and data.get("status") == "current"
                       and data.get("freshness", {}).get("within_limit") is True
                       and data.get("quality_control", {}).get(
@@ -476,9 +479,9 @@ jobs:
           minute = generated.hour * 60 + generated.minute
           if generated.strftime("%Y%m%d") != tag:
               raise SystemExit("ECONet 10:30 snapshot has wrong Eastern date")
-          if not ((10 * 60) <= minute <= (11 * 60 + 20)):
+          if not ((10 * 60) <= minute <= (12 * 60)):
               raise SystemExit(
-                  f"ECONet generated outside 10:30 slot: {generated.isoformat()}"
+                  f"ECONet generated outside late-morning recovery window: {generated.isoformat()}"
               )
 
           rainfall = data.get("rainfall", {})
@@ -836,7 +839,7 @@ jobs:
                   "current/morg-econet-0830.json", 7 * 60 + 40, 8 * 60 + 50
               ),
               "econet_1030": econet_state(
-                  "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
+                  "current/morg-econet-1030.json", 10 * 60, 12 * 60
               ),
               "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
           }
@@ -938,7 +941,7 @@ jobs:
                   econet_valid = (
                       data.get("station", {}).get("id") == "MORG"
                       and generated.date() == today
-                      and (10 * 60) <= minute <= (11 * 60 + 20)
+                      and (10 * 60) <= minute <= (12 * 60)
                       and data.get("status") == "current"
                       and data.get("freshness", {}).get("within_limit") is True
                       and data.get("quality_control", {}).get(
@@ -1079,7 +1082,7 @@ jobs:
               )
           if os.environ["EXPECT_1030"] == "true":
               valid = valid and validate_econet(
-                  "/tmp/check-1030.json", 10 * 60, 11 * 60 + 20
+                  "/tmp/check-1030.json", 10 * 60, 12 * 60
               )
 
           raise SystemExit(0 if valid else 1)
