@@ -56,7 +56,6 @@ jobs:
               "          slot_end = 12 * 60\n",
           )
 
-          # Keep every downstream validator aligned with the new recovery window.
           text = text.replace(old_window, "12 * 60")
           text = text.replace(
               '                  f"ECONet generated outside 10:30 slot: {generated.isoformat()}"',
@@ -64,22 +63,24 @@ jobs:
           )
 
           path.write_text(text, encoding="utf-8")
-          print("Updated V3.8 -> V3.9 and extended all seven late ECONet checks through 12:00 PM Eastern")
+          stage = Path("maintenance/update-hrrr-v39.yml.txt")
+          stage.parent.mkdir(parents=True, exist_ok=True)
+          stage.write_text(text, encoding="utf-8")
+          print("Prepared guarded V3.9 workflow and staged exact replacement blob")
           PY
 
       - name: Show guarded patch
-        run: |
-          git diff -- .github/workflows/update-hrrr.yml
+        run: git diff -- .github/workflows/update-hrrr.yml
 
-      - name: Commit V3.9 recovery-window improvement
+      - name: Commit staged replacement blob
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/workflows/update-hrrr.yml
+          git add maintenance/update-hrrr-v39.yml.txt
           if git diff --cached --quiet; then
-            echo "No workflow changes required"
+            echo "Staged replacement blob is already current"
           else
-            git commit -m "Extend late ECONet recovery window through noon"
+            git commit -m "Stage V3.9 late ECONet recovery workflow"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
