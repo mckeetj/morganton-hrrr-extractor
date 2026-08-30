@@ -6,9 +6,9 @@
     "status": "valid"
   },
   "econet_1030": {
-    "generated_at": "2026-08-29T14:25:39.980451+00:00",
+    "generated_at": "2026-08-30T14:25:50.748109+00:00",
     "path": "current/morg-econet-1030.json",
-    "status": "not_current_for_today"
+    "status": "valid"
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-08-30T12:00:00+00:00",
@@ -18,5 +18,5 @@
     "through": "2026-08-31T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-08-30T13:25:56.421010+00:00"
+  "updated_at": "2026-08-30T14:25:59.844213+00:00"
 }
