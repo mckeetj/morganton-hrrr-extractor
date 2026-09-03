@@ -5,12 +5,12 @@
     "soil_moisture_substitution": "Do not substitute another station's soil moisture for MORG."
   },
   "freshness": {
-    "age_minutes": 1.0,
-    "latest_accepted_observation_time": "2026-09-02T10:31:00-04:00",
+    "age_minutes": 0.4,
+    "latest_accepted_observation_time": "2026-09-03T10:32:00-04:00",
     "maximum_current_age_minutes": 90.0,
     "within_limit": true
   },
-  "generated_at": "2026-09-02T14:31:57.967198+00:00",
+  "generated_at": "2026-09-03T14:32:25.641307+00:00",
   "notes": [
     "Only CLOUDS observations with QC score 0 or 1 are used.",
     "Current MORG soil-moisture context is considered usable only when the latest accepted observation is no more than 90 minutes old.",
@@ -37,63 +37,63 @@
       "coverage_percent": 100.0,
       "expected_hourly_observations": 168,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-09-02T10:31:00-04:00",
+      "through_observation_time": "2026-09-03T10:32:00-04:00",
       "total_inches": 0.63,
-      "window_end": "2026-09-02T14:31:57.967198+00:00",
+      "window_end": "2026-09-03T14:32:25.641307+00:00",
       "window_hours": 168,
-      "window_start": "2026-08-26T14:31:57.967198+00:00"
+      "window_start": "2026-08-27T14:32:25.641307+00:00"
     },
     "24h": {
       "accepted_hourly_observations": 24,
       "coverage_percent": 100.0,
       "expected_hourly_observations": 24,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-09-02T10:31:00-04:00",
+      "through_observation_time": "2026-09-03T10:32:00-04:00",
       "total_inches": 0.0,
-      "window_end": "2026-09-02T14:31:57.967198+00:00",
+      "window_end": "2026-09-03T14:32:25.641307+00:00",
       "window_hours": 24,
-      "window_start": "2026-09-01T14:31:57.967198+00:00"
+      "window_start": "2026-09-02T14:32:25.641307+00:00"
     },
     "72h": {
       "accepted_hourly_observations": 72,
       "coverage_percent": 100.0,
       "expected_hourly_observations": 72,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-09-02T10:31:00-04:00",
+      "through_observation_time": "2026-09-03T10:32:00-04:00",
       "total_inches": 0.0,
-      "window_end": "2026-09-02T14:31:57.967198+00:00",
+      "window_end": "2026-09-03T14:32:25.641307+00:00",
       "window_hours": 72,
-      "window_start": "2026-08-30T14:31:57.967198+00:00"
+      "window_start": "2026-08-31T14:32:25.641307+00:00"
     },
     "units": "in"
   },
   "schema_version": 1,
   "soil_moisture": {
     "10cm": {
-      "age_minutes": 32.0,
-      "change_24h_m3m3": -0.01,
-      "change_reference_time": "2026-09-01T10:00:00-04:00",
+      "age_minutes": 32.4,
+      "change_24h_m3m3": 0.0,
+      "change_reference_time": "2026-09-02T10:00:00-04:00",
       "current_value_published": false,
       "depth_cm": 10,
-      "observation_time": "2026-09-02T10:00:00-04:00",
+      "observation_time": "2026-09-03T10:00:00-04:00",
       "qc_flag": "R0",
       "qc_score": 0,
       "qc_status": "good",
-      "seven_day_percentile": 21.7,
+      "seven_day_percentile": 22.6,
       "status": "current",
       "units": "m3/m3"
     },
     "20cm": {
-      "age_minutes": 32.0,
-      "change_24h_m3m3": -0.01,
-      "change_reference_time": "2026-09-01T10:00:00-04:00",
+      "age_minutes": 32.4,
+      "change_24h_m3m3": 0.0,
+      "change_reference_time": "2026-09-02T10:00:00-04:00",
       "current_value_published": false,
       "depth_cm": 20,
-      "observation_time": "2026-09-02T10:00:00-04:00",
+      "observation_time": "2026-09-03T10:00:00-04:00",
       "qc_flag": "R0",
       "qc_score": 0,
       "qc_status": "good",
-      "seven_day_percentile": 21.7,
+      "seven_day_percentile": 22.6,
       "status": "current",
       "units": "m3/m3"
     }
