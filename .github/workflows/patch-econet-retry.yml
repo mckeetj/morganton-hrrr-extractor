@@ -17,130 +17,31 @@ jobs:
           fetch-depth: 0
 
       - name: Patch late-morning ECONet retry behavior
+        env:
+          OLD_B64: ICAgICAgICAgIGlmIGRhdGEuZ2V0KCJzdGF0aW9uIiwge30pLmdldCgiaWQiKSAhPSAiTU9SRyI6CiAgICAgICAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgiRUNPTmV0IG91dHB1dCBpcyBub3QgZm9yIE1PUkciKQogICAgICAgICAgaWYgZGF0YS5nZXQoInNjaGVtYV92ZXJzaW9uIikgIT0gMToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KGYidW5leHBlY3RlZCBFQ09OZXQgc2NoZW1hOiB7ZGF0YS5nZXQoJ3NjaGVtYV92ZXJzaW9uJykhcn0iKQogICAgICAgICAgaWYgZGF0YS5nZXQoInN0YXR1cyIpICE9ICJjdXJyZW50IjoKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KGYiRUNPTmV0IHN0YXR1cyBpcyBub3QgY3VycmVudDoge2RhdGEuZ2V0KCdzdGF0dXMnKSFyfSIpCiAgICAgICAgICBpZiBkYXRhLmdldCgiZnJlc2huZXNzIiwge30pLmdldCgid2l0aGluX2xpbWl0IikgaXMgbm90IFRydWU6CiAgICAgICAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgiRUNPTmV0IGZyZXNobmVzcy53aXRoaW5fbGltaXQgaXMgbm90IHRydWUiKQogICAgICAgICAgaWYgZGF0YS5nZXQoInF1YWxpdHlfY29udHJvbCIsIHt9KS5nZXQoImZsYWdfbWV0YWRhdGFfdmVyaWZpZWQiKSBpcyBub3QgVHJ1ZToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJFQ09OZXQgUUMgZmxhZyBtZXRhZGF0YSBpcyBub3QgdmVyaWZpZWQiKQoKICAgICAgICAgIGdlbmVyYXRlZCA9IGR0LmRhdGV0aW1lLmZyb21pc29mb3JtYXQoCiAgICAgICAgICAgICAgc3RyKGRhdGFbImdlbmVyYXRlZF9hdCJdKS5yZXBsYWNlKCJaIiwgIiswMDowMCIpCiAgICAgICAgICApLmFzdGltZXpvbmUoZWFzdGVybikKICAgICAgICAgIG1pbnV0ZSA9IGdlbmVyYXRlZC5ob3VyICogNjAgKyBnZW5lcmF0ZWQubWludXRlCiAgICAgICAgICBpZiBnZW5lcmF0ZWQuc3RyZnRpbWUoIiVZJW0lZCIpICE9IHRhZzoKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJFQ09OZXQgMTA6MzAgc25hcHNob3QgaGFzIHdyb25nIEVhc3Rlcm4gZGF0ZSIpCiAgICAgICAgICBpZiBub3QgKCgxMCAqIDYwKSA8PSBtaW51dGUgPD0gKDEyICogNjApKToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KAogICAgICAgICAgICAgICAgICBmIkVDT05ldCBnZW5lcmF0ZWQgb3V0c2lkZSBsYXRlLW1vcm5pbmcgcmVjb3Zlcnkgd2luZG93OiB7Z2VuZXJhdGVkLmlzb2Zvcm1hdCgpfSIKICAgICAgICAgICAgICApCgogICAgICAgICAgcmFpbmZhbGwgPSBkYXRhLmdldCgicmFpbmZhbGwiLCB7fSkK
+          NEW_B64: ICAgICAgICAgIGlmIGRhdGEuZ2V0KCJzdGF0aW9uIiwge30pLmdldCgiaWQiKSAhPSAiTU9SRyI6CiAgICAgICAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgiRUNPTmV0IG91dHB1dCBpcyBub3QgZm9yIE1PUkciKQogICAgICAgICAgaWYgZGF0YS5nZXQoInNjaGVtYV92ZXJzaW9uIikgIT0gMToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KGYidW5leHBlY3RlZCBFQ09OZXQgc2NoZW1hOiB7ZGF0YS5nZXQoJ3NjaGVtYV92ZXJzaW9uJykhcn0iKQoKICAgICAgICAgIGdlbmVyYXRlZCA9IGR0LmRhdGV0aW1lLmZyb21pc29mb3JtYXQoCiAgICAgICAgICAgICAgc3RyKGRhdGFbImdlbmVyYXRlZF9hdCJdKS5yZXBsYWNlKCJaIiwgIiswMDowMCIpCiAgICAgICAgICApLmFzdGltZXpvbmUoZWFzdGVybikKICAgICAgICAgIG1pbnV0ZSA9IGdlbmVyYXRlZC5ob3VyICogNjAgKyBnZW5lcmF0ZWQubWludXRlCiAgICAgICAgICBpZiBnZW5lcmF0ZWQuc3RyZnRpbWUoIiVZJW0lZCIpICE9IHRhZzoKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJFQ09OZXQgMTA6MzAgc25hcHNob3QgaGFzIHdyb25nIEVhc3Rlcm4gZGF0ZSIpCiAgICAgICAgICBpZiBub3QgKCgxMCAqIDYwKSA8PSBtaW51dGUgPD0gKDEyICogNjApKToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KAogICAgICAgICAgICAgICAgICBmIkVDT05ldCBnZW5lcmF0ZWQgb3V0c2lkZSBsYXRlLW1vcm5pbmcgcmVjb3Zlcnkgd2luZG93OiB7Z2VuZXJhdGVkLmlzb2Zvcm1hdCgpfSIKICAgICAgICAgICAgICApCgogICAgICAgICAgc3RhdHVzID0gZGF0YS5nZXQoInN0YXR1cyIpCiAgICAgICAgICBpZiBzdGF0dXMgPT0gInVuYXZhaWxhYmxlIjoKICAgICAgICAgICAgICBwcmludCgKICAgICAgICAgICAgICAgICAgIk1PUkcgRUNPTmV0IHVwc3RyZWFtIGRhdGEgaXMgdGVtcG9yYXJpbHkgdW5hdmFpbGFibGU7ICIKICAgICAgICAgICAgICAgICAgInRoaXMgc2NoZWR1bGVkIGF0dGVtcHQgd2lsbCByZW1haW4gZ3JlZW4gc28gYSBsYXRlciByZXRyeSBjYW4gcmVjb3ZlciIKICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgwKQogICAgICAgICAgaWYgc3RhdHVzICE9ICJjdXJyZW50IjoKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KGYidW5leHBlY3RlZCBFQ09OZXQgc3RhdHVzOiB7c3RhdHVzIXJ9IikKICAgICAgICAgIGlmIGRhdGEuZ2V0KCJmcmVzaG5lc3MiLCB7fSkuZ2V0KCJ3aXRoaW5fbGltaXQiKSBpcyBub3QgVHJ1ZToKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJFQ09OZXQgZnJlc2huZXNzLndpdGhpbl9saW1pdCBpcyBub3QgdHJ1ZSIpCiAgICAgICAgICBpZiBkYXRhLmdldCgicXVhbGl0eV9jb250cm9sIiwge30pLmdldCgiZmxhZ19tZXRhZGF0YV92ZXJpZmllZCIpIGlzIG5vdCBUcnVlOgogICAgICAgICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoIkVDT05ldCBRQyBmbGFnIG1ldGFkYXRhIGlzIG5vdCB2ZXJpZmllZCIpCgogICAgICAgICAgcmFpbmZhbGwgPSBkYXRhLmdldCgicmFpbmZhbGwiLCB7fSkK
+          MARKER_B64: ICAgICAgLSBuYW1lOiBDb25maWd1cmUgR2l0SHViIFBhZ2VzCiAgICAgICAgaWY6IHN0ZXBzLnB1Ymxpc2hfcGxhbi5vdXRwdXRzLmRlcGxveV9uZWVkZWQgPT0gJ3RydWUnCiAgICAgICAgdXNlczogYWN0aW9ucy9jb25maWd1cmUtcGFnZXNAdjYK
+          ALERT_B64: ICAgICAgLSBuYW1lOiBGaW5hbCBzY2hlZHVsZWQgMTA6MzAgRUNPTmV0IGF2YWlsYWJpbGl0eSBhbGVydAogICAgICAgIGlmOiBhbHdheXMoKSAmJiBnaXRodWIuZXZlbnRfbmFtZSA9PSAnc2NoZWR1bGUnICYmIGdpdGh1Yi5ldmVudC5zY2hlZHVsZSA9PSAnMTcgMTEgKiAqIConCiAgICAgICAgcnVuOiB8CiAgICAgICAgICBweXRob24gLSA8PCdQWTInCiAgICAgICAgICBpbXBvcnQgZGF0ZXRpbWUgYXMgZHQKICAgICAgICAgIGltcG9ydCBqc29uCiAgICAgICAgICBpbXBvcnQgb3MKICAgICAgICAgIGZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAogICAgICAgICAgZnJvbSB6b25laW5mbyBpbXBvcnQgWm9uZUluZm8KCiAgICAgICAgICBlYXN0ZXJuID0gWm9uZUluZm8oIkFtZXJpY2EvTmV3X1lvcmsiKQogICAgICAgICAgdGFnID0gb3MuZW52aXJvblsiTE9DQUxfREFURV9UQUciXQogICAgICAgICAgcGF0aCA9IFBhdGgoImN1cnJlbnQvbW9yZy1lY29uZXQtMTAzMC5qc29uIikKICAgICAgICAgIHZhbGlkID0gRmFsc2UKICAgICAgICAgIGlmIHBhdGguZXhpc3RzKCk6CiAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkKICAgICAgICAgICAgICAgICAgZ2VuZXJhdGVkID0gZHQuZGF0ZXRpbWUuZnJvbWlzb2Zvcm1hdCgKICAgICAgICAgICAgICAgICAgICAgIHN0cihkYXRhWyJnZW5lcmF0ZWRfYXQiXSkucmVwbGFjZSgiWiIsICIrMDA6MDAiKQogICAgICAgICAgICAgICAgICApLmFzdGltZXpvbmUoZWFzdGVybikKICAgICAgICAgICAgICAgICAgbWludXRlID0gZ2VuZXJhdGVkLmhvdXIgKiA2MCArIGdlbmVyYXRlZC5taW51dGUKICAgICAgICAgICAgICAgICAgdmFsaWQgPSAoCiAgICAgICAgICAgICAgICAgICAgICBkYXRhLmdldCgic3RhdGlvbiIsIHt9KS5nZXQoImlkIikgPT0gIk1PUkciCiAgICAgICAgICAgICAgICAgICAgICBhbmQgZ2VuZXJhdGVkLnN0cmZ0aW1lKCIlWSVtJWQiKSA9PSB0YWcKICAgICAgICAgICAgICAgICAgICAgIGFuZCAoMTAgKiA2MCkgPD0gbWludXRlIDw9ICgxMiAqIDYwKQogICAgICAgICAgICAgICAgICAgICAgYW5kIGRhdGEuZ2V0KCJzdGF0dXMiKSA9PSAiY3VycmVudCIKICAgICAgICAgICAgICAgICAgICAgIGFuZCBkYXRhLmdldCgiZnJlc2huZXNzIiwge30pLmdldCgid2l0aGluX2xpbWl0IikgaXMgVHJ1ZQogICAgICAgICAgICAgICAgICAgICAgYW5kIGRhdGEuZ2V0KCJxdWFsaXR5X2NvbnRyb2wiLCB7fSkuZ2V0KAogICAgICAgICAgICAgICAgICAgICAgICAgICJmbGFnX21ldGFkYXRhX3ZlcmlmaWVkIgogICAgICAgICAgICAgICAgICAgICAgKSBpcyBUcnVlCiAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgICB2YWxpZCA9IEZhbHNlCiAgICAgICAgICBpZiB2YWxpZDoKICAgICAgICAgICAgICBwcmludCgiRmluYWwgc2NoZWR1bGVkIGNoZWNrOiBjdXJyZW50IE1PUkcgMTA6MzAgc25hcHNob3QgaXMgYXZhaWxhYmxlIikKICAgICAgICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KDApCiAgICAgICAgICBwcmludCgKICAgICAgICAgICAgICAiOjplcnJvcjo6TU9SRyBFQ09OZXQgcmVtYWluZWQgdW5hdmFpbGFibGUgdGhyb3VnaCB0aGUgZmluYWwgIgogICAgICAgICAgICAgICJzY2hlZHVsZWQgbGF0ZS1tb3JuaW5nIGF0dGVtcHQuIEVhcmxpZXIgdXBzdHJlYW0tdW5hdmFpbGFibGUgIgogICAgICAgICAgICAgICJhdHRlbXB0cyB3ZXJlIGludGVudGlvbmFsbHkgdHJlYXRlZCBhcyByZXRyeWFibGUuIgogICAgICAgICAgKQogICAgICAgICAgcmFpc2UgU3lzdGVtRXhpdCgxKQogICAgICAgICAgUFkyCgo=
         run: |
           python - <<'PY'
+          import base64
+          import os
           from pathlib import Path
 
           path = Path('.github/workflows/update-hrrr.yml')
           text = path.read_text(encoding='utf-8')
-
-          old = '''          if data.get("station", {}).get("id") != "MORG":
-              raise SystemExit("ECONet output is not for MORG")
-          if data.get("schema_version") != 1:
-              raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
-          if data.get("status") != "current":
-              raise SystemExit(f"ECONet status is not current: {data.get('status')!r}")
-          if data.get("freshness", {}).get("within_limit") is not True:
-              raise SystemExit("ECONet freshness.within_limit is not true")
-          if data.get("quality_control", {}).get("flag_metadata_verified") is not True:
-              raise SystemExit("ECONet QC flag metadata is not verified")
-
-          generated = dt.datetime.fromisoformat(
-              str(data["generated_at"]).replace("Z", "+00:00")
-          ).astimezone(eastern)
-          minute = generated.hour * 60 + generated.minute
-          if generated.strftime("%Y%m%d") != tag:
-              raise SystemExit("ECONet 10:30 snapshot has wrong Eastern date")
-          if not ((10 * 60) <= minute <= (12 * 60)):
-              raise SystemExit(
-                  f"ECONet generated outside late-morning recovery window: {generated.isoformat()}"
-              )
-
-          rainfall = data.get("rainfall", {})
-          '''
-
-          new = '''          if data.get("station", {}).get("id") != "MORG":
-              raise SystemExit("ECONet output is not for MORG")
-          if data.get("schema_version") != 1:
-              raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
-
-          generated = dt.datetime.fromisoformat(
-              str(data["generated_at"]).replace("Z", "+00:00")
-          ).astimezone(eastern)
-          minute = generated.hour * 60 + generated.minute
-          if generated.strftime("%Y%m%d") != tag:
-              raise SystemExit("ECONet 10:30 snapshot has wrong Eastern date")
-          if not ((10 * 60) <= minute <= (12 * 60)):
-              raise SystemExit(
-                  f"ECONet generated outside late-morning recovery window: {generated.isoformat()}"
-              )
-
-          status = data.get("status")
-          if status == "unavailable":
-              print(
-                  "MORG ECONet upstream data is temporarily unavailable; "
-                  "this scheduled attempt will remain green so a later retry can recover"
-              )
-              raise SystemExit(0)
-          if status != "current":
-              raise SystemExit(f"unexpected ECONet status: {status!r}")
-          if data.get("freshness", {}).get("within_limit") is not True:
-              raise SystemExit("ECONet freshness.within_limit is not true")
-          if data.get("quality_control", {}).get("flag_metadata_verified") is not True:
-              raise SystemExit("ECONet QC flag metadata is not verified")
-
-          rainfall = data.get("rainfall", {})
-          '''
+          old = base64.b64decode(os.environ['OLD_B64']).decode()
+          new = base64.b64decode(os.environ['NEW_B64']).decode()
+          marker = base64.b64decode(os.environ['MARKER_B64']).decode()
+          alert = base64.b64decode(os.environ['ALERT_B64']).decode()
 
           if old not in text:
               raise SystemExit('Expected 10:30 ECONet validator block not found')
-          text = text.replace(old, new, 1)
-
-          marker = '''      - name: Configure GitHub Pages
-        if: steps.publish_plan.outputs.deploy_needed == 'true'
-        uses: actions/configure-pages@v6
-          '''
-
-          alert = '''      - name: Final scheduled 10:30 ECONet availability alert
-        if: always() && github.event_name == 'schedule' && github.event.schedule == '17 11 * * *'
-        run: |
-          python - <<'PY2'
-          import datetime as dt
-          import json
-          import os
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-
-          eastern = ZoneInfo("America/New_York")
-          tag = os.environ["LOCAL_DATE_TAG"]
-          path = Path("current/morg-econet-1030.json")
-          valid = False
-          if path.exists():
-              try:
-                  data = json.loads(path.read_text(encoding="utf-8"))
-                  generated = dt.datetime.fromisoformat(
-                      str(data["generated_at"]).replace("Z", "+00:00")
-                  ).astimezone(eastern)
-                  minute = generated.hour * 60 + generated.minute
-                  valid = (
-                      data.get("station", {}).get("id") == "MORG"
-                      and generated.strftime("%Y%m%d") == tag
-                      and (10 * 60) <= minute <= (12 * 60)
-                      and data.get("status") == "current"
-                      and data.get("freshness", {}).get("within_limit") is True
-                      and data.get("quality_control", {}).get(
-                          "flag_metadata_verified"
-                      ) is True
-                  )
-              except Exception:
-                  valid = False
-          if valid:
-              print("Final scheduled check: current MORG 10:30 snapshot is available")
-              raise SystemExit(0)
-          print(
-              "::error::MORG ECONet remained unavailable through the final "
-              "scheduled late-morning attempt. Earlier upstream-unavailable "
-              "attempts were intentionally treated as retryable."
-          )
-          raise SystemExit(1)
-          PY2
-
-          '''
-
           if marker not in text:
               raise SystemExit('Configure Pages marker not found')
-          text = text.replace(marker, alert + marker, 1)
 
+          text = text.replace(old, new, 1)
+          text = text.replace(marker, alert + marker, 1)
           text = text.replace(
               '# V3.9: resilient late-morning publishing with same-day ECONet recovery.',
               '# V3.10: resilient late-morning publishing with retryable ECONet unavailability.',
