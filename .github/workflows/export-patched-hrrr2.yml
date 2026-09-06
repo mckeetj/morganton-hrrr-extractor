@@ -1,0 +1,120 @@
+name: Export patched late workflow v2
+
+on: push
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Build patched workflow text
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          src = Path('.github/workflows/update-hrrr.yml')
+          text = src.read_text(encoding='utf-8')
+
+          section_start = text.index('      - name: Validate newly generated 10:30 ECONet JSON')
+          section_end = text.index('      - name: Stage 10:30 ECONet for Pages and repository', section_start)
+          section = text[section_start:section_end]
+          needle = '''          if data.get("status") != "current":
+              raise SystemExit(f"ECONet status is not current: {data.get('status')!r}")
+'''
+          replacement = '''          status = data.get("status")
+          if status == "unavailable":
+              print(
+                  "MORG ECONet upstream data is temporarily unavailable; "
+                  "this scheduled attempt will remain green so a later retry can recover"
+              )
+              raise SystemExit(0)
+          if status != "current":
+              raise SystemExit(f"unexpected ECONet status: {status!r}")
+'''
+          if needle not in section:
+              raise SystemExit('10:30 ECONet status validator not found')
+          section = section.replace(needle, replacement, 1)
+          text = text[:section_start] + section + text[section_end:]
+
+          marker = '''      - name: Configure GitHub Pages
+        if: steps.publish_plan.outputs.deploy_needed == 'true'
+        uses: actions/configure-pages@v6
+'''
+          alert = '''      - name: Final scheduled 10:30 ECONet availability alert
+        if: always() && github.event_name == 'schedule' && github.event.schedule == '17 11 * * *'
+        run: |
+          python - <<'PY2'
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          tag = os.environ["LOCAL_DATE_TAG"]
+          path = Path("current/morg-econet-1030.json")
+          valid = False
+          if path.exists():
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+                  generated = dt.datetime.fromisoformat(
+                      str(data["generated_at"]).replace("Z", "+00:00")
+                  ).astimezone(eastern)
+                  minute = generated.hour * 60 + generated.minute
+                  valid = (
+                      data.get("station", {}).get("id") == "MORG"
+                      and generated.strftime("%Y%m%d") == tag
+                      and (10 * 60) <= minute <= (12 * 60)
+                      and data.get("status") == "current"
+                      and data.get("freshness", {}).get("within_limit") is True
+                      and data.get("quality_control", {}).get(
+                          "flag_metadata_verified"
+                      ) is True
+                  )
+              except Exception:
+                  valid = False
+          if valid:
+              print("Final scheduled check: current MORG 10:30 snapshot is available")
+              raise SystemExit(0)
+          print(
+              "::error::MORG ECONet remained unavailable through the final "
+              "scheduled late-morning attempt. Earlier upstream-unavailable "
+              "attempts were intentionally treated as retryable."
+          )
+          raise SystemExit(1)
+          PY2
+
+'''
+          if marker not in text:
+              raise SystemExit('Configure Pages marker not found')
+          text = text.replace(marker, alert + marker, 1)
+          text = text.replace(
+              '# V3.9: resilient late-morning publishing with same-day ECONet recovery.',
+              '# V3.10: resilient late-morning publishing with retryable ECONet unavailability.',
+              1,
+          )
+
+          out = Path('tmp/update-hrrr-patched.txt')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(text, encoding='utf-8')
+          print(f'wrote {out} ({len(text)} bytes)')
+          PY
+
+      - name: Publish temporary patched text
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tmp/update-hrrr-patched.txt
+          if git diff --cached --quiet; then
+            echo "Temporary patched text already current"
+          else
+            git commit -m "Export patched late workflow for connected editor [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
