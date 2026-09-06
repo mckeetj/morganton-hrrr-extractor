@@ -1,7 +1,5 @@
 name: One-time ECONet retry patch
 
-# Second push intentionally triggers this one-time patch now that the workflow
-# already exists on the default branch.
 on:
   push:
     paths:
@@ -49,7 +47,7 @@ jobs:
               )
 
           rainfall = data.get("rainfall", {})
-'''
+          '''
 
           new = '''          if data.get("station", {}).get("id") != "MORG":
               raise SystemExit("ECONet output is not for MORG")
@@ -82,7 +80,7 @@ jobs:
               raise SystemExit("ECONet QC flag metadata is not verified")
 
           rainfall = data.get("rainfall", {})
-'''
+          '''
 
           if old not in text:
               raise SystemExit('Expected 10:30 ECONet validator block not found')
@@ -91,7 +89,7 @@ jobs:
           marker = '''      - name: Configure GitHub Pages
         if: steps.publish_plan.outputs.deploy_needed == 'true'
         uses: actions/configure-pages@v6
-'''
+          '''
 
           alert = '''      - name: Final scheduled 10:30 ECONet availability alert
         if: always() && github.event_name == 'schedule' && github.event.schedule == '17 11 * * *'
@@ -137,7 +135,7 @@ jobs:
           raise SystemExit(1)
           PY2
 
-'''
+          '''
 
           if marker not in text:
               raise SystemExit('Configure Pages marker not found')
