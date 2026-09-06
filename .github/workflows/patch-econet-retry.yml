@@ -1,5 +1,7 @@
 name: One-time ECONet retry patch
 
+# Second push intentionally triggers this one-time patch now that the workflow
+# already exists on the default branch.
 on:
   push:
     paths:
