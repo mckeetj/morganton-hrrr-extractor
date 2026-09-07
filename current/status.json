@@ -6,7 +6,7 @@
     "status": "not_current_for_today"
   },
   "econet_1030": {
-    "generated_at": "2026-09-07T15:00:00.924833+00:00",
+    "generated_at": "2026-09-07T15:26:51.380652+00:00",
     "path": "current/morg-econet-1030.json",
     "status": "not_current_for_today"
   },
@@ -18,5 +18,5 @@
     "through": "2026-09-08T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-09-07T15:00:09.534483+00:00"
+  "updated_at": "2026-09-07T15:26:59.102322+00:00"
 }
