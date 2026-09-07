@@ -10,10 +10,13 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import errno
 import io
 import json
 import math
 import os
+import socket
+import ssl
 import statistics
 import sys
 import time
@@ -294,6 +297,36 @@ def _build_url(api_hash: str, start: dt.datetime, end: dt.datetime) -> str:
     return f"{API_ENDPOINT}?{urllib.parse.urlencode(params)}"
 
 
+def _classify_url_error(exc: urllib.error.URLError) -> str:
+    """Return a safe, actionable network diagnostic without exposing the request URL.
+
+    The CLOUDS request URL contains the private API hash, so this function never
+    stringifies the URLError or its reason. Only exception types and numeric errno
+    values are inspected.
+    """
+    reason = exc.reason
+    err_no = getattr(reason, "errno", None)
+
+    if isinstance(reason, socket.gaierror):
+        return "CLOUDS API DNS resolution failed"
+    if isinstance(reason, ssl.SSLCertVerificationError):
+        return "CLOUDS API TLS certificate verification failed"
+    if isinstance(reason, ssl.SSLError):
+        return "CLOUDS API TLS/SSL connection failed"
+    if isinstance(reason, (TimeoutError, socket.timeout)):
+        return "CLOUDS API connection timed out"
+    if isinstance(reason, ConnectionRefusedError) or err_no == errno.ECONNREFUSED:
+        return "CLOUDS API connection was refused"
+    if isinstance(reason, ConnectionResetError) or err_no == errno.ECONNRESET:
+        return "CLOUDS API connection was reset"
+    if isinstance(reason, ConnectionAbortedError) or err_no == errno.ECONNABORTED:
+        return "CLOUDS API connection was aborted"
+    if err_no in {errno.ENETUNREACH, errno.EHOSTUNREACH}:
+        return "CLOUDS API network/host was unreachable"
+
+    return "CLOUDS API network request failed (unclassified connection error)"
+
+
 def _fetch_csv(api_hash: str, start: dt.datetime, end: dt.datetime, retries: int = 4) -> str:
     url = _build_url(api_hash, start, end)
     retryable = {429, 500, 502, 503, 504}
@@ -315,12 +348,17 @@ def _fetch_csv(api_hash: str, start: dt.datetime, end: dt.datetime, retries: int
             last_error = RuntimeError(f"CLOUDS API returned HTTP {exc.code}")
             if exc.code not in retryable or attempt == retries - 1:
                 raise last_error from None
-        except urllib.error.URLError:
-            last_error = RuntimeError("CLOUDS API network request failed")
+        except urllib.error.URLError as exc:
+            # Never stringify exc/reason: the request URL contains the secret hash.
+            last_error = RuntimeError(_classify_url_error(exc))
             if attempt == retries - 1:
                 raise last_error from None
-        except (TimeoutError, UnicodeDecodeError):
-            last_error = RuntimeError("CLOUDS API response timed out or was not valid UTF-8 CSV")
+        except TimeoutError:
+            last_error = RuntimeError("CLOUDS API connection timed out")
+            if attempt == retries - 1:
+                raise last_error from None
+        except UnicodeDecodeError:
+            last_error = RuntimeError("CLOUDS API response was not valid UTF-8 CSV")
             if attempt == retries - 1:
                 raise last_error from None
         time.sleep(2**attempt)

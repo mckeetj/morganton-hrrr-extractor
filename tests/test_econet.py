@@ -1,13 +1,20 @@
 from __future__ import annotations
 
 import datetime as dt
+import errno
+import socket
+import ssl
 import unittest
+import urllib.error
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 from burke_hrrr.econet import (
     EASTERN,
     Observation,
     _build_url,
+    _classify_url_error,
+    _fetch_csv,
     build_summary,
     parse_clouds_csv,
     parse_clouds_json,
@@ -29,6 +36,42 @@ class EconetTests(unittest.TestCase):
         self.assertIn("soilmoist%7Cm3%2Fm3", url)
         self.assertIn("soilmoist20cm%7Cm3%2Fm3", url)
 
+
+    def test_url_error_diagnostics_are_specific_and_sanitized(self) -> None:
+        cases = [
+            (urllib.error.URLError(socket.gaierror(-2, "SECRET_HASH")), "CLOUDS API DNS resolution failed"),
+            (urllib.error.URLError(TimeoutError("SECRET_HASH")), "CLOUDS API connection timed out"),
+            (urllib.error.URLError(ssl.SSLCertVerificationError("SECRET_HASH")), "CLOUDS API TLS certificate verification failed"),
+            (urllib.error.URLError(ssl.SSLError("SECRET_HASH")), "CLOUDS API TLS/SSL connection failed"),
+            (urllib.error.URLError(ConnectionRefusedError(errno.ECONNREFUSED, "SECRET_HASH")), "CLOUDS API connection was refused"),
+            (urllib.error.URLError(ConnectionResetError(errno.ECONNRESET, "SECRET_HASH")), "CLOUDS API connection was reset"),
+            (urllib.error.URLError(OSError(errno.ENETUNREACH, "SECRET_HASH")), "CLOUDS API network/host was unreachable"),
+            (urllib.error.URLError(OSError(9999, "SECRET_HASH")), "CLOUDS API network request failed (unclassified connection error)"),
+        ]
+        for exc, expected in cases:
+            with self.subTest(expected=expected):
+                diagnostic = _classify_url_error(exc)
+                self.assertEqual(diagnostic, expected)
+                self.assertNotIn("SECRET_HASH", diagnostic)
+                self.assertNotIn("hash=", diagnostic.lower())
+
+    def test_fetch_csv_surfaces_sanitized_dns_failure(self) -> None:
+        now = dt.datetime(2026, 8, 21, 10, 15, tzinfo=EASTERN)
+        failure = urllib.error.URLError(socket.gaierror(-2, "SECRET_HASH"))
+        with patch("burke_hrrr.econet.urllib.request.urlopen", side_effect=failure):
+            with self.assertRaises(RuntimeError) as caught:
+                _fetch_csv("SECRET_HASH", now - dt.timedelta(days=7), now, retries=1)
+        message = str(caught.exception)
+        self.assertEqual(message, "CLOUDS API DNS resolution failed")
+        self.assertNotIn("SECRET_HASH", message)
+
+    def test_fetch_csv_distinguishes_direct_timeout(self) -> None:
+        now = dt.datetime(2026, 8, 21, 10, 15, tzinfo=EASTERN)
+        with patch("burke_hrrr.econet.urllib.request.urlopen", side_effect=TimeoutError("SECRET_HASH")):
+            with self.assertRaises(RuntimeError) as caught:
+                _fetch_csv("SECRET_HASH", now - dt.timedelta(days=7), now, retries=1)
+        self.assertEqual(str(caught.exception), "CLOUDS API connection timed out")
+        self.assertNotIn("SECRET_HASH", str(caught.exception))
 
     def test_parse_standard_csv_long_records(self) -> None:
         payload = """location,datetime,var,value,unit,score,flag,obtime
