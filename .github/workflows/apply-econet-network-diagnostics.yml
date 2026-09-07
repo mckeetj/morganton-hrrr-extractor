@@ -1,0 +1,37 @@
+name: Apply ECONet network diagnostics
+
+on:
+  push:
+    paths:
+      - "tmp/trigger-econet-network-diagnostics.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Apply patch
+        run: python tmp/patch_econet_network_diagnostics.py
+
+      - name: Run ECONet tests
+        run: python -m unittest tests.test_econet -v
+
+      - name: Commit tested changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add burke_hrrr/econet.py tests/test_econet.py
+          git rm tmp/patch_econet_network_diagnostics.py tmp/trigger-econet-network-diagnostics.txt
+          git commit -m "Improve CLOUDS API network diagnostics [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
