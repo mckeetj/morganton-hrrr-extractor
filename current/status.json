@@ -1,9 +1,9 @@
 {
   "date_eastern": "2026-09-10",
   "econet_0830": {
-    "generated_at": "2026-09-10T11:56:20.284647+00:00",
+    "generated_at": "2026-09-10T12:30:38.399418+00:00",
     "path": "current/morg-econet-0830.json",
-    "status": "upstream_unavailable"
+    "status": "valid"
   },
   "econet_1030": {
     "generated_at": "2026-09-09T14:33:12.032724+00:00",
@@ -18,5 +18,5 @@
     "through": "2026-09-10T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-09-10T11:59:29.319624+00:00"
+  "updated_at": "2026-09-10T12:30:47.092375+00:00"
 }
