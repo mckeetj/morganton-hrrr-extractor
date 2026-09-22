@@ -1,6 +1,7 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.10: resilient late-morning publishing with retryable ECONet unavailability.
+# V3.11: pin known-good ecCodes runtime, persist valid ECONet before HRRR,
+# and validate HRRR output even if the native process exits abnormally.
 # HRRR, 10:30 ECONet, and the morning 08:30 snapshot are independent.
 # The 10:30 ECONet product may recover through noon Eastern after delayed
 # or manual dispatch while retaining its actual generated_at timestamp.
@@ -349,6 +350,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
+          python -m pip freeze | grep -E '^(eccodes|eccodeslib|eckitlib|cfgrib)=='
 
       - name: Verify ecCodes runtime
         if: steps.decide.outputs.hrrr_action == 'extract' && steps.hrrr_ready.outputs.ready == 'true'
@@ -449,6 +451,7 @@ jobs:
           morg-econet --output public/morg-econet.json
 
       - name: Validate newly generated 10:30 ECONet JSON
+        id: econet_validate
         if: steps.decide.outputs.econet_action == 'extract'
         run: |
           python - <<'PY'
@@ -468,6 +471,8 @@ jobs:
               raise SystemExit(f"unexpected ECONet schema: {data.get('schema_version')!r}")
           status = data.get("status")
           if status == "unavailable":
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+                  out.write("publishable=false\n")
               print(
                   "MORG ECONet upstream data is temporarily unavailable; "
                   "this scheduled attempt will remain green so a later retry can recover"
@@ -506,11 +511,13 @@ jobs:
                       "public ECONet summary must not republish raw soil-moisture values"
                   )
 
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write("publishable=true\n")
           print(f"Validated MORG 10:30 snapshot generated {generated.isoformat()}")
           PY
 
       - name: Stage 10:30 ECONet for Pages and repository
-        if: steps.decide.outputs.econet_action == 'extract'
+        if: steps.decide.outputs.econet_action == 'extract' && steps.econet_validate.outputs.publishable == 'true'
         run: |
           mkdir -p public/econet current
           cp public/morg-econet.json "public/econet/${LOCAL_DATE_TAG}-1030.json"
@@ -526,14 +533,40 @@ jobs:
           cp current/morg-econet-1030.json "public/econet/${LOCAL_DATE_TAG}-1030.json"
           python -m json.tool "public/econet/${LOCAL_DATE_TAG}-1030.json" > /dev/null
 
+      - name: Persist valid 10:30 ECONet snapshot before HRRR
+        if: steps.decide.outputs.econet_action == 'recover_repo' || (steps.decide.outputs.econet_action == 'extract' && steps.econet_validate.outputs.publishable == 'true')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current/morg-econet-1030.json
+          if git diff --cached --quiet; then
+            echo "No 10:30 ECONet repository change to commit"
+          else
+            git commit -m "Update current 1030 ECONet snapshot [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
       - name: Run Burke County HRRR extractor
+        id: hrrr_extract
         if: steps.decide.outputs.hrrr_action == 'extract' && steps.hrrr_ready.outputs.ready == 'true'
         run: |
           mkdir -p public
+          set +e
           burke-hrrr \
             --cycle "${HRRR_CYCLE}" \
             --workdir "${RUNNER_TEMP}/hrrr-data" \
             --output public/burke-hrrr.json
+          HRRR_RC=$?
+          set -e
+          echo "exit_code=${HRRR_RC}" >> "${GITHUB_OUTPUT}"
+          if [[ "${HRRR_RC}" -ne 0 ]]; then
+            echo "::warning::HRRR extractor exited ${HRRR_RC}; validating any written JSON before deciding whether to discard it"
+          fi
+          if [[ ! -s public/burke-hrrr.json ]]; then
+            echo "::error::HRRR extractor did not produce a non-empty JSON output"
+            exit "${HRRR_RC:-1}"
+          fi
 
       - name: Validate newly generated current-day HRRR JSON
         if: steps.decide.outputs.hrrr_action == 'extract' && steps.hrrr_ready.outputs.ready == 'true'
