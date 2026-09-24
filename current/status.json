@@ -11,12 +11,12 @@
     "status": "not_current_for_today"
   },
   "hrrr_12z": {
-    "cycle_initialized": "2026-09-23T12:00:00+00:00",
-    "generated_at": "2026-09-23T14:36:04.508874+00:00",
+    "cycle_initialized": "2026-09-24T12:00:00+00:00",
+    "generated_at": "2026-09-24T17:34:39.687751+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "not_current_for_today",
-    "through": "2026-09-24T00:00:00-04:00"
+    "status": "valid",
+    "through": "2026-09-25T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-09-24T17:25:14.913082+00:00"
+  "updated_at": "2026-09-24T17:36:23.941129+00:00"
 }
