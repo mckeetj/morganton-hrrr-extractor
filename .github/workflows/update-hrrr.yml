@@ -1,7 +1,8 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.11: pin known-good ecCodes runtime, persist valid ECONet before HRRR,
-# and validate HRRR output even if the native process exits abnormally.
+# V3.12: pin known-good ecCodes runtime, persist valid ECONet before HRRR,
+# validate HRRR output even if the native process exits abnormally, and
+# refresh queued checkouts from origin/main before reading or committing state.
 # HRRR, 10:30 ECONet, and the morning 08:30 snapshot are independent.
 # The 10:30 ECONet product may recover through noon Eastern after delayed
 # or manual dispatch while retaining its actual generated_at timestamp.
@@ -49,6 +50,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+
+      - name: Refresh queued checkout from latest main
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v7
