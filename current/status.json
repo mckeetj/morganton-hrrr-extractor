@@ -1,9 +1,9 @@
 {
-  "date_eastern": "2026-09-27",
+  "date_eastern": "2026-09-28",
   "econet_0830": {
     "generated_at": "2026-09-27T12:06:30.681479+00:00",
     "path": "current/morg-econet-0830.json",
-    "status": "valid"
+    "status": "not_current_for_today"
   },
   "econet_1030": {
     "generated_at": "2026-09-25T14:11:44.333461+00:00",
@@ -14,9 +14,9 @@
     "cycle_initialized": "2026-09-27T12:00:00+00:00",
     "generated_at": "2026-09-27T17:18:48.858627+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "valid",
+    "status": "not_current_for_today",
     "through": "2026-09-28T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-09-27T17:20:39.889338+00:00"
+  "updated_at": "2026-09-28T18:15:31.216211+00:00"
 }
