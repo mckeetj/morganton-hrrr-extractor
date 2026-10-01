@@ -1095,14 +1095,6 @@ jobs:
                   }
               )
 
-          core = {
-              "schema_version": 1,
-              "date_eastern": today.isoformat(),
-              "econet_0830": state_0830,
-              "econet_1030": state_1030,
-              "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
-          }
-
           path = Path("current/status.json")
           existing = None
           if path.exists():
@@ -1110,6 +1102,44 @@ jobs:
                   existing = json.loads(path.read_text(encoding="utf-8"))
               except Exception:
                   existing = None
+
+          specific_statuses = {
+              "scheduler_missed_window",
+              "dispatch_outside_window",
+              "upstream_unavailable",
+              "stale_observation",
+              "qc_failure",
+          }
+          generic_statuses = {"not_current_for_today", "missing"}
+          if (
+              isinstance(existing, dict)
+              and existing.get("date_eastern") == today.isoformat()
+          ):
+              existing_0830 = existing.get("econet_0830", {})
+              existing_1030 = existing.get("econet_1030", {})
+
+              if (
+                  state_0830.get("status") in generic_statuses
+                  and existing_0830.get("status") in specific_statuses
+              ):
+                  state_0830 = existing_0830
+
+              if (
+                  state_1030.get("status") in generic_statuses
+                  and existing_1030.get("status") in specific_statuses
+              ) or (
+                  state_1030.get("status") in specific_statuses
+                  and state_1030.get("status") == existing_1030.get("status")
+              ):
+                  state_1030 = existing_1030
+
+          core = {
+              "schema_version": 1,
+              "date_eastern": today.isoformat(),
+              "econet_0830": state_0830,
+              "econet_1030": state_1030,
+              "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
+          }
 
           comparable_existing = None
           if isinstance(existing, dict):
