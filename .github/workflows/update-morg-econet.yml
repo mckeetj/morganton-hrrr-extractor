@@ -590,21 +590,78 @@ jobs:
                       }
                   )
 
-          manifest = {
+          state_1030 = econet_state(
+              "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
+          )
+
+          path = Path("current/status.json")
+          existing = None
+          if path.exists():
+              try:
+                  existing = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  existing = None
+
+          specific_statuses = {
+              "scheduler_missed_window",
+              "dispatch_outside_window",
+              "upstream_unavailable",
+              "stale_observation",
+              "qc_failure",
+          }
+          generic_statuses = {"not_current_for_today", "missing"}
+          if (
+              isinstance(existing, dict)
+              and existing.get("date_eastern") == today.isoformat()
+          ):
+              existing_0830 = existing.get("econet_0830", {})
+              existing_1030 = existing.get("econet_1030", {})
+
+              if (
+                  state_0830.get("status") in generic_statuses
+                  and existing_0830.get("status") in specific_statuses
+              ) or (
+                  state_0830.get("status") in specific_statuses
+                  and state_0830.get("status") == existing_0830.get("status")
+              ):
+                  state_0830 = existing_0830
+
+              if (
+                  state_1030.get("status") in generic_statuses
+                  and existing_1030.get("status") in specific_statuses
+              ):
+                  state_1030 = existing_1030
+
+          core = {
               "schema_version": 1,
               "date_eastern": today.isoformat(),
-              "updated_at": dt.datetime.now(dt.UTC).isoformat(),
               "econet_0830": state_0830,
-              "econet_1030": econet_state(
-                  "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
-              ),
+              "econet_1030": state_1030,
               "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
           }
-          Path("current/status.json").write_text(
-              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          print(json.dumps(manifest, indent=2, sort_keys=True))
+
+          comparable_existing = None
+          if isinstance(existing, dict):
+              comparable_existing = {
+                  key: existing.get(key)
+                  for key in (
+                      "schema_version",
+                      "date_eastern",
+                      "econet_0830",
+                      "econet_1030",
+                      "hrrr_12z",
+                  )
+              }
+
+          if comparable_existing == core:
+              print("Health manifest state is unchanged; keeping existing updated_at")
+          else:
+              core["updated_at"] = dt.datetime.now(dt.UTC).isoformat()
+              path.write_text(
+                  json.dumps(core, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
+              print(json.dumps(core, indent=2, sort_keys=True))
           PY
 
       - name: Commit current snapshot and health manifest
