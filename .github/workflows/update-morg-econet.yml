@@ -1,9 +1,8 @@
 name: Update MORG ECONet Morning Context
 
-# V3.9: resilient 08:30 snapshot publishing with redundant schedule attempts,
-# slot protection, repository/Page verification, retryable upstream-unavailable
-# sentinels, and a current health manifest. Only the final scheduled attempt
-# fails when ECONet remains unavailable.
+# V3.10: retain protected 08:30 publishing while diagnosing delayed GitHub
+# schedule delivery separately from upstream ECONet/CLOUDS availability.
+# The health manifest records scheduler misses without relabeling late data.
 
 on:
   workflow_dispatch:
@@ -50,6 +49,9 @@ jobs:
 
       - name: Determine Eastern date and 08:30 slot eligibility
         id: meta
+        env:
+          RUN_EVENT_NAME: ${{ github.event_name }}
+          RUN_EVENT_SCHEDULE: ${{ github.event.schedule }}
         run: |
           python - <<'PY'
           import datetime as dt
@@ -60,6 +62,9 @@ jobs:
           now = dt.datetime.now(dt.UTC).astimezone(eastern)
           tag = now.strftime("%Y%m%d")
           minutes = now.hour * 60 + now.minute
+          event_name = os.environ.get("RUN_EVENT_NAME", "")
+          event_schedule = os.environ.get("RUN_EVENT_SCHEDULE", "")
+
           # Do not create an 08:30-labeled snapshot outside this window.
           slot_start = 7 * 60 + 40
           slot_end = 8 * 60 + 50
@@ -70,16 +75,56 @@ jobs:
           else:
               slot_state = "after"
 
+          schedule_times = {
+              "43 6 * * *": (6, 43),
+              "23 7 * * *": (7, 23),
+              "53 7 * * *": (7, 53),
+              "13 8 * * *": (8, 13),
+              "27 8 * * *": (8, 27),
+          }
+          intended = None
+          scheduler_delay_minutes = None
+          if event_name == "schedule" and event_schedule in schedule_times:
+              hour, minute = schedule_times[event_schedule]
+              intended = dt.datetime.combine(
+                  now.date(), dt.time(hour, minute), tzinfo=eastern
+              )
+              scheduler_delay_minutes = max(
+                  0.0, (now - intended).total_seconds() / 60.0
+              )
+
+          intended_text = intended.isoformat() if intended else ""
+          delay_text = (
+              f"{scheduler_delay_minutes:.1f}"
+              if scheduler_delay_minutes is not None
+              else ""
+          )
+
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write(f"local_date_tag={tag}\n")
               out.write(f"slot_state={slot_state}\n")
               out.write(f"expected_path=econet/{tag}-0830.json\n")
+              out.write(f"actual_start_time={now.isoformat()}\n")
+              out.write(f"intended_schedule={intended_text}\n")
+              out.write(f"scheduler_delay_minutes={delay_text}\n")
+              out.write(f"event_name={event_name}\n")
 
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
               env.write(f"LOCAL_DATE_TAG={tag}\n")
+              env.write(f"RUN_EVENT_NAME={event_name}\n")
+              env.write(f"RUN_EVENT_SCHEDULE={event_schedule}\n")
+              env.write(f"ACTUAL_START_TIME={now.isoformat()}\n")
+              env.write(f"INTENDED_SCHEDULE={intended_text}\n")
+              env.write(f"SCHEDULER_DELAY_MINUTES={delay_text}\n")
 
           print(f"Eastern now: {now.isoformat()}")
           print(f"08:30 slot state: {slot_state}")
+          if scheduler_delay_minutes is not None:
+              print(
+                  "Scheduled event delay: "
+                  f"{scheduler_delay_minutes:.1f} minutes "
+                  f"(intended {intended_text})"
+              )
           PY
 
       - name: Validate repository 08:30 snapshot
@@ -355,6 +400,8 @@ jobs:
 
       - name: Build current health manifest
         if: steps.decide.outputs.record_status == 'true'
+        env:
+          RUN_MODE: ${{ steps.decide.outputs.mode }}
         run: |
           mkdir -p current
           python - <<'PY'
@@ -381,27 +428,76 @@ jobs:
                   data = json.loads(p.read_text(encoding="utf-8"))
                   generated = parse_time(data["generated_at"]).astimezone(eastern)
                   minute = generated.hour * 60 + generated.minute
-                  base_valid = (
-                      data.get("station", {}).get("id") == "MORG"
-                      and generated.date() == today
-                      and start_minute <= minute <= end_minute
-                  )
-                  if base_valid and data.get("status") == "unavailable":
+
+                  if data.get("station", {}).get("id") != "MORG":
+                      return {
+                          "status": "invalid",
+                          "path": path,
+                          "reason": "station is not MORG",
+                      }
+                  if generated.date() != today or not (
+                      start_minute <= minute <= end_minute
+                  ):
+                      return {
+                          "status": "not_current_for_today",
+                          "path": path,
+                          "generated_at": data.get("generated_at"),
+                      }
+
+                  data_status = data.get("status")
+                  if data_status == "unavailable":
                       return {
                           "status": "upstream_unavailable",
                           "path": path,
                           "generated_at": data.get("generated_at"),
+                          "upstream_tested": True,
                       }
-                  valid = (
-                      base_valid
-                      and data.get("status") == "current"
-                      and data.get("freshness", {}).get("within_limit") is True
-                      and data.get("quality_control", {}).get(
+                  if data_status != "current":
+                      return {
+                          "status": "invalid",
+                          "path": path,
+                          "generated_at": data.get("generated_at"),
+                          "reason": f"unexpected ECONet status: {data_status!r}",
+                      }
+
+                  soil = data.get("soil_moisture", {})
+                  qc_ok = (
+                      data.get("quality_control", {}).get(
                           "flag_metadata_verified"
                       ) is True
+                      and all(
+                          soil.get(depth, {}).get("qc_score") in {0, 1}
+                          for depth in ("10cm", "20cm")
+                      )
                   )
+                  if not qc_ok:
+                      return {
+                          "status": "qc_failure",
+                          "path": path,
+                          "generated_at": data.get("generated_at"),
+                          "upstream_tested": True,
+                      }
+
+                  freshness_ok = (
+                      data.get("freshness", {}).get("within_limit") is True
+                      and all(
+                          soil.get(depth, {}).get("status") == "current"
+                          and float(
+                              soil.get(depth, {}).get("age_minutes", 1e9)
+                          ) <= 90.0
+                          for depth in ("10cm", "20cm")
+                      )
+                  )
+                  if not freshness_ok:
+                      return {
+                          "status": "stale_observation",
+                          "path": path,
+                          "generated_at": data.get("generated_at"),
+                          "upstream_tested": True,
+                      }
+
                   return {
-                      "status": "valid" if valid else "not_current_for_today",
+                      "status": "valid",
                       "path": path,
                       "generated_at": data.get("generated_at"),
                   }
@@ -443,23 +539,129 @@ jobs:
                       "reason": f"{type(exc).__name__}: {exc}",
                   }
 
-          manifest = {
+          def delay_value():
+              raw = os.environ.get("SCHEDULER_DELAY_MINUTES", "")
+              try:
+                  return round(float(raw), 1) if raw else None
+              except ValueError:
+                  return None
+
+          state_0830 = econet_state(
+              "current/morg-econet-0830.json", 7 * 60 + 40, 8 * 60 + 50
+          )
+          run_mode = os.environ.get("RUN_MODE", "")
+          event_name = os.environ.get("RUN_EVENT_NAME", "")
+          if state_0830.get("status") != "valid" and run_mode == "missed":
+              if event_name == "schedule":
+                  state_0830.update(
+                      {
+                          "status": "scheduler_missed_window",
+                          "reason": (
+                              "GitHub delivered the scheduled run after the "
+                              "protected 08:30 snapshot window; ECONet/CLOUDS "
+                              "was not tested in this run."
+                          ),
+                          "upstream_tested": False,
+                          "intended_schedule": (
+                              os.environ.get("INTENDED_SCHEDULE") or None
+                          ),
+                          "actual_start_time": (
+                              os.environ.get("ACTUAL_START_TIME") or None
+                          ),
+                          "scheduler_delay_minutes": delay_value(),
+                          "trigger_schedule": (
+                              os.environ.get("RUN_EVENT_SCHEDULE") or None
+                          ),
+                      }
+                  )
+              else:
+                  state_0830.update(
+                      {
+                          "status": "dispatch_outside_window",
+                          "reason": (
+                              "A manual/external dispatch arrived after the "
+                              "protected 08:30 snapshot window; ECONet/CLOUDS "
+                              "was not tested in this run."
+                          ),
+                          "upstream_tested": False,
+                          "actual_start_time": (
+                              os.environ.get("ACTUAL_START_TIME") or None
+                          ),
+                      }
+                  )
+
+          state_1030 = econet_state(
+              "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
+          )
+
+          path = Path("current/status.json")
+          existing = None
+          if path.exists():
+              try:
+                  existing = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  existing = None
+
+          specific_statuses = {
+              "scheduler_missed_window",
+              "dispatch_outside_window",
+              "upstream_unavailable",
+              "stale_observation",
+              "qc_failure",
+          }
+          generic_statuses = {"not_current_for_today", "missing"}
+          if (
+              isinstance(existing, dict)
+              and existing.get("date_eastern") == today.isoformat()
+          ):
+              existing_0830 = existing.get("econet_0830", {})
+              existing_1030 = existing.get("econet_1030", {})
+
+              if (
+                  state_0830.get("status") in generic_statuses
+                  and existing_0830.get("status") in specific_statuses
+              ) or (
+                  state_0830.get("status") in specific_statuses
+                  and state_0830.get("status") == existing_0830.get("status")
+              ):
+                  state_0830 = existing_0830
+
+              if (
+                  state_1030.get("status") in generic_statuses
+                  and existing_1030.get("status") in specific_statuses
+              ):
+                  state_1030 = existing_1030
+
+          core = {
               "schema_version": 1,
               "date_eastern": today.isoformat(),
-              "updated_at": dt.datetime.now(dt.UTC).isoformat(),
-              "econet_0830": econet_state(
-                  "current/morg-econet-0830.json", 7 * 60 + 40, 8 * 60 + 50
-              ),
-              "econet_1030": econet_state(
-                  "current/morg-econet-1030.json", 10 * 60, 11 * 60 + 20
-              ),
+              "econet_0830": state_0830,
+              "econet_1030": state_1030,
               "hrrr_12z": hrrr_state("current/burke-hrrr-12z.json"),
           }
-          Path("current/status.json").write_text(
-              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          print(json.dumps(manifest, indent=2, sort_keys=True))
+
+          comparable_existing = None
+          if isinstance(existing, dict):
+              comparable_existing = {
+                  key: existing.get(key)
+                  for key in (
+                      "schema_version",
+                      "date_eastern",
+                      "econet_0830",
+                      "econet_1030",
+                      "hrrr_12z",
+                  )
+              }
+
+          if comparable_existing == core:
+              print("Health manifest state is unchanged; keeping existing updated_at")
+          else:
+              core["updated_at"] = dt.datetime.now(dt.UTC).isoformat()
+              path.write_text(
+                  json.dumps(core, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
+              print(json.dumps(core, indent=2, sort_keys=True))
           PY
 
       - name: Commit current snapshot and health manifest
@@ -550,6 +752,8 @@ jobs:
 
       - name: Final scheduled 08:30 ECONet availability alert
         if: always() && github.event_name == 'schedule' && github.event.schedule == '27 8 * * *'
+        env:
+          SLOT_STATE: ${{ steps.meta.outputs.slot_state }}
         run: |
           python - <<'PY'
           import datetime as dt
@@ -581,14 +785,47 @@ jobs:
                   )
               except Exception:
                   valid = False
+
           if valid:
               print("Final scheduled check: current MORG 08:30 snapshot is available")
               raise SystemExit(0)
-          print(
-              "::error::MORG ECONet remained unavailable through the final "
-              "scheduled 08:30 attempt. Earlier temporary-unavailable attempts "
-              "were intentionally treated as retryable."
-          )
+
+          manifest_status = None
+          try:
+              manifest = json.loads(
+                  Path("current/status.json").read_text(encoding="utf-8")
+              )
+              manifest_status = manifest.get("econet_0830", {}).get("status")
+          except Exception:
+              pass
+
+          if manifest_status == "upstream_unavailable":
+              print(
+                  "::error::MORG ECONet/CLOUDS was tested during the 08:30 "
+                  "window and reported upstream unavailable."
+              )
+          elif manifest_status == "stale_observation":
+              print(
+                  "::error::MORG ECONet/CLOUDS was reachable, but the latest "
+                  "accepted observation was too old for the 08:30 snapshot."
+              )
+          elif manifest_status == "qc_failure":
+              print(
+                  "::error::MORG ECONet/CLOUDS was reachable, but required QC "
+                  "checks failed for the 08:30 snapshot."
+              )
+          elif os.environ.get("SLOT_STATE") == "after":
+              delay = os.environ.get("SCHEDULER_DELAY_MINUTES") or "unknown"
+              print(
+                  "::error::GitHub scheduler missed the protected 08:30 ECONet "
+                  f"window (delay {delay} minutes). ECONet/CLOUDS was not "
+                  "tested in this run."
+              )
+          else:
+              print(
+                  "::error::No valid current MORG 08:30 snapshot was produced; "
+                  "inspect the extractor and health manifest for the failure type."
+              )
           raise SystemExit(1)
           PY
 
