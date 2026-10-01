@@ -6,9 +6,15 @@
     "status": "not_current_for_today"
   },
   "econet_1030": {
+    "actual_start_time": "2026-10-01T15:36:28.471147-04:00",
     "generated_at": "2026-09-25T14:11:44.333461+00:00",
+    "intended_schedule": "2026-10-01T10:17:00-04:00",
     "path": "current/morg-econet-1030.json",
-    "status": "not_current_for_today"
+    "reason": "GitHub delivered the scheduled run after the protected 10:30/noon recovery window; ECONet/CLOUDS was not tested in this run.",
+    "scheduler_delay_minutes": 319.5,
+    "status": "scheduler_missed_window",
+    "trigger_schedule": "17 10 * * *",
+    "upstream_tested": false
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-10-01T12:00:00+00:00",
@@ -18,5 +24,5 @@
     "through": "2026-10-02T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-01T18:37:04.630366+00:00"
+  "updated_at": "2026-10-01T19:36:32.149668+00:00"
 }
