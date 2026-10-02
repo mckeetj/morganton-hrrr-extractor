@@ -1,23 +1,14 @@
 name: Update MORG ECONet Morning Context
 
-# V3.10: retain protected 08:30 publishing while diagnosing delayed GitHub
-# schedule delivery separately from upstream ECONet/CLOUDS availability.
-# The health manifest records scheduler misses without relabeling late data.
+# V3.11: independent ChatGPT dispatch is the primary clock; GitHub schedule
+# is retained only as a final backup. Protected 08:30 snapshot timing and
+# scheduler-vs-upstream diagnostics remain unchanged.
 
 on:
   workflow_dispatch:
   schedule:
-    # Multiple independent opportunities reduce the chance that a dropped or
-    # delayed GitHub scheduler event causes the 08:30 snapshot to be missed.
-    # Early attempts exit quickly unless GitHub delay lands them in the valid slot.
-    - cron: "43 6 * * *"
-      timezone: "America/New_York"
-    - cron: "23 7 * * *"
-      timezone: "America/New_York"
-    - cron: "53 7 * * *"
-      timezone: "America/New_York"
-    - cron: "13 8 * * *"
-      timezone: "America/New_York"
+    # Backup only. Primary timing is supplied by the independent ChatGPT
+    # trigger workflow, which dispatches this production workflow directly.
     - cron: "27 8 * * *"
       timezone: "America/New_York"
 
@@ -76,10 +67,6 @@ jobs:
               slot_state = "after"
 
           schedule_times = {
-              "43 6 * * *": (6, 43),
-              "23 7 * * *": (7, 23),
-              "53 7 * * *": (7, 53),
-              "13 8 * * *": (8, 13),
               "27 8 * * *": (8, 27),
           }
           intended = None
