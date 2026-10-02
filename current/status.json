@@ -1,28 +1,28 @@
 {
-  "date_eastern": "2026-10-01",
+  "date_eastern": "2026-10-02",
   "econet_0830": {
+    "actual_start_time": "2026-10-02T12:21:51.744753-04:00",
     "generated_at": "2026-09-27T12:06:30.681479+00:00",
+    "intended_schedule": "2026-10-02T06:43:00-04:00",
     "path": "current/morg-econet-0830.json",
-    "status": "not_current_for_today"
+    "reason": "GitHub delivered the scheduled run after the protected 08:30 snapshot window; ECONet/CLOUDS was not tested in this run.",
+    "scheduler_delay_minutes": 338.9,
+    "status": "scheduler_missed_window",
+    "trigger_schedule": "43 6 * * *",
+    "upstream_tested": false
   },
   "econet_1030": {
-    "actual_start_time": "2026-10-01T15:36:28.471147-04:00",
     "generated_at": "2026-09-25T14:11:44.333461+00:00",
-    "intended_schedule": "2026-10-01T10:17:00-04:00",
     "path": "current/morg-econet-1030.json",
-    "reason": "GitHub delivered the scheduled run after the protected 10:30/noon recovery window; ECONet/CLOUDS was not tested in this run.",
-    "scheduler_delay_minutes": 319.5,
-    "status": "scheduler_missed_window",
-    "trigger_schedule": "17 10 * * *",
-    "upstream_tested": false
+    "status": "not_current_for_today"
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-10-01T12:00:00+00:00",
     "generated_at": "2026-10-01T18:35:27.874678+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "valid",
+    "status": "not_current_for_today",
     "through": "2026-10-02T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-01T19:36:32.149668+00:00"
+  "updated_at": "2026-10-02T16:21:56.223537+00:00"
 }
