@@ -1,28 +1,15 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.13: retain protected late-morning publishing while separating delayed
-# GitHub schedule delivery from upstream ECONet/CLOUDS failures in status.json.
-# HRRR, 10:30 ECONet, and the morning 08:30 snapshot remain independent.
+# V3.14: independent ChatGPT dispatch is the primary clock; GitHub schedule
+# is retained only as a final backup before the 11:00 AM briefing. Scheduler,
+# upstream, freshness, and QC diagnoses remain separate in status.json.
 
 on:
   workflow_dispatch:
   schedule:
-    # Multiple independent attempts. Early attempts are cheap availability
-    # checks; later attempts provide automatic recovery if GitHub drops/delays
-    # an earlier schedule event.
-    - cron: "47 8 * * *"
-      timezone: "America/New_York"
-    - cron: "17 9 * * *"
-      timezone: "America/New_York"
-    - cron: "47 9 * * *"
-      timezone: "America/New_York"
-    - cron: "17 10 * * *"
-      timezone: "America/New_York"
-    - cron: "37 10 * * *"
-      timezone: "America/New_York"
+    # Backup only. Primary timing and retries are supplied by the independent
+    # ChatGPT trigger workflow before the 11:00 AM briefing.
     - cron: "57 10 * * *"
-      timezone: "America/New_York"
-    - cron: "17 11 * * *"
       timezone: "America/New_York"
 
 permissions:
@@ -92,13 +79,7 @@ jobs:
               slot_state = "after"
 
           schedule_times = {
-              "47 8 * * *": (8, 47),
-              "17 9 * * *": (9, 17),
-              "47 9 * * *": (9, 47),
-              "17 10 * * *": (10, 17),
-              "37 10 * * *": (10, 37),
               "57 10 * * *": (10, 57),
-              "17 11 * * *": (11, 17),
           }
           intended = None
           scheduler_delay_minutes = None
@@ -1267,7 +1248,7 @@ jobs:
           PY
 
       - name: Final scheduled 10:30 ECONet availability alert
-        if: always() && github.event_name == 'schedule' && github.event.schedule == '17 11 * * *'
+        if: always() && github.event_name == 'schedule' && github.event.schedule == '57 10 * * *'
         env:
           SLOT_STATE: ${{ steps.meta.outputs.econet_slot_state }}
         run: |
