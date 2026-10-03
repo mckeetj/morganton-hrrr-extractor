@@ -122,7 +122,7 @@ jobs:
 
           production_active() {
             local n
-            n="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow update-morg-econet.yml               --limit 10               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+            n="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow update-morg-econet.yml               --limit 10               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress" or .status == "requested" or .status == "waiting" or .status == "pending")] | length')"
             [[ "${n}" != "0" ]]
           }
 
