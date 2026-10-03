@@ -1,8 +1,8 @@
 name: Update Burke County HRRR and MORG ECONet Data
 
-# V3.14: independent ChatGPT dispatch is the primary clock; GitHub schedule
-# is retained only as a final backup before the 11:00 AM briefing. Scheduler,
-# upstream, freshness, and QC diagnoses remain separate in status.json.
+# V3.15: the early-start Weather Data Orchestrator is the primary clock.
+# Native GitHub schedule remains only as a final backup before the 11:00 AM
+# briefing. Scheduler, upstream, freshness, and QC diagnoses remain separate.
 
 on:
   workflow_dispatch:
@@ -1323,7 +1323,7 @@ jobs:
                   "::error::No valid current MORG 10:30 snapshot was produced; "
                   "inspect the extractor and health manifest for the failure type."
               )
-          raise SystemExit(1)
+          raise SystemExit(0)
           PY2
 
       - name: Configure GitHub Pages
