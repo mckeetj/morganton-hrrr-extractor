@@ -1,8 +1,8 @@
 name: ChatGPT Trigger - Late HRRR and ECONet
 
-# Independent trigger path for the late-morning decision-support refresh.
-# A ChatGPT scheduled task updates triggers/late-model-refresh.txt; this push
-# then dispatches the existing production workflow through workflow_dispatch.
+# Manual fallback trigger path for the late-morning decision-support refresh.
+# A deliberate push to triggers/late-model-refresh.txt dispatches the existing
+# production workflow. Routine timing is owned by weather-orchestrator.yml.
 
 on:
   workflow_dispatch:

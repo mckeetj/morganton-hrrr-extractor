@@ -1,8 +1,8 @@
 name: ChatGPT Trigger - Morning ECONet
 
-# Independent trigger path for the MORG 08:30 snapshot.
-# A ChatGPT scheduled task updates triggers/morning-econet.txt; this push
-# then dispatches the existing production workflow through workflow_dispatch.
+# Manual fallback trigger path for the MORG 08:30 snapshot.
+# A deliberate push to triggers/morning-econet.txt dispatches the existing
+# production workflow. Routine timing is owned by weather-orchestrator.yml.
 
 on:
   workflow_dispatch:

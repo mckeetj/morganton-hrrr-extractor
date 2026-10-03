@@ -1,0 +1,357 @@
+name: Weather Data Orchestrator
+
+# Primary clock for Morganton decision-support data.
+# GitHub scheduled events are intentionally started several hours early; once
+# the runner is allocated it waits until the protected production windows, then
+# dispatches the existing production workflows directly through workflow_dispatch.
+# This absorbs multi-hour GitHub scheduler delay without relabeling late data.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Which production workflow to orchestrate"
+        required: true
+        type: choice
+        options:
+          - morning
+          - late
+      immediate:
+        description: "Dispatch/check immediately instead of waiting for checkpoints"
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    # Morning runner may be delayed by several hours and still reach 08:05 EDT.
+    - cron: "40 2 * * *"
+      timezone: "America/New_York"
+    # Late runner may be delayed by several hours and still reach 10:05 EDT.
+    - cron: "0 5 * * *"
+      timezone: "America/New_York"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  morning:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '40 2 * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'morning')
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    concurrency:
+      group: weather-orchestrator-morning
+      cancel-in-progress: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run morning orchestration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMMEDIATE: ${{ github.event_name == 'workflow_dispatch' && inputs.immediate }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          wait_until() {
+            local target="$1"
+            local seconds
+            seconds="$(TARGET="$target" python - <<'PY'
+          import datetime as dt
+          import os
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          hour, minute = map(int, os.environ["TARGET"].split(":"))
+          target = dt.datetime.combine(now.date(), dt.time(hour, minute), tzinfo=eastern)
+          print(max(0, int((target - now).total_seconds())))
+          PY
+          )"
+            if (( seconds > 0 )); then
+              echo "Waiting ${seconds}s until ${target} Eastern"
+              sleep "${seconds}"
+            fi
+          }
+
+          refresh_main() {
+            git fetch --quiet origin main
+            git reset --hard --quiet origin/main
+          }
+
+          valid_morning() {
+            python - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          today = dt.datetime.now(dt.UTC).astimezone(eastern).date()
+          path = Path("current/morg-econet-0830.json")
+          try:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              generated = dt.datetime.fromisoformat(
+                  str(data["generated_at"]).replace("Z", "+00:00")
+              ).astimezone(eastern)
+              minute = generated.hour * 60 + generated.minute
+              soil = data.get("soil_moisture", {})
+              ok = (
+                  data.get("station", {}).get("id") == "MORG"
+                  and generated.date() == today
+                  and (7 * 60 + 40) <= minute <= (8 * 60 + 50)
+                  and data.get("status") == "current"
+                  and data.get("freshness", {}).get("within_limit") is True
+                  and data.get("quality_control", {}).get("flag_metadata_verified") is True
+                  and all(
+                      soil.get(depth, {}).get("status") == "current"
+                      and float(soil.get(depth, {}).get("age_minutes", 1e9)) <= 90.0
+                      and soil.get(depth, {}).get("qc_score") in {0, 1}
+                      for depth in ("10cm", "20cm")
+                  )
+              )
+          except Exception:
+              ok = False
+          raise SystemExit(0 if ok else 1)
+          PY
+          }
+
+          production_active() {
+            local n
+            n="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow update-morg-econet.yml               --limit 10               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress" or .status == "requested" or .status == "waiting" or .status == "pending")] | length')"
+            [[ "${n}" != "0" ]]
+          }
+
+          attempt() {
+            refresh_main
+            if valid_morning; then
+              echo "Current MORG 08:30 snapshot is already valid"
+              return 0
+            fi
+
+            if production_active; then
+              echo "Morning production workflow is already queued/running"
+            else
+              gh workflow run update-morg-econet.yml                 --repo "${GITHUB_REPOSITORY}"                 --ref main
+              echo "Dispatched update-morg-econet.yml"
+            fi
+            return 1
+          }
+
+          if [[ "${IMMEDIATE}" == "true" ]]; then
+            attempt || true
+            exit 0
+          fi
+
+          for checkpoint in "08:05" "08:18" "08:25"; do
+            wait_until "${checkpoint}"
+            if attempt; then
+              exit 0
+            fi
+            sleep 90
+          done
+
+          refresh_main
+          if valid_morning; then
+            echo "Morning snapshot recovered after final dispatch"
+          else
+            echo "::warning::MORG 08:30 snapshot is still invalid after orchestrated recovery attempts"
+          fi
+
+  late:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'late')
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    concurrency:
+      group: weather-orchestrator-late
+      cancel-in-progress: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run late orchestration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMMEDIATE: ${{ github.event_name == 'workflow_dispatch' && inputs.immediate }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          wait_until() {
+            local target="$1"
+            local seconds
+            seconds="$(TARGET="$target" python - <<'PY'
+          import datetime as dt
+          import os
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          hour, minute = map(int, os.environ["TARGET"].split(":"))
+          target = dt.datetime.combine(now.date(), dt.time(hour, minute), tzinfo=eastern)
+          print(max(0, int((target - now).total_seconds())))
+          PY
+          )"
+            if (( seconds > 0 )); then
+              echo "Waiting ${seconds}s until ${target} Eastern"
+              sleep "${seconds}"
+            fi
+          }
+
+          refresh_main() {
+            git fetch --quiet origin main
+            git reset --hard --quiet origin/main
+          }
+
+          valid_late() {
+            python - <<'PY'
+          import datetime as dt
+          import json
+          import math
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          today = now.date()
+
+          def parse(value):
+              return dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+
+          econet_ok = False
+          try:
+              data = json.loads(Path("current/morg-econet-1030.json").read_text(encoding="utf-8"))
+              generated = parse(data["generated_at"]).astimezone(eastern)
+              minute = generated.hour * 60 + generated.minute
+              soil = data.get("soil_moisture", {})
+              econet_ok = (
+                  data.get("station", {}).get("id") == "MORG"
+                  and generated.date() == today
+                  and (10 * 60) <= minute <= (12 * 60)
+                  and data.get("status") == "current"
+                  and data.get("freshness", {}).get("within_limit") is True
+                  and data.get("quality_control", {}).get("flag_metadata_verified") is True
+                  and all(
+                      soil.get(depth, {}).get("status") == "current"
+                      and float(soil.get(depth, {}).get("age_minutes", 1e9)) <= 90.0
+                      and soil.get(depth, {}).get("qc_score") in {0, 1}
+                      for depth in ("10cm", "20cm")
+                  )
+              )
+          except Exception:
+              econet_ok = False
+
+          hrrr_ok = False
+          try:
+              data = json.loads(Path("current/burke-hrrr-12z.json").read_text(encoding="utf-8"))
+              version = tuple(int(x) for x in str(data.get("extractor_version", "0.0.0")).split(".")[:3])
+              cycle = parse(data["cycle_initialized"]).astimezone(dt.UTC)
+              generated = parse(data["generated_at"]).astimezone(eastern)
+              published = parse(data["snapshot_published_at"]).astimezone(eastern)
+              through = parse(data["through"]).astimezone(dt.UTC)
+              expected_cycle = dt.datetime.combine(today, dt.time(12), tzinfo=dt.UTC)
+              local_midnight = dt.datetime.combine(
+                  today + dt.timedelta(days=1), dt.time(0), tzinfo=eastern
+              ).astimezone(dt.UTC)
+
+              hours = data.get("forecast_hours", [])
+              valid_times = []
+              core_seen = False
+              core_valid = True
+              for hour in hours:
+                  if hour.get("valid_time"):
+                      valid_times.append(parse(hour["valid_time"]).astimezone(dt.UTC))
+                  diag = hour.get("key_diagnostics", {})
+                  for name in (
+                      "surface_gust_mph",
+                      "max_10m_wind_mph",
+                      "max_downdraft_magnitude_ms",
+                      "max_updraft_velocity_ms",
+                      "max_reflectivity_1km_dbz",
+                      "composite_reflectivity_dbz",
+                      "pwat_inches",
+                      "bulk_shear_sfc_500mb_kt",
+                  ):
+                      summary = diag.get(name, {}).get("summary")
+                      if summary is None:
+                          continue
+                      core_seen = True
+                      count = summary.get("count")
+                      values = [
+                          summary.get(key)
+                          for key in ("min", "median", "p90", "max")
+                          if summary.get(key) is not None
+                      ]
+                      if not isinstance(count, (int, float)) or count <= 0:
+                          core_valid = False
+                      if any(not isinstance(v, (int, float)) or not math.isfinite(v) for v in values):
+                          core_valid = False
+
+              hrrr_ok = (
+                  version >= (0, 3, 2)
+                  and cycle == expected_cycle
+                  and generated.date() == today
+                  and published.date() == today
+                  and through >= local_midnight
+                  and bool(valid_times)
+                  and max(valid_times) >= local_midnight
+                  and core_seen
+                  and core_valid
+              )
+          except Exception:
+              hrrr_ok = False
+
+          print(f"Late validation: ECONet={econet_ok} HRRR={hrrr_ok}")
+          raise SystemExit(0 if econet_ok and hrrr_ok else 1)
+          PY
+          }
+
+          production_active() {
+            local n
+            n="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow update-hrrr.yml               --limit 10               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+            [[ "${n}" != "0" ]]
+          }
+
+          attempt() {
+            refresh_main
+            if valid_late; then
+              echo "Current MORG 10:30 and HRRR 12Z snapshots are already valid"
+              return 0
+            fi
+
+            if production_active; then
+              echo "Late production workflow is already queued/running"
+            else
+              gh workflow run update-hrrr.yml                 --repo "${GITHUB_REPOSITORY}"                 --ref main
+              echo "Dispatched update-hrrr.yml"
+            fi
+            return 1
+          }
+
+          if [[ "${IMMEDIATE}" == "true" ]]; then
+            attempt || true
+            exit 0
+          fi
+
+          for checkpoint in "10:05" "10:30" "10:45"; do
+            wait_until "${checkpoint}"
+            if attempt; then
+              exit 0
+            fi
+            sleep 180
+          done
+
+          refresh_main
+          if valid_late; then
+            echo "Late snapshots recovered after final dispatch"
+          else
+            echo "::warning::MORG 10:30 and/or HRRR 12Z is still invalid after orchestrated recovery attempts"
+          fi
