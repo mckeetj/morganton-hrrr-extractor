@@ -1298,29 +1298,29 @@ jobs:
 
           if manifest_status == "upstream_unavailable":
               print(
-                  "::error::MORG ECONet/CLOUDS was tested during the late-morning "
+                  "::warning::MORG ECONet/CLOUDS was tested during the late-morning "
                   "window and reported upstream unavailable."
               )
           elif manifest_status == "stale_observation":
               print(
-                  "::error::MORG ECONet/CLOUDS was reachable, but the latest "
+                  "::warning::MORG ECONet/CLOUDS was reachable, but the latest "
                   "accepted observation was too old for the late-morning snapshot."
               )
           elif manifest_status == "qc_failure":
               print(
-                  "::error::MORG ECONet/CLOUDS was reachable, but required QC "
+                  "::warning::MORG ECONet/CLOUDS was reachable, but required QC "
                   "checks failed for the late-morning snapshot."
               )
           elif os.environ.get("SLOT_STATE") == "after":
               delay = os.environ.get("SCHEDULER_DELAY_MINUTES") or "unknown"
               print(
-                  "::error::GitHub scheduler missed the protected late-morning "
+                  "::warning::GitHub scheduler missed the protected late-morning "
                   f"ECONet window (delay {delay} minutes). ECONet/CLOUDS was "
                   "not tested in this run."
               )
           else:
               print(
-                  "::error::No valid current MORG 10:30 snapshot was produced; "
+                  "::warning::No valid current MORG 10:30 snapshot was produced; "
                   "inspect the extractor and health manifest for the failure type."
               )
           raise SystemExit(0)
