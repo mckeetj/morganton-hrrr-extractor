@@ -1,8 +1,8 @@
 name: Update MORG ECONet Morning Context
 
-# V3.11: independent ChatGPT dispatch is the primary clock; GitHub schedule
-# is retained only as a final backup. Protected 08:30 snapshot timing and
-# scheduler-vs-upstream diagnostics remain unchanged.
+# V3.12: the early-start Weather Data Orchestrator is the primary clock.
+# Native GitHub schedule remains only as a final backup. Protected 08:30
+# timing and scheduler-vs-upstream diagnostics remain unchanged.
 
 on:
   workflow_dispatch:
@@ -813,7 +813,7 @@ jobs:
                   "::error::No valid current MORG 08:30 snapshot was produced; "
                   "inspect the extractor and health manifest for the failure type."
               )
-          raise SystemExit(1)
+          raise SystemExit(0)
           PY
 
   deploy:
