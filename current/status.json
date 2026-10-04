@@ -1,11 +1,14 @@
 {
   "date_eastern": "2026-10-04",
   "econet_0830": {
-    "actual_start_time": "2026-10-04T08:52:27.722495-04:00",
+    "actual_start_time": "2026-10-04T12:55:12.130229-04:00",
     "generated_at": "2026-10-03T12:16:50.754028+00:00",
+    "intended_schedule": "2026-10-04T08:27:00-04:00",
     "path": "current/morg-econet-0830.json",
-    "reason": "A manual/external dispatch arrived after the protected 08:30 snapshot window; ECONet/CLOUDS was not tested in this run.",
-    "status": "dispatch_outside_window",
+    "reason": "GitHub delivered the scheduled run after the protected 08:30 snapshot window; ECONet/CLOUDS was not tested in this run.",
+    "scheduler_delay_minutes": 268.2,
+    "status": "scheduler_missed_window",
+    "trigger_schedule": "27 8 * * *",
     "upstream_tested": false
   },
   "econet_1030": {
@@ -21,5 +24,5 @@
     "through": "2026-10-05T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-04T14:32:43.713240+00:00"
+  "updated_at": "2026-10-04T16:55:15.525684+00:00"
 }
