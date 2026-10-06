@@ -1,25 +1,22 @@
 {
-  "date_eastern": "2026-10-05",
+  "date_eastern": "2026-10-06",
   "econet_0830": {
-    "actual_start_time": "2026-10-05T11:15:50.485763-04:00",
-    "generated_at": "2026-10-03T12:16:50.754028+00:00",
+    "generated_at": "2026-10-06T12:05:22.754034+00:00",
     "path": "current/morg-econet-0830.json",
-    "reason": "A manual/external dispatch arrived after the protected 08:30 snapshot window; ECONet/CLOUDS was not tested in this run.",
-    "status": "dispatch_outside_window",
-    "upstream_tested": false
+    "status": "valid"
   },
   "econet_1030": {
     "generated_at": "2026-10-05T15:45:45.181593+00:00",
     "path": "current/morg-econet-1030.json",
-    "status": "valid"
+    "status": "not_current_for_today"
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-10-05T12:00:00+00:00",
     "generated_at": "2026-10-05T15:45:55.360565+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "valid",
+    "status": "not_current_for_today",
     "through": "2026-10-06T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-05T15:47:40.387753+00:00"
+  "updated_at": "2026-10-06T12:05:31.314785+00:00"
 }
