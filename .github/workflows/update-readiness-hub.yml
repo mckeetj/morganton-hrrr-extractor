@@ -1,0 +1,99 @@
+name: Update Operational Readiness Hub Snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 8 * * *"
+      timezone: "America/New_York"
+    - cron: "20 11 * * *"
+      timezone: "America/New_York"
+  push:
+    branches:
+      - main
+    paths:
+      - "current/downburst-outlook.json"
+      - "current/load-stress.json"
+  pull_request:
+    paths:
+      - "burke_hrrr/readiness_hub.py"
+      - "tests/test_readiness_hub.py"
+      - ".github/workflows/update-readiness-hub.yml"
+      - "current/downburst-outlook.json"
+      - "current/load-stress.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "operational-readiness-hub"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Refresh scheduled/manual main checkout
+        if: github.event_name != 'pull_request'
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run readiness builder tests
+        run: python -m unittest tests.test_readiness_hub
+
+      - name: Build current Hub snapshot
+        run: python -m burke_hrrr.readiness_hub --output current/operational-readiness-hub.json
+
+      - name: Validate generated snapshot
+        run: |
+          python -m json.tool current/operational-readiness-hub.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("current/operational-readiness-hub.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          assert data["meta"]["mode"] == "REVIEWED"
+          assert data["meta"]["forecast_window"] == "72 hours"
+          assert "severe" in data and isinstance(data["severe"], dict)
+          assert "winter" in data and isinstance(data["winter"], dict)
+          assert "sources" in data and isinstance(data["sources"], dict)
+          assert data["meta"]["mode"] != "OPERATIONAL"
+
+          if "load_stress_level" in data["winter"]:
+              assert data["winter"]["load_stress_level"] in (1, 2, 3, 4, 5)
+
+          if "downburst_index" in data["severe"]:
+              assert 0 <= data["severe"]["downburst_index"] <= 100
+
+          print(json.dumps({
+              "mode": data["meta"]["mode"],
+              "confidence": data["meta"]["confidence"],
+              "severe": data["severe"],
+              "winter": data["winter"],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Commit current snapshot
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current/operational-readiness-hub.json
+          if git diff --cached --quiet; then
+            echo "No Hub snapshot change to commit"
+          else
+            git commit -m "Update Operational Readiness Hub snapshot [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
