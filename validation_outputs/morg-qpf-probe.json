@@ -1,6 +1,6 @@
 {
   "source_url": "https://forecast.weather.gov/MapClick.php?lat=35.745&lon=-81.684&FcstType=digitalDWML",
-  "retrieved_at": "2026-10-09T20:22:22.071056+00:00",
+  "retrieved_at": "2026-10-09T20:38:37.859136+00:00",
   "source_creation_time": "2026-10-09T14:23:34-04:00",
   "latitude": 35.745,
   "longitude": -81.684,
@@ -15,6 +15,122 @@
   "qpf_24_in": 0.71,
   "qpf_24_window_start": "2026-10-09T16:00:00-04:00",
   "qpf_24_window_end": "2026-10-10T16:00:00-04:00",
+  "parameter_inventory": [
+    {
+      "tag": "temperature",
+      "attributes": {
+        "type": "hourly",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "temperature",
+      "attributes": {
+        "type": "dew point",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "temperature",
+      "attributes": {
+        "type": "heat index",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "probability-of-precipitation",
+      "attributes": {
+        "type": "floating",
+        "units": "percent",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "wind-speed",
+      "attributes": {
+        "type": "sustained",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "wind-speed",
+      "attributes": {
+        "type": "gust",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "direction",
+      "attributes": {
+        "type": "wind",
+        "units": "degrees true",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "cloud-amount",
+      "attributes": {
+        "type": "total",
+        "units": "percent",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "humidity",
+      "attributes": {
+        "type": "relative",
+        "units": "percent",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "hourly-qpf",
+      "attributes": {
+        "type": "floating",
+        "units": "inches",
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 168
+    },
+    {
+      "tag": "weather",
+      "attributes": {
+        "time-layout": "k-p1h-n1-0"
+      },
+      "name": null,
+      "units": null,
+      "value_count": 0
+    }
+  ],
   "entries": [
     {
       "start": "2026-10-09T16:00:00-04:00",
