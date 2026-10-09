@@ -98,3 +98,27 @@ summary records when the peak county max and peak county p90 occur.
 - Independently maximized `MAXUW` and `MAXVW` are never vector-combined.
 - Cycle initialization, valid time, units, and provenance should accompany any
   value that materially affects an operational verdict.
+
+
+## Operational Readiness Hub snapshot
+
+The repository now assembles a controlled-pilot snapshot at:
+
+`current/operational-readiness-hub.json`
+
+The snapshot is always generated in **REVIEWED** mode. It never self-designates
+as OPERATIONAL.
+
+Inputs are deliberately separated by responsibility:
+
+- NWS Digital Forecast / NDFD and api.weather.gov grid data: wind gust, source-aligned 24-hour QPF, minimum temperature, snowfall, ice accumulation, and active NWS alerts.
+- Daily Downburst Model: reviewed 0-100 Downburst Index plus the current SPC categorical handoff in `current/downburst-outlook.json`.
+- MORG ECONet: rolling 72-hour antecedent rainfall and source freshness.
+- Morganton Electric: manual Load Stress Level 1-5 in `current/load-stress.json`.
+
+The builder does not turn missing data into a numeric risk level. When an input
+cannot be established conservatively, it is omitted so the Hub's degraded-data
+propagation can require review.
+
+The snapshot workflow runs after the morning and late-morning decision-support
+windows and also when the Downburst or Load Stress handoff files change.
