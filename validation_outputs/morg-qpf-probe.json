@@ -1,6 +1,6 @@
 {
   "source_url": "https://forecast.weather.gov/MapClick.php?lat=35.745&lon=-81.684&FcstType=digitalDWML",
-  "retrieved_at": "2026-10-09T20:21:03.852154+00:00",
+  "retrieved_at": "2026-10-09T20:22:22.071056+00:00",
   "source_creation_time": "2026-10-09T14:23:34-04:00",
   "latitude": 35.745,
   "longitude": -81.684,
@@ -11,6 +11,10 @@
   "unique_interval_hours": [
     1.0
   ],
+  "qpf_24_complete": true,
+  "qpf_24_in": 0.71,
+  "qpf_24_window_start": "2026-10-09T16:00:00-04:00",
+  "qpf_24_window_end": "2026-10-10T16:00:00-04:00",
   "entries": [
     {
       "start": "2026-10-09T16:00:00-04:00",
