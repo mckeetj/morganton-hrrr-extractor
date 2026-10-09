@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/qpf-probe.yml"
       - "validation_tools/probe_nws_hourly_qpf.py"
+      - "validation_tools/probe_nws_grid.py"
 
 permissions:
   contents: write
@@ -23,11 +24,14 @@ jobs:
       - name: Run NWS hourly-QPF probe
         run: python validation_tools/probe_nws_hourly_qpf.py
 
+      - name: Run NWS grid-data probe
+        run: python validation_tools/probe_nws_grid.py
+
       - name: Commit validation output
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add validation_outputs/morg-qpf-probe.json
+          git add validation_outputs/morg-qpf-probe.json validation_outputs/morg-nws-grid-probe.json
           if git diff --cached --quiet; then
             echo "No validation output change"
           else
