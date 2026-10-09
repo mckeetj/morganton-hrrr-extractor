@@ -102,6 +102,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "V2 uses HRRR's direct MAXDVV field as the model downdraft diagnostic; DCAPE is not reconstructed from the sparse filtered 2D pressure profile.",
             "CAPE/CIN layer keys preserve the HRRR GRIB layer labels and are not relabeled as a parcel method.",
             "MAXUW and MAXVW are not vector-combined because their maxima can be noncontemporaneous.",
+            "An experimental MWPI-based 0-100 downburst candidate may be present; it is environmental potential conditional on convection and is not approved to control Operational Readiness Hub risk until locally validated.",
         ],
     }
 
