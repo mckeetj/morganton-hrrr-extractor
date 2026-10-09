@@ -327,6 +327,8 @@ def build_key_diagnostics(
         "dewpoint_depression_700mb": "dewpoint_depression_700mb_k",
         "relative_humidity_700mb": "relative_humidity_700mb_percent",
         "bulk_shear_sfc_500mb": "bulk_shear_sfc_500mb_kt",
+        "mwpi_environment": "mwpi_environment",
+        "downburst_index_candidate_0_100": "downburst_index_candidate_0_100",
     }
     for source_key, target_key in derived_key_map.items():
         if source_key in derived:
@@ -360,6 +362,8 @@ PEAK_METRICS = (
     "lapse_rate_0_3km_agl_k_per_km",
     "lapse_rate_700_500mb_k_per_km",
     "dewpoint_depression_700mb_k",
+    "mwpi_environment",
+    "downburst_index_candidate_0_100",
 )
 
 
