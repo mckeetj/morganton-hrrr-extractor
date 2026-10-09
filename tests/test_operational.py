@@ -79,6 +79,16 @@ class OperationalTests(unittest.TestCase):
                 "method": "deep-layer proxy",
                 "summary": {"count": 4, "min": 10.0, "median": 20.0, "p90": 30.0, "max": 35.0},
             },
+            "mwpi_environment": {
+                "units": "dimensionless",
+                "method": "experimental",
+                "summary": {"count": 4, "min": 1.0, "median": 2.0, "p90": 3.0, "max": 4.0},
+            },
+            "downburst_index_candidate_0_100": {
+                "units": "0-100 candidate",
+                "method": "experimental",
+                "summary": {"count": 4, "min": 20.0, "median": 40.0, "p90": 60.0, "max": 80.0},
+            },
         }
         result = build_key_diagnostics(surface, [], specials, derived, BURKE_BOUNDS)
 
@@ -90,6 +100,8 @@ class OperationalTests(unittest.TestCase):
         self.assertEqual(result["updraft_helicity_2_5km_m2s2"]["summary"]["max"], 100.0)
         self.assertEqual(result["lapse_rate_700_500mb_k_per_km"]["summary"]["max"], 7.5)
         self.assertEqual(result["bulk_shear_sfc_500mb_kt"]["summary"]["max"], 35.0)
+        self.assertEqual(result["mwpi_environment"]["summary"]["max"], 4.0)
+        self.assertEqual(result["downburst_index_candidate_0_100"]["summary"]["max"], 80.0)
 
     def test_operational_summary_keeps_peak_time_and_p90(self) -> None:
         def metric(maximum: float, p90: float):
