@@ -94,6 +94,20 @@ qpf_24_in = (
 qpf_24_window_start = first_24[0]["start"] if first_24 else None
 qpf_24_window_end = first_24[-1]["end"] if first_24 else None
 
+parameter_inventory = []
+parameters = root.find(".//parameters")
+if parameters is not None:
+    for child in list(parameters):
+        parameter_inventory.append(
+            {
+                "tag": child.tag.split("}")[-1],
+                "attributes": dict(child.attrib),
+                "name": child.findtext("name"),
+                "units": child.findtext("units"),
+                "value_count": len(child.findall("value")),
+            }
+        )
+
 payload = {
     "source_url": URL,
     "retrieved_at": dt.datetime.now(dt.UTC).isoformat(),
@@ -109,6 +123,7 @@ payload = {
     "qpf_24_in": qpf_24_in,
     "qpf_24_window_start": qpf_24_window_start,
     "qpf_24_window_end": qpf_24_window_end,
+    "parameter_inventory": parameter_inventory,
     "entries": entries,
 }
 
