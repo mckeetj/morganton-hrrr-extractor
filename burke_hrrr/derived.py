@@ -217,6 +217,82 @@ def _find_shear_component(fields: list[Field], name: str, depth_m: float) -> Fie
     return None
 
 
+
+def _log_pressure_interpolate(
+    lower_pressure_hpa: float,
+    lower_values: np.ndarray,
+    upper_pressure_hpa: float,
+    upper_values: np.ndarray,
+    target_pressure_hpa: float,
+) -> np.ndarray:
+    """Interpolate a field linearly in log-pressure coordinates."""
+    if not (
+        lower_pressure_hpa > target_pressure_hpa > upper_pressure_hpa
+    ):
+        raise ValueError("target pressure must lie between bounding pressure levels")
+    weight = (
+        np.log(target_pressure_hpa) - np.log(lower_pressure_hpa)
+    ) / (
+        np.log(upper_pressure_hpa) - np.log(lower_pressure_hpa)
+    )
+    return (
+        np.asarray(lower_values, dtype=float)
+        + weight
+        * (
+            np.asarray(upper_values, dtype=float)
+            - np.asarray(lower_values, dtype=float)
+        )
+    )
+
+
+def _mwpi_candidate(
+    cape_jkg: np.ndarray,
+    t850_k: np.ndarray,
+    td850_k: np.ndarray,
+    z850_m: np.ndarray,
+    t700_k: np.ndarray,
+    td700_k: np.ndarray,
+    z700_m: np.ndarray,
+    t500_k: np.ndarray,
+    td500_k: np.ndarray,
+    z500_m: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return Pryor-style MWPI and a provisional 0-100 scaled candidate.
+
+    The published 2015 MWPI formulation uses surface-based CAPE plus the
+    850-to-670-hPa lapse rate and dewpoint-depression difference. HRRR's
+    filtered 2D pressure levels do not include 670 hPa, so the 670-hPa
+    temperature, dewpoint, and geopotential height are interpolated between
+    the available 700- and 500-hPa fields in log-pressure coordinates.
+
+    The 0-100 value is only a candidate integration field for local validation:
+    it is 20 times the dimensionless MWPI, clipped to 0-100. It is not a
+    standalone thunderstorm forecast and must not become operationally
+    controlling until validated against Morganton/Burke events.
+    """
+    t670 = _log_pressure_interpolate(700.0, t700_k, 500.0, t500_k, 670.0)
+    td670 = _log_pressure_interpolate(700.0, td700_k, 500.0, td500_k, 670.0)
+    z670 = _log_pressure_interpolate(700.0, z700_m, 500.0, z500_m, 670.0)
+
+    depth_km = (np.asarray(z670, dtype=float) - np.asarray(z850_m, dtype=float)) / 1000.0
+    with np.errstate(divide="ignore", invalid="ignore"):
+        lapse_rate = (
+            np.asarray(t850_k, dtype=float) - np.asarray(t670, dtype=float)
+        ) / depth_km
+
+    dd850 = np.asarray(t850_k, dtype=float) - np.asarray(td850_k, dtype=float)
+    dd670 = np.asarray(t670, dtype=float) - np.asarray(td670, dtype=float)
+
+    mwpi = (
+        np.asarray(cape_jkg, dtype=float) / 1000.0
+        + lapse_rate / 5.0
+        + (dd850 - dd670) / 5.0
+    )
+    mwpi = np.where(depth_km > 0.0, mwpi, np.nan)
+    candidate_0_100 = np.clip(mwpi * 20.0, 0.0, 100.0)
+    return mwpi, candidate_0_100
+
+
 def derive_diagnostics(
     surface_fields: list[Field],
     pressure_fields: list[Field],
@@ -310,5 +386,70 @@ def derive_diagnostics(
             ),
             bounds,
         )
+
+
+    # Experimental MWPI candidate for eventual Operational Readiness Hub
+    # integration. This is environmental downburst potential conditional on
+    # convection; it is deliberately not treated as an operational verdict.
+    cape_surface = _find(surface_fields, {"cape"}, type_contains="surface")
+    t850 = _pressure_field(pressure_fields, {"t", "tmp"}, 850)
+    td850 = _pressure_field(pressure_fields, {"dpt", "td"}, 850)
+    z850 = _pressure_field(pressure_fields, {"gh", "hgt"}, 850)
+    t700_mwpi = _pressure_field(pressure_fields, {"t", "tmp"}, 700)
+    td700_mwpi = _pressure_field(pressure_fields, {"dpt", "td"}, 700)
+    z700_mwpi = _pressure_field(pressure_fields, {"gh", "hgt"}, 700)
+    t500_mwpi = _pressure_field(pressure_fields, {"t", "tmp"}, 500)
+    td500_mwpi = _pressure_field(pressure_fields, {"dpt", "td"}, 500)
+    z500_mwpi = _pressure_field(pressure_fields, {"gh", "hgt"}, 500)
+
+    mwpi_required = (
+        cape_surface,
+        t850,
+        td850,
+        z850,
+        t700_mwpi,
+        td700_mwpi,
+        z700_mwpi,
+        t500_mwpi,
+        td500_mwpi,
+        z500_mwpi,
+    )
+    if all(field is not None for field in mwpi_required):
+        mwpi, candidate = _mwpi_candidate(
+            cape_surface.values,  # type: ignore[union-attr]
+            t850.values,  # type: ignore[union-attr]
+            td850.values,  # type: ignore[union-attr]
+            z850.values,  # type: ignore[union-attr]
+            t700_mwpi.values,  # type: ignore[union-attr]
+            td700_mwpi.values,  # type: ignore[union-attr]
+            z700_mwpi.values,  # type: ignore[union-attr]
+            t500_mwpi.values,  # type: ignore[union-attr]
+            td500_mwpi.values,  # type: ignore[union-attr]
+            z500_mwpi.values,  # type: ignore[union-attr]
+        )
+        output["mwpi_environment"] = _metric(
+            mwpi,
+            cape_surface,  # type: ignore[arg-type]
+            "dimensionless",
+            (
+                "Pryor-style 2015 MWPI environmental potential using surface CAPE "
+                "and 850-to-670-hPa lapse/dryness terms; 670-hPa fields are "
+                "log-pressure interpolated from HRRR 700/500-hPa fields. "
+                "Conditional on convection and not a standalone forecast."
+            ),
+            bounds,
+        )
+        output["downburst_index_candidate_0_100"] = _metric(
+            candidate,
+            cape_surface,  # type: ignore[arg-type]
+            "0-100 candidate",
+            (
+                "Experimental Morganton integration candidate: 20 x MWPI, clipped "
+                "to 0-100. Not locally calibrated and not approved to control the "
+                "Operational Readiness Hub until validated against Morganton/Burke events."
+            ),
+            bounds,
+        )
+
 
     return output
