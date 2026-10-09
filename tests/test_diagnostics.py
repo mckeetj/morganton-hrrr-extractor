@@ -92,6 +92,49 @@ class DiagnosticTests(unittest.TestCase):
         rh = derived["relative_humidity_700mb"]["summary"]["max"]
         self.assertTrue(45.0 < rh < 55.0)
 
+
+    def test_provisional_mwpi_downburst_candidate(self) -> None:
+        lat = np.array([[35.75]])
+        lon = np.array([[-81.70]])
+
+        def fld(name, type_of_level, level, value, units):
+            return Field(
+                name,
+                type_of_level,
+                level,
+                "instant",
+                units,
+                np.array([[value]], dtype=float),
+                lat,
+                lon,
+            )
+
+        surface = [
+            fld("cape", "surface", 0, 2000.0, "J kg-1"),
+        ]
+        pressure = [
+            fld("t", "isobaricInhPa", 850, 300.0, "K"),
+            fld("dpt", "isobaricInhPa", 850, 290.0, "K"),
+            fld("gh", "isobaricInhPa", 850, 1500.0, "gpm"),
+            fld("t", "isobaricInhPa", 700, 290.0, "K"),
+            fld("dpt", "isobaricInhPa", 700, 285.0, "K"),
+            fld("gh", "isobaricInhPa", 700, 3000.0, "gpm"),
+            fld("t", "isobaricInhPa", 500, 270.0, "K"),
+            fld("dpt", "isobaricInhPa", 500, 265.0, "K"),
+            fld("gh", "isobaricInhPa", 500, 5600.0, "gpm"),
+        ]
+
+        derived = derive_diagnostics(surface, pressure, BURKE_BOUNDS)
+        mwpi = derived["mwpi_environment"]["summary"]["max"]
+        candidate = derived["downburst_index_candidate_0_100"]["summary"]["max"]
+
+        self.assertAlmostEqual(mwpi, 4.3711, places=3)
+        self.assertAlmostEqual(candidate, 87.4220, places=3)
+        self.assertIn(
+            "not approved",
+            derived["downburst_index_candidate_0_100"]["method"].lower(),
+        )
+
     def test_v32_surface_to_500mb_shear_proxy(self) -> None:
         lat = np.array([[35.75]])
         lon = np.array([[-81.70]])
