@@ -373,9 +373,11 @@ def fetch_nws_alert(now: dt.datetime) -> dict[str, Any]:
         effective = _parse_time(properties.get("effective"))
         onset = _parse_time(properties.get("onset"))
         end = ends or expires
-        start = onset or effective
-        if start and now < start:
-            continue
+        # alerts/active represents currently issued products. Preserve an
+        # issued watch even when its hazard onset is later today/tomorrow; the
+        # Hub needs to display that watch before the effective period begins.
+        # Only discard products whose expiration/end time has already passed.
+        _start = onset or effective
         if end and now >= end:
             continue
         candidates.append(properties)
