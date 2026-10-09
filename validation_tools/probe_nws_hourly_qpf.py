@@ -77,6 +77,23 @@ for row in entries:
     if s is not None and e is not None:
         durations.append((e - s).total_seconds() / 3600.0)
 
+first_24 = entries[:24]
+qpf_24_complete = (
+    len(first_24) == 24
+    and all(row["qpf"] is not None for row in first_24)
+    and all(
+        parse_iso(first_24[i]["end"]) == parse_iso(first_24[i + 1]["start"])
+        for i in range(23)
+    )
+)
+qpf_24_in = (
+    round(sum(float(row["qpf"]) for row in first_24), 4)
+    if qpf_24_complete
+    else None
+)
+qpf_24_window_start = first_24[0]["start"] if first_24 else None
+qpf_24_window_end = first_24[-1]["end"] if first_24 else None
+
 payload = {
     "source_url": URL,
     "retrieved_at": dt.datetime.now(dt.UTC).isoformat(),
@@ -88,6 +105,10 @@ payload = {
     "entry_count": len(entries),
     "all_intervals_one_hour": bool(durations) and all(abs(x - 1.0) < 1e-9 for x in durations),
     "unique_interval_hours": sorted(set(round(x, 6) for x in durations)),
+    "qpf_24_complete": qpf_24_complete,
+    "qpf_24_in": qpf_24_in,
+    "qpf_24_window_start": qpf_24_window_start,
+    "qpf_24_window_end": qpf_24_window_end,
     "entries": entries,
 }
 
