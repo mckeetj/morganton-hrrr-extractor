@@ -3,15 +3,11 @@ name: Update Operational Readiness Hub Snapshot
 on:
   workflow_dispatch:
   schedule:
-    # Hourly pilot refresh keeps the import file current throughout the day.
+    # GitHub Actions cron is UTC-based. An hourly schedule does not need a
+    # timezone conversion: :15 UTC is also :15 local in every time zone.
+    # Daily Downburst handoff commits independently trigger this workflow
+    # immediately through the push path below.
     - cron: "15 * * * *"
-      timezone: "America/New_York"
-    # Preserve dedicated post-briefing refreshes after the 8:30 AM and
-    # 11:00 AM Daily Downburst runs.
-    - cron: "45 8 * * *"
-      timezone: "America/New_York"
-    - cron: "20 11 * * *"
-      timezone: "America/New_York"
   push:
     branches:
       - main
