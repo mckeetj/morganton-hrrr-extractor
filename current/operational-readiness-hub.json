@@ -1,28 +1,32 @@
 {
   "meta": {
-    "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
+    "confidence": "Automated pilot snapshot \u2014 Complete controlling inputs",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-10T03:03:47.767018-04:00",
+    "generated_at": "2026-10-10T08:30:46.455451-04:00",
     "mode": "REVIEWED",
-    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.spc_category."
+    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual."
   },
   "severe": {
+    "downburst_index": 29,
     "nws_alert": "Flood Watch",
-    "qpf_24_in": 2.7417,
-    "rainfall_72_in": 0.01,
+    "qpf_24_in": 3.5502,
+    "rainfall_72_in": 0.05,
+    "spc_category": "General",
     "wind_gust_mph": 31.1
   },
   "sources": {
     "downburst_workflow": {
-      "notes": "No valid current Daily Downburst Model handoff was available.",
-      "status": "Unavailable"
+      "notes": "Daily Downburst Model handoff from 8:30 AM Initial; verdict=CONDITIONAL; index=29; confidence=Moderate. Heavy tropical rain and possible thunder after 2 PM create a limited wet-downburst opportunity, but persistent cool-air damming and the greater severe threat south of Burke keep the signal marginal.",
+      "observation_time": "2026-10-10T08:30:15-04:00",
+      "retrieved_at": "2026-10-10T08:30:46.455451-04:00",
+      "status": "Available"
     },
     "econet": {
       "freshness_threshold_hours": 1.5,
-      "notes": "MORG ECONet source file morg-econet-1030.json. Rolling 72-hour rainfall=0.01 in with 98.6% coverage. Latest accepted observation=2026-10-09T09:05:00-04:00. Freshness threshold=90.0 minutes.",
-      "observation_time": "2026-10-09T09:05:00-04:00",
-      "retrieved_at": "2026-10-09T14:05:48.776802+00:00",
-      "status": "Stale"
+      "notes": "MORG ECONet source file morg-econet-0830.json. Rolling 72-hour rainfall=0.05 in with 98.6% coverage. Latest accepted observation=2026-10-10T07:05:00-04:00. Freshness threshold=90.0 minutes.",
+      "observation_time": "2026-10-10T07:05:00-04:00",
+      "retrieved_at": "2026-10-10T12:05:19.989441+00:00",
+      "status": "Available"
     },
     "hrrr": {
       "notes": "Burke County HRRR decision-support extraction. Used as an input to the late-morning Daily Downburst Model, not as the Hub Downburst Index.",
@@ -33,25 +37,27 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-10T03:03:47.767018-04:00",
+      "retrieved_at": "2026-10-10T08:30:46.455451-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "Active NWS alert selected for Hub display: Flood Watch. Area: Rabun; Habersham; Stephens; Franklin; Hart; Elbert; Avery; Yancey; Mitchell; Haywood; Buncombe; Northern Jackson; Macon; Southern Jackson; Transylvania; Henderson; Caldwell Mountains; Greater Caldwell; Burke Mountains; Greater Burke; McDowell Mountains; Eastern McDowell; Rutherford Mountains; Greater Rutherford; Polk Mountains; Eastern Polk; Oconee Mountains; Pickens Mountains; Greenville Mountains; Greater Oconee. Headline: Flood Watch issued October 10 at 2:06AM EDT until October 11 at 2:00PM EDT by NWS Greenville-Spartanburg SC",
       "observation_time": "2026-10-10T02:06:00-04:00",
-      "retrieved_at": "2026-10-10T03:03:47.767018-04:00",
+      "retrieved_at": "2026-10-10T08:30:46.455451-04:00",
       "status": "Available"
     },
     "nws_nbm": {
-      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-10T03:00:00-04:00 through 2026-10-11T03:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
-      "observation_time": "2026-10-10T06:58:52+00:00",
-      "retrieved_at": "2026-10-10T03:03:47.767018-04:00",
+      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-10T08:00:00-04:00 through 2026-10-11T08:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
+      "observation_time": "2026-10-10T10:23:39+00:00",
+      "retrieved_at": "2026-10-10T08:30:46.455451-04:00",
       "status": "Available",
-      "valid_time": "2026-10-10T03:00:00-04:00"
+      "valid_time": "2026-10-10T08:00:00-04:00"
     },
     "spc": {
-      "notes": "No valid current Daily Downburst Model handoff was available.",
-      "status": "Unavailable"
+      "notes": "SPC category carried by the reviewed Daily Downburst Model handoff: General.",
+      "observation_time": "2026-10-10T01:54:00-04:00",
+      "retrieved_at": "2026-10-10T08:30:46.455451-04:00",
+      "status": "Available"
     }
   },
   "winter": {
