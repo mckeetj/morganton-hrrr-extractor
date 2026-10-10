@@ -141,6 +141,25 @@ jobs:
             fi
           }
 
+          ensure_hub_clock() {
+            local workflow="hub-snapshot-orchestrator.yml"
+            if workflow_active "${workflow}"; then
+              echo "${workflow} already queued/running"
+            else
+              local today
+              today="$(python - <<'PY'
+          import datetime as dt
+          from zoneinfo import ZoneInfo
+          print(dt.datetime.now(dt.UTC).astimezone(
+              ZoneInfo("America/New_York")
+          ).date().isoformat())
+          PY
+              )"
+              gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main                 -f target_date="${today}"
+              echo "Restarted resilient Hub clock for ${today} at $(local_now_iso)"
+            fi
+          }
+
           wait_until() {
             local target="$1"
             local seconds
@@ -150,6 +169,10 @@ jobs:
               sleep "${seconds}"
             fi
           }
+
+          # This resilient weather clock also serves as a daily resurrection
+          # check for the independent Hub snapshot clock.
+          ensure_hub_clock
 
           # If the clock is still well before the morning window, hand off to
           # a fresh run before this job approaches GitHub's six-hour limit.
