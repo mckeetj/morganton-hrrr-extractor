@@ -5,11 +5,6 @@ name: Update Burke County HRRR and MORG ECONet Data
 # briefing. Scheduler, upstream, freshness, and QC diagnoses remain separate.
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/update-hrrr.yml"
   workflow_dispatch:
   schedule:
     # Backup only. Primary timing and retries are supplied by the independent
