@@ -14,6 +14,8 @@ on:
     paths:
       - "current/downburst-outlook.json"
       - "current/load-stress.json"
+      - "burke_hrrr/readiness_hub.py"
+      - ".github/workflows/update-readiness-hub.yml"
   pull_request:
     paths:
       - "burke_hrrr/readiness_hub.py"
