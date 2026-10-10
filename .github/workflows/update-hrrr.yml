@@ -661,9 +661,18 @@ jobs:
               raise SystemExit(
                   f"expected HRRR schema_version 2, got {data['schema_version']!r}"
               )
-          if data.get("extractor_version") != "0.3.2":
+          extractor_version = str(data.get("extractor_version") or "")
+          try:
+              extractor_version_parts = tuple(
+                  int(part) for part in extractor_version.split(".")
+              )
+          except ValueError:
               raise SystemExit(
-                  f"expected extractor_version 0.3.2, got {data.get('extractor_version')!r}"
+                  f"invalid extractor_version {extractor_version!r}; expected 0.3.2 or newer"
+              )
+          if extractor_version_parts < (0, 3, 2):
+              raise SystemExit(
+                  f"extractor_version too old: {extractor_version!r}; expected 0.3.2 or newer"
               )
           if not data["forecast_hours"]:
               raise SystemExit("HRRR forecast_hours is empty")
