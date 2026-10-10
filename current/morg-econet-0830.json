@@ -1,16 +1,16 @@
 {
-  "extractor_version": "0.3.2",
+  "extractor_version": "0.3.3",
   "fallback_policy": {
     "if_morg_unavailable": "Nearby rainfall observations may be used as context only.",
     "soil_moisture_substitution": "Do not substitute another station's soil moisture for MORG."
   },
   "freshness": {
     "age_minutes": 60.3,
-    "latest_accepted_observation_time": "2026-10-09T07:05:00-04:00",
+    "latest_accepted_observation_time": "2026-10-10T07:05:00-04:00",
     "maximum_current_age_minutes": 90.0,
     "within_limit": true
   },
-  "generated_at": "2026-10-09T12:05:20.588200+00:00",
+  "generated_at": "2026-10-10T12:05:19.989441+00:00",
   "notes": [
     "Only CLOUDS observations with QC score 0 or 1 are used.",
     "Current MORG soil-moisture context is considered usable only when the latest accepted observation is no more than 90 minutes old.",
@@ -37,33 +37,33 @@
       "coverage_percent": 99.4,
       "expected_hourly_observations": 168,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-10-09T07:05:00-04:00",
-      "total_inches": 0.44,
-      "window_end": "2026-10-09T12:05:20.588200+00:00",
+      "through_observation_time": "2026-10-10T07:05:00-04:00",
+      "total_inches": 0.49,
+      "window_end": "2026-10-10T12:05:19.989441+00:00",
       "window_hours": 168,
-      "window_start": "2026-10-02T12:05:20.588200+00:00"
+      "window_start": "2026-10-03T12:05:19.989441+00:00"
     },
     "24h": {
       "accepted_hourly_observations": 23,
       "coverage_percent": 95.8,
       "expected_hourly_observations": 24,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-10-09T07:05:00-04:00",
-      "total_inches": 0.0,
-      "window_end": "2026-10-09T12:05:20.588200+00:00",
+      "through_observation_time": "2026-10-10T07:05:00-04:00",
+      "total_inches": 0.05,
+      "window_end": "2026-10-10T12:05:19.989441+00:00",
       "window_hours": 24,
-      "window_start": "2026-10-08T12:05:20.588200+00:00"
+      "window_start": "2026-10-09T12:05:19.989441+00:00"
     },
     "72h": {
       "accepted_hourly_observations": 71,
       "coverage_percent": 98.6,
       "expected_hourly_observations": 72,
       "qc_rule": "scores 0-1 only",
-      "through_observation_time": "2026-10-09T07:05:00-04:00",
-      "total_inches": 0.01,
-      "window_end": "2026-10-09T12:05:20.588200+00:00",
+      "through_observation_time": "2026-10-10T07:05:00-04:00",
+      "total_inches": 0.05,
+      "window_end": "2026-10-10T12:05:19.989441+00:00",
       "window_hours": 72,
-      "window_start": "2026-10-06T12:05:20.588200+00:00"
+      "window_start": "2026-10-07T12:05:19.989441+00:00"
     },
     "units": "in"
   },
@@ -72,28 +72,28 @@
     "10cm": {
       "age_minutes": 65.3,
       "change_24h_m3m3": 0.0,
-      "change_reference_time": "2026-10-08T07:00:00-04:00",
+      "change_reference_time": "2026-10-09T07:00:00-04:00",
       "current_value_published": false,
       "depth_cm": 10,
-      "observation_time": "2026-10-09T07:00:00-04:00",
+      "observation_time": "2026-10-10T07:00:00-04:00",
       "qc_flag": "R0",
       "qc_score": 0,
       "qc_status": "good",
-      "seven_day_percentile": 48.2,
+      "seven_day_percentile": 50.0,
       "status": "current",
       "units": "m3/m3"
     },
     "20cm": {
       "age_minutes": 65.3,
       "change_24h_m3m3": 0.0,
-      "change_reference_time": "2026-10-08T07:00:00-04:00",
+      "change_reference_time": "2026-10-09T07:00:00-04:00",
       "current_value_published": false,
       "depth_cm": 20,
-      "observation_time": "2026-10-09T07:00:00-04:00",
+      "observation_time": "2026-10-10T07:00:00-04:00",
       "qc_flag": "R0",
       "qc_score": 0,
       "qc_status": "good",
-      "seven_day_percentile": 48.2,
+      "seven_day_percentile": 50.0,
       "status": "current",
       "units": "m3/m3"
     }
