@@ -1,1 +1,16 @@
-{"schema_version":1,"downburst_index":29,"verdict":"CONDITIONAL","confidence":"Moderate","source_run":"8:30 AM Initial","trend":null,"valid_date":"2026-10-10","issued_at":"2026-10-10T08:30:15-04:00","most_likely_window":"6:00 PM-midnight EDT (conditional)","spc_category":"General","spc_issued_at":"2026-10-10T01:54:00-04:00","index_basis":"Heavy tropical rain and possible thunder after 2 PM create a limited wet-downburst opportunity, but persistent cool-air damming and the greater severe threat south of Burke keep the signal marginal.","handoff_status":"Automated reviewed handoff","notes":"8:30 AM Daily Downburst Model handoff for the Operational Readiness Hub."}
+{
+  "schema_version": 1,
+  "downburst_index": 29,
+  "verdict": "CONDITIONAL",
+  "confidence": "Moderate",
+  "source_run": "11:00 AM Model Refresh",
+  "trend": "Similar",
+  "valid_date": "2026-10-10",
+  "issued_at": "2026-10-10T11:03:59-04:00",
+  "most_likely_window": "6:00 PM-midnight EDT (conditional)",
+  "spc_category": "General",
+  "spc_issued_at": "2026-10-10T08:48:00-04:00",
+  "index_basis": "Tropical rain brings a limited opportunity for embedded convection, but persistent cold-air damming, a more favorable severe-weather environment south and east of Burke, and missing current 12Z HRRR diagnostics keep the downburst signal near the bottom of CONDITIONAL.",
+  "handoff_status": "Automated reviewed handoff",
+  "notes": "11:00 AM Daily Downburst Model handoff for the Operational Readiness Hub."
+}
