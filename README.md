@@ -120,16 +120,15 @@ The builder does not turn missing data into a numeric risk level. When an input
 cannot be established conservatively, it is omitted so the Hub's degraded-data
 propagation can require review.
 
-The snapshot workflow runs hourly at :15 Eastern, preserves dedicated
-post-briefing refreshes at 8:45 AM and 11:20 AM Eastern, and also reruns when
-the Downburst or Load Stress handoff files change.
+The snapshot workflow runs hourly at :15 and also reruns immediately when the
+Downburst or Load Stress handoff files change.
 
 ### Controlled-pilot operating routine
 
-- The 8:30 AM Daily Downburst Outlook publishes the morning Downburst handoff.
-- The 8:45 AM Hub snapshot refresh captures that handoff.
-- The 11:00 AM Daily Downburst Model Refresh publishes the late-morning handoff.
-- The 11:20 AM Hub snapshot refresh captures that handoff.
+- The 8:30 AM Daily Downburst Outlook publishes the morning Downburst handoff,
+  which immediately triggers a Hub snapshot refresh.
+- The 11:00 AM Daily Downburst Model Refresh publishes the late-morning handoff,
+  which immediately triggers another Hub snapshot refresh.
 - Hourly :15 refreshes keep NWS forecast, QPF, winter, alert, and provenance
   fields current throughout the rest of the day.
 - Load Stress remains an explicit manual Morganton Electric Level 1-5
