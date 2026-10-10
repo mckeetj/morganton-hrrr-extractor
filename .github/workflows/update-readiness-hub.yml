@@ -3,11 +3,12 @@ name: Update Operational Readiness Hub Snapshot
 on:
   workflow_dispatch:
   schedule:
-    # GitHub Actions cron is UTC-based. An hourly schedule does not need a
-    # timezone conversion: :15 UTC is also :15 local in every time zone.
+    # Redundant twice-hourly pilot refresh. GitHub documents that scheduled
+    # Actions can occasionally be delayed or dropped, so two off-hour slots
+    # reduce the chance of the operational snapshot becoming stale.
     # Daily Downburst handoff commits independently trigger this workflow
     # immediately through the push path below.
-    - cron: "15 * * * *"
+    - cron: "17,47 * * * *"
   push:
     branches:
       - main
