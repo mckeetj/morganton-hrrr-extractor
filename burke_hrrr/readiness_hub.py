@@ -223,6 +223,7 @@ def source_aligned_qpf_24(
         "window_end": selected[-1]["end"],
         "qpf_24_in": sum(float(row["value"]) for row in selected),
         "interval_count": 24,
+        "hourly_rows": rows,
     }
 
 
@@ -312,6 +313,436 @@ def _mm_to_in(value: float) -> float:
     return value / 25.4
 
 
+
+def _converted_grid_series(
+    values: list[dict[str, Any]],
+    converter=None,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for row in values:
+        valid_time = row.get("validTime")
+        number = _finite_number(row.get("value"))
+        if not isinstance(valid_time, str) or number is None:
+            continue
+        start, end = _parse_valid_time(valid_time)
+        if converter is not None:
+            number = converter(number)
+        rows.append({"start": start, "end": end, "value": number})
+    return rows
+
+
+def _series_max(
+    rows: list[dict[str, Any]],
+    window_start: dt.datetime,
+    window_end: dt.datetime,
+) -> float | None:
+    values = [
+        float(row["value"])
+        for row in rows
+        if _overlaps(row["start"], row["end"], window_start, window_end)
+        and _finite_number(row.get("value")) is not None
+    ]
+    return max(values) if values else None
+
+
+def _series_min(
+    rows: list[dict[str, Any]],
+    window_start: dt.datetime,
+    window_end: dt.datetime,
+) -> float | None:
+    values = [
+        float(row["value"])
+        for row in rows
+        if _overlaps(row["start"], row["end"], window_start, window_end)
+        and _finite_number(row.get("value")) is not None
+    ]
+    return min(values) if values else None
+
+
+def _sum_hourly_qpf(
+    rows: list[dict[str, Any]],
+    window_start: dt.datetime,
+    window_end: dt.datetime,
+) -> float | None:
+    selected = [
+        row
+        for row in rows
+        if _fully_inside(row["start"], row["end"], window_start, window_end)
+    ]
+    if not selected:
+        return None
+    selected.sort(key=lambda row: row["start"])
+    cursor = window_start
+    total = 0.0
+    for row in selected:
+        if row["start"] != cursor:
+            return None
+        if row["end"] - row["start"] != dt.timedelta(hours=1):
+            return None
+        number = _finite_number(row.get("value"))
+        if number is None:
+            return None
+        total += number
+        cursor = row["end"]
+    if cursor != window_end:
+        return None
+    return total
+
+
+def _band(value: float, thresholds: tuple[float, ...]) -> int:
+    for index, threshold in enumerate(thresholds):
+        if value < threshold:
+            return index
+    return len(thresholds)
+
+
+def _wind_level(value: float | None) -> int | None:
+    return None if value is None else _band(value, (25.0, 35.0, 45.0, 58.0))
+
+
+def _qpf_vulnerability_level(value: float | None) -> int | None:
+    return None if value is None else _band(value, (0.50, 1.00, 2.00, 3.00))
+
+
+def _qpf_direct_level(value: float | None) -> int | None:
+    level = _qpf_vulnerability_level(value)
+    return None if level is None else min(level, 1)
+
+
+def _rain_level(value: float | None) -> int | None:
+    return None if value is None else _band(value, (1.00, 2.00, 3.00, 5.00))
+
+
+def _downburst_level(value: float | None) -> int | None:
+    return None if value is None else _band(value, (25.0, 45.0, 65.0, 80.0))
+
+
+def _ice_level(value: float | None) -> int | None:
+    return None if value is None else _band(value, (0.01, 0.10, 0.25, 0.50))
+
+
+def _snow_level(value: float | None) -> int | None:
+    if value is None:
+        return None
+    if value < 1.0:
+        return 0
+    if value < 2.0:
+        return 1
+    if value < 4.0:
+        return 2
+    return 3
+
+
+def _cold_level(value: float | None) -> int | None:
+    if value is None:
+        return None
+    if value > 20.0:
+        return 0
+    if value >= 10.0:
+        return 1
+    return 2
+
+
+def _spc_level(category: str | None) -> int | None:
+    if category is None:
+        return None
+    return {
+        "General": 0,
+        "Thunderstorms": 0,
+        "Marginal": 1,
+        "Slight": 1,
+        "Enhanced": 2,
+        "Moderate": 3,
+        "High": 4,
+    }.get(category)
+
+
+def _tree_level(
+    wind_level: int | None,
+    downburst_level: int | None,
+    qpf_level: int | None,
+    rain_level: int | None,
+) -> int | None:
+    if None in (wind_level, downburst_level, qpf_level, rain_level):
+        return None
+    assert wind_level is not None
+    assert downburst_level is not None
+    assert qpf_level is not None
+    assert rain_level is not None
+
+    downburst_floor = 0
+    if downburst_level == 2:
+        downburst_floor = 1
+    elif downburst_level == 3:
+        downburst_floor = 2
+    elif downburst_level >= 4:
+        downburst_floor = 3
+
+    mechanical = max(wind_level, downburst_floor)
+    moisture = max(qpf_level, rain_level)
+
+    if mechanical == 0:
+        return 0 if moisture < 2 else 1
+    if mechanical == 1:
+        return 1
+    level = mechanical
+    if moisture >= 2:
+        level = min(4, level + 1)
+    return level
+
+
+def _planning_components(
+    *,
+    wind_gust_mph: float | None,
+    qpf_24_in: float | None,
+    rainfall_72_in: float | None,
+    ice_accretion_in: float | None,
+    snowfall_in: float | None,
+    min_temp_f: float | None,
+    downburst_index: float | None,
+    spc_category: str | None,
+    load_stress_level: int | None,
+) -> dict[str, int | None]:
+    wind_level = _wind_level(wind_gust_mph)
+    qpf_vulnerability = _qpf_vulnerability_level(qpf_24_in)
+    rain_level = _rain_level(rainfall_72_in)
+    downburst_level = _downburst_level(downburst_index)
+    tree_level = _tree_level(
+        wind_level,
+        downburst_level,
+        qpf_vulnerability,
+        rain_level,
+    )
+    load_level = (
+        None
+        if load_stress_level is None
+        else max(0, min(4, load_stress_level - 1))
+    )
+    return {
+        "Tree Failure": tree_level,
+        "Downburst": downburst_level,
+        "Forecast Surface Gust": wind_level,
+        "Forecast QPF — direct contribution": _qpf_direct_level(qpf_24_in),
+        "SPC Outlook": _spc_level(spc_category),
+        "Ice": _ice_level(ice_accretion_in),
+        "Snow": _snow_level(snowfall_in),
+        "Cold Weather": _cold_level(min_temp_f),
+        "Load Stress": load_level,
+    }
+
+
+def _planning_floor(
+    components: dict[str, int | None],
+) -> tuple[int, str]:
+    available = [(name, level) for name, level in components.items() if level is not None]
+    if not available:
+        return 0, "No supported hazard"
+    level = max(value for _, value in available)
+    preferred = [
+        "Tree Failure",
+        "Downburst",
+        "Forecast Surface Gust",
+        "Ice",
+        "Snow",
+        "Cold Weather",
+        "Forecast QPF — direct contribution",
+        "SPC Outlook",
+        "Load Stress",
+    ]
+    tied = {name for name, value in available if value == level}
+    for name in preferred:
+        if name in tied:
+            return level, name
+    return level, next(iter(tied))
+
+
+def _timeline_label(value: dt.datetime, now: dt.datetime) -> str:
+    local = value.astimezone(EASTERN)
+    date = local.date()
+    if date == now.astimezone(EASTERN).date():
+        prefix = "Today"
+    elif date == now.astimezone(EASTERN).date() + dt.timedelta(days=1):
+        prefix = "Tomorrow"
+    else:
+        prefix = local.strftime("%a")
+    hour = local.strftime("%I %p").lstrip("0")
+    return f"{prefix} {hour}"
+
+
+def build_timeline(
+    nws: dict[str, Any],
+    now: dt.datetime,
+    rainfall_72_in: float | None,
+    downburst_index: int | None,
+    spc_category: str | None,
+    downburst_valid_date: str | None,
+    load_stress_level: int | None,
+) -> list[dict[str, Any]]:
+    base = nws["qpf_window_start"]
+    offsets = (0, 3, 6, 12, 24, 48, 72)
+    rows: list[dict[str, Any]] = []
+    for offset in offsets:
+        valid = base + dt.timedelta(hours=offset)
+        short_end = valid + dt.timedelta(hours=3)
+        forward_end = valid + dt.timedelta(hours=24)
+
+        gust = _series_max(nws["gust_series"], valid, short_end)
+        qpf_24 = _sum_hourly_qpf(nws["qpf_hourly_rows"], valid, forward_end)
+        min_temp = _series_min(nws["temperature_series"], valid, forward_end)
+        snow = conservative_accumulation(
+            nws["snow_raw_values"], valid, forward_end
+        )
+        if snow is not None and nws["snow_uom"] == "wmoUnit:mm":
+            snow = _mm_to_in(snow)
+        ice = conservative_accumulation(
+            nws["ice_raw_values"], valid, forward_end
+        )
+        if ice is not None and nws["ice_uom"] == "wmoUnit:mm":
+            ice = _mm_to_in(ice)
+
+        local_date = valid.astimezone(EASTERN).date().isoformat()
+        downburst_available = (
+            downburst_index is not None
+            and downburst_valid_date is not None
+            and local_date == downburst_valid_date
+        )
+        bucket_downburst = downburst_index if downburst_available else None
+        bucket_spc = spc_category if downburst_available else None
+
+        required_available = all(
+            value is not None
+            for value in (gust, qpf_24, min_temp, snow, ice, rainfall_72_in)
+        )
+        complete = downburst_available and required_available
+        note = (
+            "Daily Downburst Model applies to this local date."
+            if downburst_available
+            else "Downburst is not assessed beyond the current Daily Downburst Model valid date."
+        )
+        if not required_available:
+            note += " One or more NWS timeline fields are unavailable."
+
+        rows.append(
+            {
+                "label": _timeline_label(valid, now),
+                "valid_time": valid.isoformat(),
+                "downburst_index": bucket_downburst,
+                "downburst_status": "Available" if downburst_available else "Not Assessed",
+                "spc_category": bucket_spc,
+                "spc_status": "Available" if bucket_spc is not None else "Not Assessed",
+                "wind_gust_mph": None if gust is None else round(gust, 1),
+                "qpf_24_in": None if qpf_24 is None else round(qpf_24, 4),
+                "rainfall_72_in": rainfall_72_in,
+                "rainfall_72_status": "Current observed baseline",
+                "ice_accretion_in": None if ice is None else round(ice, 4),
+                "snowfall_in": None if snow is None else round(snow, 4),
+                "min_temp_f": None if min_temp is None else round(min_temp, 1),
+                "load_stress_level": load_stress_level,
+                "load_stress_status": "Manual" if load_stress_level is not None else "Not Assessed",
+                "data_status": "Complete" if complete else "Partial",
+                "note": note,
+            }
+        )
+    return rows
+
+
+def build_daily(
+    nws: dict[str, Any],
+    now: dt.datetime,
+    rainfall_72_in: float | None,
+    downburst_index: int | None,
+    spc_category: str | None,
+    downburst_valid_date: str | None,
+    load_stress_level: int | None,
+) -> list[dict[str, Any]]:
+    base = nws["qpf_window_start"]
+    results: list[dict[str, Any]] = []
+    for day_index in range(7):
+        start = base + dt.timedelta(hours=24 * day_index)
+        end = start + dt.timedelta(hours=24)
+        local_date = start.astimezone(EASTERN).date()
+        gust = _series_max(nws["gust_series"], start, end)
+        qpf_24 = _sum_hourly_qpf(nws["qpf_hourly_rows"], start, end)
+        min_temp = _series_min(nws["temperature_series"], start, end)
+        snow = conservative_accumulation(nws["snow_raw_values"], start, end)
+        if snow is not None and nws["snow_uom"] == "wmoUnit:mm":
+            snow = _mm_to_in(snow)
+        ice = conservative_accumulation(nws["ice_raw_values"], start, end)
+        if ice is not None and nws["ice_uom"] == "wmoUnit:mm":
+            ice = _mm_to_in(ice)
+
+        downburst_available = (
+            downburst_index is not None
+            and downburst_valid_date is not None
+            and local_date.isoformat() == downburst_valid_date
+        )
+        bucket_downburst = downburst_index if downburst_available else None
+        bucket_spc = spc_category if downburst_available else None
+
+        components = _planning_components(
+            wind_gust_mph=gust,
+            qpf_24_in=qpf_24,
+            rainfall_72_in=rainfall_72_in,
+            ice_accretion_in=ice,
+            snowfall_in=snow,
+            min_temp_f=min_temp,
+            downburst_index=bucket_downburst,
+            spc_category=bucket_spc,
+            load_stress_level=load_stress_level,
+        )
+        level, hazard = _planning_floor(components)
+
+        required_nws = all(
+            value is not None for value in (gust, qpf_24, min_temp, snow, ice)
+        )
+        completeness = (
+            "Complete"
+            if downburst_available and required_nws and rainfall_72_in is not None
+            else "Partial"
+        )
+
+        if day_index == 0:
+            label = "Today"
+        elif day_index == 1:
+            label = "Tomorrow"
+        else:
+            label = local_date.strftime("%a")
+
+        note_parts = []
+        if gust is not None:
+            note_parts.append(f"Max gust {gust:.0f} mph")
+        if qpf_24 is not None:
+            note_parts.append(f"24h QPF {qpf_24:.2f} in")
+        if min_temp is not None:
+            note_parts.append(f"Min temp {min_temp:.0f} F")
+        if downburst_available:
+            note_parts.append(f"Downburst Index {bucket_downburst}")
+        else:
+            note_parts.append("Downburst not assessed for this planning period")
+        if completeness == "Partial":
+            note_parts.append("planning floor only")
+
+        results.append(
+            {
+                "label": label,
+                "forecast_date": local_date.isoformat(),
+                "window_start": start.isoformat(),
+                "window_end": end.isoformat(),
+                "overall_level": level,
+                "primary_hazard": hazard if level > 0 else "None",
+                "note": "; ".join(note_parts) + ".",
+                "data_status": completeness,
+                "downburst_status": "Available" if downburst_available else "Not Assessed",
+                "wind_gust_mph": None if gust is None else round(gust, 1),
+                "qpf_24_in": None if qpf_24 is None else round(qpf_24, 4),
+                "min_temp_f": None if min_temp is None else round(min_temp, 1),
+                "ice_accretion_in": None if ice is None else round(ice, 4),
+                "snowfall_in": None if snow is None else round(snow, 4),
+            }
+        )
+    return results
+
+
 def fetch_nws_weather(now: dt.datetime) -> dict[str, Any]:
     point = _fetch_json(NWS_POINT_URL)
     grid_url = point.get("properties", {}).get("forecastGridData")
@@ -326,14 +757,14 @@ def fetch_nws_weather(now: dt.datetime) -> dict[str, Any]:
     forecast_end = qpf_start + dt.timedelta(hours=72)
 
     gust_uom, gust_values = _grid_values(grid, "windGust")
-    gust = _max_grid_value(gust_values, qpf_start, qpf_end)
-    if gust is not None and gust_uom == "wmoUnit:km_h-1":
-        gust = _kmh_to_mph(gust)
+    gust_converter = _kmh_to_mph if gust_uom == "wmoUnit:km_h-1" else None
+    gust_series = _converted_grid_series(gust_values, gust_converter)
+    gust = _series_max(gust_series, qpf_start, qpf_end)
 
     temp_uom, temp_values = _grid_values(grid, "temperature")
-    min_temp = _min_grid_value(temp_values, qpf_start, forecast_end)
-    if min_temp is not None and temp_uom == "wmoUnit:degC":
-        min_temp = _c_to_f(min_temp)
+    temp_converter = _c_to_f if temp_uom == "wmoUnit:degC" else None
+    temperature_series = _converted_grid_series(temp_values, temp_converter)
+    min_temp = _series_min(temperature_series, qpf_start, forecast_end)
 
     snow_uom, snow_values = _grid_values(grid, "snowfallAmount")
     snow = conservative_accumulation(snow_values, qpf_start, forecast_end)
@@ -353,10 +784,17 @@ def fetch_nws_weather(now: dt.datetime) -> dict[str, Any]:
         "qpf_window_start": qpf_start,
         "qpf_window_end": qpf_end,
         "qpf_24_in": qpf["qpf_24_in"],
+        "qpf_hourly_rows": qpf["hourly_rows"],
         "wind_gust_mph": gust,
+        "gust_series": gust_series,
         "min_temp_f": min_temp,
+        "temperature_series": temperature_series,
         "snowfall_in": snow,
+        "snow_uom": snow_uom,
+        "snow_raw_values": snow_values,
         "ice_accretion_in": ice,
+        "ice_uom": ice_uom,
+        "ice_raw_values": ice_values,
     }
 
 
@@ -666,6 +1104,9 @@ def build_snapshot(
     sources: dict[str, Any] = {}
     severe: dict[str, Any] = {}
     winter: dict[str, Any] = {}
+    nws: dict[str, Any] | None = None
+    timeline: list[dict[str, Any]] = []
+    daily: list[dict[str, Any]] = []
 
     try:
         nws = fetch_nws_weather(now)
@@ -770,6 +1211,31 @@ def build_snapshot(
     else:
         missing.append("winter.load_stress_level")
 
+    handoff = _read_json(repo_root / "current" / "downburst-outlook.json") or {}
+    downburst_valid_date = handoff.get("valid_date")
+    if not isinstance(downburst_valid_date, str):
+        downburst_valid_date = None
+
+    if nws is not None:
+        timeline = build_timeline(
+            nws,
+            now,
+            rainfall_72,
+            downburst_index,
+            spc_category,
+            downburst_valid_date,
+            load_level,
+        )
+        daily = build_daily(
+            nws,
+            now,
+            rainfall_72,
+            downburst_index,
+            spc_category,
+            downburst_valid_date,
+            load_level,
+        )
+
     missing = sorted(set(missing))
     completeness = "Complete controlling inputs" if not missing else "Partial / Degraded"
     notes = (
@@ -793,6 +1259,8 @@ def build_snapshot(
         "severe": severe,
         "winter": winter,
         "sources": sources,
+        "timeline": timeline,
+        "daily": daily,
     }
 
 
