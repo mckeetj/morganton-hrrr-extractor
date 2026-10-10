@@ -1,0 +1,243 @@
+name: Hub Snapshot Orchestrator
+
+# Resilient clock for Operational Readiness Hub snapshots.
+#
+# Native GitHub schedule events have proven too unreliable for a time-sensitive
+# pilot dashboard. This workflow is started through workflow_dispatch (or a
+# one-time trigger-file seed), then relays itself before GitHub's six-hour job
+# limit. It dispatches the normal snapshot worker at :17 and :47 Eastern.
+#
+# The Weather Data Orchestrator also checks that this clock is alive each day
+# and can restart it if needed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "Eastern target date (YYYY-MM-DD); blank = today"
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "triggers/hub-clock.txt"
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: "hub-snapshot-orchestrator"
+  cancel-in-progress: false
+
+jobs:
+  clock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Resolve target Eastern date
+        env:
+          INPUT_TARGET_DATE: ${{ inputs.target_date }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          supplied = (os.environ.get("INPUT_TARGET_DATE") or "").strip()
+
+          if supplied:
+              target = dt.date.fromisoformat(supplied)
+              source = "workflow_dispatch"
+          elif os.environ.get("EVENT_NAME") == "push":
+              raw = Path("triggers/hub-clock.txt").read_text(
+                  encoding="utf-8"
+              ).strip().splitlines()[0]
+              target = dt.date.fromisoformat(raw)
+              source = "push seed"
+          else:
+              target = now.date()
+              source = "default"
+
+          # A delayed relay must never keep operating on a past target date.
+          if target < now.date():
+              target = now.date()
+              source += " adjusted-to-today"
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"TARGET_DATE={target.isoformat()}\n")
+
+          print(f"Eastern now: {now.isoformat()}")
+          print(f"Target date: {target.isoformat()} ({source})")
+          PY
+
+      - name: Run resilient Hub clock
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          local_now_iso() {
+            python - <<'PY'
+          import datetime as dt
+          from zoneinfo import ZoneInfo
+          print(dt.datetime.now(dt.UTC).astimezone(
+              ZoneInfo("America/New_York")
+          ).isoformat())
+          PY
+          }
+
+          local_today() {
+            python - <<'PY'
+          import datetime as dt
+          from zoneinfo import ZoneInfo
+          print(dt.datetime.now(dt.UTC).astimezone(
+              ZoneInfo("America/New_York")
+          ).date().isoformat())
+          PY
+          }
+
+          worker_active() {
+            local count
+            count="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow "update-readiness-hub.yml"               --limit 12               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+            [[ "${count}" != "0" ]]
+          }
+
+          dispatch_worker_if_idle() {
+            if worker_active; then
+              echo "Hub snapshot worker already queued/running"
+            else
+              gh workflow run update-readiness-hub.yml                 --repo "${GITHUB_REPOSITORY}"                 --ref main
+              echo "Dispatched Hub snapshot worker at $(local_now_iso)"
+            fi
+          }
+
+          dispatch_successor() {
+            local next_date="$1"
+            echo "Relaying Hub clock for ${next_date}"
+            gh workflow run hub-snapshot-orchestrator.yml               --repo "${GITHUB_REPOSITORY}"               --ref main               -f target_date="${next_date}"
+          }
+
+          snapshot_age_minutes() {
+            python - <<'PY'
+          import datetime as dt
+          import json
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          path = Path("current/operational-readiness-hub.json")
+          if not path.exists():
+              print(999999)
+              raise SystemExit(0)
+
+          try:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              generated = dt.datetime.fromisoformat(
+                  str(data["meta"]["generated_at"]).replace("Z", "+00:00")
+              )
+              if generated.tzinfo is None:
+                  generated = generated.replace(tzinfo=ZoneInfo("America/New_York"))
+              age = (
+                  dt.datetime.now(dt.UTC) - generated.astimezone(dt.UTC)
+              ).total_seconds() / 60.0
+              print(max(0, int(age)))
+          except Exception:
+              print(999999)
+          PY
+          }
+
+          next_checkpoint() {
+            python - <<'PY'
+          import datetime as dt
+          import os
+          from zoneinfo import ZoneInfo
+
+          eastern = ZoneInfo("America/New_York")
+          now = dt.datetime.now(dt.UTC).astimezone(eastern)
+          target_date = dt.date.fromisoformat(os.environ["TARGET_DATE"])
+
+          # Accept a checkpoint up to 90 seconds late so runner startup jitter
+          # does not skip an intended dispatch.
+          grace = now - dt.timedelta(seconds=90)
+
+          checkpoints = []
+          for hour in range(24):
+              for minute in (17, 47):
+                  checkpoints.append(
+                      dt.datetime.combine(
+                          target_date,
+                          dt.time(hour, minute),
+                          tzinfo=eastern,
+                      )
+                  )
+
+          for checkpoint in checkpoints:
+              if checkpoint >= grace:
+                  seconds = int((checkpoint - now).total_seconds())
+                  if seconds < 0:
+                      seconds = 0
+                  print(
+                      f"{checkpoint.isoformat()}|"
+                      f"{checkpoint.strftime('%H:%M')}|{seconds}"
+                  )
+                  raise SystemExit(0)
+
+          print("DONE")
+          PY
+          }
+
+          # Catch up immediately if this clock starts while the production
+          # snapshot is already older than 45 minutes. This is intentionally
+          # stricter than the Site's 90-minute stale warning.
+          AGE_MINUTES="$(snapshot_age_minutes)"
+          echo "Current Hub snapshot age: ${AGE_MINUTES} minutes"
+          if (( AGE_MINUTES > 45 )); then
+            echo "Snapshot is older than 45 minutes; dispatching catch-up refresh"
+            dispatch_worker_if_idle
+          fi
+
+          # Each run handles at most eight half-hour checkpoints (~4 hours),
+          # then hands off to a fresh workflow_dispatch run well before the
+          # GitHub six-hour job limit.
+          CHECKPOINTS_HANDLED=0
+          while (( CHECKPOINTS_HANDLED < 8 )); do
+            NEXT="$(next_checkpoint)"
+            if [[ "${NEXT}" == "DONE" ]]; then
+              NEXT_DATE="$(TARGET_DATE="${TARGET_DATE}" python - <<'PY'
+          import datetime as dt
+          import os
+          d = dt.date.fromisoformat(os.environ["TARGET_DATE"])
+          print((d + dt.timedelta(days=1)).isoformat())
+          PY
+              )"
+              dispatch_successor "${NEXT_DATE}"
+              exit 0
+            fi
+
+            IFS='|' read -r CHECKPOINT_ISO CHECKPOINT_CLOCK WAIT_SECONDS <<< "${NEXT}"
+            if (( WAIT_SECONDS > 0 )); then
+              echo "Waiting ${WAIT_SECONDS}s until ${CHECKPOINT_ISO}"
+              sleep "${WAIT_SECONDS}"
+            fi
+
+            dispatch_worker_if_idle
+            CHECKPOINTS_HANDLED=$((CHECKPOINTS_HANDLED + 1))
+
+            # Move beyond the 90-second checkpoint grace before asking for the
+            # next checkpoint; otherwise the current checkpoint could be
+            # selected a second time.
+            sleep 95
+          done
+
+          dispatch_successor "${TARGET_DATE}"
