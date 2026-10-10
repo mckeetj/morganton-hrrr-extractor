@@ -564,6 +564,28 @@ def _downburst_handoff(
     confidence = value.get("confidence")
     source_run = value.get("source_run")
 
+    # The 8:30 AM Initial is intentionally superseded by the late-morning
+    # Model Refresh. After 11:20 AM local time, do not silently keep using an
+    # 8:30 handoff if the 11:00 publication failed. Make the Hub degrade
+    # visibly until a current late-morning handoff arrives.
+    local_now = now.astimezone(EASTERN)
+    late_refresh_cutoff = local_now.replace(
+        hour=11, minute=20, second=0, microsecond=0
+    )
+    if source_run == "8:30 AM Initial" and local_now >= late_refresh_cutoff:
+        stale = {
+            "status": "Stale",
+            "observation_time": issued.isoformat(),
+            "retrieved_at": now.isoformat(),
+            "notes": (
+                "The 8:30 AM Initial Downburst handoff has passed the "
+                "11:20 AM late-refresh cutoff, but no current 11:00 AM "
+                "Model Refresh handoff is published. Treat Downburst and "
+                "SPC handoff inputs as unresolved until refreshed."
+            ),
+        }
+        return None, None, stale, stale.copy()
+
     downburst_source = {
         "status": "Available",
         "observation_time": issued.isoformat(),
