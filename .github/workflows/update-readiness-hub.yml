@@ -1,14 +1,9 @@
 name: Update Operational Readiness Hub Snapshot
 
 on:
+  # Primary timing is supplied by hub-snapshot-orchestrator.yml through
+  # workflow_dispatch. Native cron is intentionally not used for this worker.
   workflow_dispatch:
-  schedule:
-    # Redundant twice-hourly pilot refresh. GitHub documents that scheduled
-    # Actions can occasionally be delayed or dropped, so two off-hour slots
-    # reduce the chance of the operational snapshot becoming stale.
-    # Daily Downburst handoff commits independently trigger this workflow
-    # immediately through the push path below.
-    - cron: "17,47 * * * *"
   push:
     branches:
       - main

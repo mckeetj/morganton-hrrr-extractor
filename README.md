@@ -120,20 +120,29 @@ The builder does not turn missing data into a numeric risk level. When an input
 cannot be established conservatively, it is omitted so the Hub's degraded-data
 propagation can require review.
 
-The snapshot workflow runs hourly at :15 and also reruns immediately when the
-Downburst or Load Stress handoff files change.
+The normal snapshot worker is dispatch-driven. Timing is supplied by
+`.github/workflows/hub-snapshot-orchestrator.yml`, which self-relays through
+`workflow_dispatch` and dispatches the worker at :17 and :47 Eastern. This avoids
+depending on GitHub's native scheduled-event delivery for the operational clock.
+The Daily Downburst and Load Stress handoff files still trigger immediate snapshot
+refreshes when they change.
+
+The resilient Hub clock catches up immediately if it starts while the production
+snapshot is already more than 45 minutes old, relays itself before GitHub's six-hour
+job limit, and hands off to the next Eastern date after the final daily checkpoint.
+The Weather Data Orchestrator also checks that the Hub clock is alive and can restart
+it if necessary.
 
 ### Controlled-pilot operating routine
 
+- The resilient Hub clock dispatches snapshot builds at approximately :17 and :47
+  each hour.
 - The 8:30 AM Daily Downburst Outlook publishes the morning Downburst handoff,
   which immediately triggers a Hub snapshot refresh.
 - The 11:00 AM Daily Downburst Model Refresh publishes the late-morning handoff,
   which immediately triggers another Hub snapshot refresh.
-- Hourly :15 refreshes keep NWS forecast, QPF, winter, alert, and provenance
-  fields current throughout the rest of the day.
 - Load Stress remains an explicit manual Morganton Electric Level 1-5
   assessment until changed by an operator.
-- Before a meaningful operational decision, import the latest
-  `current/operational-readiness-hub.json`, review Snapshot Age and Source
-  Health, and use the Hub as decision support. NWS warnings, City procedures,
-  and management judgment remain authoritative.
+- The Site checks for a newer repository snapshot while open and warns when the
+  loaded snapshot exceeds the 90-minute pilot freshness threshold.
+- NWS warnings, City procedures, and management judgment remain authoritative.
