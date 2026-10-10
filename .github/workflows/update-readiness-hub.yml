@@ -77,11 +77,23 @@ jobs:
           if "downburst_index" in data["severe"]:
               assert 0 <= data["severe"]["downburst_index"] <= 100
 
+          if "timeline" in data:
+              assert len(data["timeline"]) == 7
+              assert data["timeline"][0]["downburst_status"] in ("Available", "Not Assessed")
+              assert data["timeline"][-1]["data_status"] in ("Complete", "Partial")
+
+          if "daily" in data:
+              assert len(data["daily"]) == 7
+              assert all(0 <= row["overall_level"] <= 4 for row in data["daily"])
+              assert all(row["data_status"] in ("Complete", "Partial") for row in data["daily"])
+
           print(json.dumps({
               "mode": data["meta"]["mode"],
               "confidence": data["meta"]["confidence"],
               "severe": data["severe"],
               "winter": data["winter"],
+              "timeline": data.get("timeline", []),
+              "daily": data.get("daily", []),
           }, indent=2, sort_keys=True))
           PY
 
