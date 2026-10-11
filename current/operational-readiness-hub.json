@@ -1,15 +1,15 @@
 {
   "daily": [
     {
-      "data_status": "Partial",
-      "downburst_status": "Not Assessed",
+      "data_status": "Complete",
+      "downburst_status": "Available",
       "forecast_date": "2026-10-11",
       "ice_accretion_in": 0.0,
       "label": "Today",
       "min_temp_f": 61.0,
-      "note": "Max gust 21 mph; 24h QPF 0.01 in; Min temp 61 F; Downburst not assessed for this planning period; planning floor only.",
-      "overall_level": 0,
-      "primary_hazard": "None",
+      "note": "Max gust 21 mph; 24h QPF 0.01 in; Min temp 61 F; Downburst Index 20.",
+      "overall_level": 1,
+      "primary_hazard": "Tree Failure",
       "qpf_24_in": 0.01,
       "snowfall_in": 0.0,
       "wind_gust_mph": 20.7,
@@ -114,24 +114,26 @@
     }
   ],
   "meta": {
-    "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
+    "confidence": "Automated pilot snapshot \u2014 Complete controlling inputs",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-11T13:17:08.482024-04:00",
+    "generated_at": "2026-10-11T13:46:52.591201-04:00",
     "mode": "REVIEWED",
-    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.spc_category."
+    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual."
   },
   "severe": {
+    "downburst_index": 20,
     "nws_alert": "Flood Warning",
     "qpf_24_in": 0.01,
     "rainfall_72_in": 7.31,
+    "spc_category": "General",
     "wind_gust_mph": 20.7
   },
   "sources": {
     "downburst_workflow": {
-      "notes": "The 8:30 AM Initial Downburst handoff has passed the 11:20 AM late-refresh cutoff, but no current 11:00 AM Model Refresh handoff is published. Treat Downburst and SPC handoff inputs as unresolved until refreshed.",
-      "observation_time": "2026-10-11T08:34:58-04:00",
-      "retrieved_at": "2026-10-11T13:17:08.482024-04:00",
-      "status": "Stale"
+      "notes": "Daily Downburst Model handoff from 11:00 AM Model Refresh; verdict=LOW; index=20; confidence=Moderate. Residual showers and deep-layer shear keep the index in upper LOW, but 12Z HRRR shows weak afternoon CAPE/reflectivity and its late 55-mph county maximum is not convectively corroborated.",
+      "observation_time": "2026-10-11T11:01:00-04:00",
+      "retrieved_at": "2026-10-11T13:46:52.591201-04:00",
+      "status": "Available"
     },
     "econet": {
       "freshness_threshold_hours": 1.5,
@@ -149,84 +151,84 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-11T13:17:08.482024-04:00",
+      "retrieved_at": "2026-10-11T13:46:52.591201-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "Active NWS alert selected for Hub display: Flood Warning. Area: Burke, NC. Headline: Flood Warning issued October 11 at 11:28AM EDT until October 11 at 5:00PM EDT by NWS Greenville-Spartanburg SC",
       "observation_time": "2026-10-11T11:28:00-04:00",
-      "retrieved_at": "2026-10-11T13:17:08.482024-04:00",
+      "retrieved_at": "2026-10-11T13:46:52.591201-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-11T13:00:00-04:00 through 2026-10-12T13:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
       "observation_time": "2026-10-11T13:59:35+00:00",
-      "retrieved_at": "2026-10-11T13:17:08.482024-04:00",
+      "retrieved_at": "2026-10-11T13:46:52.591201-04:00",
       "status": "Available",
       "valid_time": "2026-10-11T13:00:00-04:00"
     },
     "spc": {
-      "notes": "The 8:30 AM Initial Downburst handoff has passed the 11:20 AM late-refresh cutoff, but no current 11:00 AM Model Refresh handoff is published. Treat Downburst and SPC handoff inputs as unresolved until refreshed.",
-      "observation_time": "2026-10-11T08:34:58-04:00",
-      "retrieved_at": "2026-10-11T13:17:08.482024-04:00",
-      "status": "Stale"
+      "notes": "SPC category carried by the reviewed Daily Downburst Model handoff: General.",
+      "observation_time": "2026-10-11T08:43:00-04:00",
+      "retrieved_at": "2026-10-11T13:46:52.591201-04:00",
+      "status": "Available"
     }
   },
   "timeline": [
     {
-      "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "data_status": "Complete",
+      "downburst_index": 20,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 1 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 61.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date.",
+      "note": "Daily Downburst Model applies to this local date.",
       "qpf_24_in": 0.01,
       "rainfall_72_in": 7.31,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-11T13:00:00-04:00",
       "wind_gust_mph": 17.3
     },
     {
-      "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "data_status": "Complete",
+      "downburst_index": 20,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 4 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 61.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date.",
+      "note": "Daily Downburst Model applies to this local date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 7.31,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-11T16:00:00-04:00",
       "wind_gust_mph": 16.1
     },
     {
-      "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "data_status": "Complete",
+      "downburst_index": 20,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 7 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 61.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date.",
+      "note": "Daily Downburst Model applies to this local date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 7.31,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-11T19:00:00-04:00",
       "wind_gust_mph": 12.7
     },
