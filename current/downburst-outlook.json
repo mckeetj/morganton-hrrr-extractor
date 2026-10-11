@@ -1,1 +1,16 @@
-{"schema_version":1,"downburst_index":34,"verdict":"CONDITIONAL","confidence":"Moderate","source_run":"8:30 AM Initial","trend":null,"valid_date":"2026-10-11","issued_at":"2026-10-11T08:34:58-04:00","most_likely_window":"8:30–11:00 AM EDT (waning rapidly; little support after noon)","spc_category":"General","spc_issued_at":"2026-10-11T01:50:00-04:00","index_basis":"Morning training convective rainbands and strong low-level shear support an isolated wet downburst, but the front is moving east quickly and Burke lacks verified surface-based instability, keeping risk in the lower-middle CONDITIONAL band.","handoff_status":"Automated reviewed handoff","notes":"8:30 AM Daily Downburst Model handoff for the Operational Readiness Hub."}
+{
+  "schema_version": 1,
+  "downburst_index": 20,
+  "verdict": "LOW",
+  "confidence": "Moderate",
+  "source_run": "11:00 AM Model Refresh",
+  "trend": "Lower",
+  "valid_date": "2026-10-11",
+  "issued_at": "2026-10-11T11:01:00-04:00",
+  "most_likely_window": "11:00 AM–3:00 PM EDT (isolated lingering convection only)",
+  "spc_category": "General",
+  "spc_issued_at": "2026-10-11T08:43:00-04:00",
+  "index_basis": "Residual showers and deep-layer shear keep the index in upper LOW, but 12Z HRRR shows weak afternoon CAPE/reflectivity and its late 55-mph county maximum is not convectively corroborated.",
+  "handoff_status": "Automated reviewed handoff",
+  "notes": "11:00 AM Daily Downburst Model handoff for the Operational Readiness Hub."
+}
