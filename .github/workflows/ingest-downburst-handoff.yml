@@ -3,8 +3,10 @@ name: Ingest Downburst Handoff
 on:
   issue_comment:
     types: [created, edited]
+  workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
   issues: write
 
@@ -15,9 +17,12 @@ concurrency:
 jobs:
   ingest:
     if: >
-      github.event.issue.number == 10 &&
-      github.event.comment.user.login == 'mckeetj' &&
-      github.event.comment.author_association == 'OWNER'
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.issue.number == 10 &&
+        github.event.comment.user.login == 'mckeetj' &&
+        github.event.comment.author_association == 'OWNER'
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -34,6 +39,13 @@ jobs:
           git checkout main
           git merge --ff-only origin/main
 
+      - name: Fetch handoff inbox for polling recovery
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate             "repos/${GITHUB_REPOSITORY}/issues/10/comments?per_page=100"             > /tmp/downburst-inbox-comments.json
+
       - name: Validate and stage handoff
         id: validate
         run: |
@@ -48,7 +60,47 @@ jobs:
 
           EASTERN = ZoneInfo("America/New_York")
           EVENT = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
-          BODY = str(EVENT["comment"]["body"]).strip()
+          EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
+          today = dt.datetime.now(dt.UTC).astimezone(EASTERN).date()
+
+          if EVENT_NAME == "issue_comment":
+              BODY = str(EVENT["comment"]["body"]).strip()
+          else:
+              comments_path = Path("/tmp/downburst-inbox-comments.json")
+              comments = json.loads(comments_path.read_text(encoding="utf-8"))
+              BODY = ""
+              for comment in reversed(comments):
+                  if comment.get("user", {}).get("login") != "mckeetj":
+                      continue
+                  if comment.get("author_association") != "OWNER":
+                      continue
+                  body = str(comment.get("body") or "").strip()
+                  first = body.find("{")
+                  last = body.rfind("}")
+                  if first < 0 or last < first:
+                      continue
+                  try:
+                      parsed = json.loads(body[first:last + 1])
+                  except Exception:
+                      continue
+                  if parsed.get("schema_version") != 1:
+                      continue
+                  if parsed.get("valid_date") != today.isoformat():
+                      continue
+                  if parsed.get("source_run") not in {
+                      "8:30 AM Initial",
+                      "11:00 AM Model Refresh",
+                  }:
+                      continue
+                  BODY = body
+                  break
+
+              if not BODY:
+                  print("SKIP: no current-date owner handoff found in Issue #10")
+                  with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+                      out.write("accepted=false\n")
+                      out.write("reason=no current-date inbox handoff\n")
+                  raise SystemExit(0)
 
           first = BODY.find("{")
           last = BODY.rfind("}")
@@ -115,7 +167,6 @@ jobs:
               raise SystemExit("11:00 AM Model Refresh trend is invalid")
 
           valid_date = dt.date.fromisoformat(str(candidate["valid_date"]))
-          today = dt.datetime.now(dt.UTC).astimezone(EASTERN).date()
           if valid_date != today:
               raise SystemExit(
                   f"valid_date {valid_date.isoformat()} does not match Eastern today {today.isoformat()}"
@@ -242,12 +293,25 @@ jobs:
           git push origin HEAD:main
 
       - name: Acknowledge accepted comment
-        if: steps.validate.outputs.accepted == 'true'
+        if: steps.validate.outputs.accepted == 'true' && github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ github.token }}
           COMMENT_ID: ${{ github.event.comment.id }}
         run: |
           gh api             --method POST             "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}/reactions"             -f content='+1'             >/dev/null
+
+      - name: Dispatch Hub snapshot after polling recovery
+        if: always() && github.event_name == 'workflow_dispatch' && steps.validate.outputs.accepted != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ACTIVE="$(gh run list             --repo "${GITHUB_REPOSITORY}"             --workflow "update-readiness-hub.yml"             --limit 12             --json status             --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+          if [[ "${ACTIVE}" == "0" ]]; then
+            gh workflow run update-readiness-hub.yml               --repo "${GITHUB_REPOSITORY}"               --ref main
+            echo "Dispatched Hub snapshot worker after inbox poll"
+          else
+            echo "Hub snapshot worker already queued/running"
+          fi
 
       - name: Write job summary
         if: always()
@@ -256,7 +320,8 @@ jobs:
             echo "## Downburst handoff ingestion"
             echo
             echo "- Issue: #10"
-            echo "- Comment: ${{ github.event.comment.html_url }}"
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Comment: ${{ github.event.comment.html_url || 'polling recovery' }}"
             echo "- Accepted: ${{ steps.validate.outputs.accepted || 'false' }}"
             echo "- Reason: ${{ steps.validate.outputs.reason || 'validated' }}"
             echo "- Source run: ${{ steps.validate.outputs.source_run || 'n/a' }}"
