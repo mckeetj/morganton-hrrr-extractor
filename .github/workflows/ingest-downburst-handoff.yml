@@ -1,0 +1,266 @@
+name: Ingest Downburst Handoff
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: downburst-handoff-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: >
+      github.event.issue.number == 10 &&
+      github.event.comment.user.login == 'mckeetj' &&
+      github.event.comment.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fast-forward to latest main
+        run: |
+          git fetch origin main
+          git checkout main
+          git merge --ff-only origin/main
+
+      - name: Validate and stage handoff
+        id: validate
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          import datetime as dt
+          import json
+          import os
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          EASTERN = ZoneInfo("America/New_York")
+          EVENT = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+          BODY = str(EVENT["comment"]["body"]).strip()
+
+          first = BODY.find("{")
+          last = BODY.rfind("}")
+          if first < 0 or last < first:
+              raise SystemExit("No JSON object found in issue comment")
+
+          candidate = json.loads(BODY[first:last + 1])
+
+          REQUIRED = {
+              "schema_version",
+              "downburst_index",
+              "verdict",
+              "confidence",
+              "source_run",
+              "trend",
+              "valid_date",
+              "issued_at",
+              "most_likely_window",
+              "spc_category",
+              "spc_issued_at",
+              "index_basis",
+              "handoff_status",
+              "notes",
+          }
+          missing = sorted(REQUIRED - set(candidate))
+          if missing:
+              raise SystemExit(f"Missing required fields: {', '.join(missing)}")
+
+          if candidate["schema_version"] != 1:
+              raise SystemExit("schema_version must equal 1")
+
+          index = candidate["downburst_index"]
+          if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index <= 100:
+              raise SystemExit("downburst_index must be an integer from 0 through 100")
+
+          verdict = candidate["verdict"]
+          allowed_verdicts = {"LOW", "CONDITIONAL", "ELEVATED", "HIGH"}
+          if verdict not in allowed_verdicts:
+              raise SystemExit("verdict is invalid")
+
+          expected_verdict = (
+              "LOW" if index <= 24
+              else "CONDITIONAL" if index <= 44
+              else "ELEVATED" if index <= 64
+              else "HIGH"
+          )
+          if verdict != expected_verdict:
+              raise SystemExit(
+                  f"verdict/index mismatch: index {index} requires {expected_verdict}"
+              )
+
+          if candidate["confidence"] not in {"Low", "Moderate", "High"}:
+              raise SystemExit("confidence is invalid")
+
+          source_run = candidate["source_run"]
+          if source_run not in {"8:30 AM Initial", "11:00 AM Model Refresh"}:
+              raise SystemExit("source_run is invalid")
+
+          trend = candidate["trend"]
+          if source_run == "8:30 AM Initial":
+              if trend is not None:
+                  raise SystemExit("8:30 AM Initial trend must be null")
+          elif trend not in {"Lower", "Similar", "Higher"}:
+              raise SystemExit("11:00 AM Model Refresh trend is invalid")
+
+          valid_date = dt.date.fromisoformat(str(candidate["valid_date"]))
+          today = dt.datetime.now(dt.UTC).astimezone(EASTERN).date()
+          if valid_date != today:
+              raise SystemExit(
+                  f"valid_date {valid_date.isoformat()} does not match Eastern today {today.isoformat()}"
+              )
+
+          issued = dt.datetime.fromisoformat(
+              str(candidate["issued_at"]).replace("Z", "+00:00")
+          )
+          if issued.tzinfo is None:
+              raise SystemExit("issued_at must include a UTC offset")
+          if issued.astimezone(EASTERN).date() != valid_date:
+              raise SystemExit("issued_at Eastern date must equal valid_date")
+
+          spc = candidate["spc_category"]
+          if spc not in {
+              "General",
+              "Thunderstorms",
+              "Marginal",
+              "Slight",
+              "Enhanced",
+              "Moderate",
+              "High",
+          }:
+              raise SystemExit("spc_category is invalid")
+
+          spc_issued_at = candidate["spc_issued_at"]
+          if spc_issued_at is not None:
+              parsed_spc = dt.datetime.fromisoformat(
+                  str(spc_issued_at).replace("Z", "+00:00")
+              )
+              if parsed_spc.tzinfo is None:
+                  raise SystemExit("spc_issued_at must include a UTC offset when supplied")
+
+          for key in (
+              "most_likely_window",
+              "index_basis",
+              "handoff_status",
+              "notes",
+          ):
+              if not isinstance(candidate[key], str) or not candidate[key].strip():
+                  raise SystemExit(f"{key} must be a non-empty string")
+
+          if candidate["handoff_status"] != "Automated reviewed handoff":
+              raise SystemExit("handoff_status must equal 'Automated reviewed handoff'")
+
+          path = Path("current/downburst-outlook.json")
+          existing = None
+          if path.exists():
+              try:
+                  existing = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  existing = None
+
+          skip_reason = None
+          if isinstance(existing, dict) and existing.get("valid_date") == candidate["valid_date"]:
+              existing_run = existing.get("source_run")
+              if existing_run == "11:00 AM Model Refresh" and source_run == "8:30 AM Initial":
+                  skip_reason = "same-day 11:00 AM handoff already exists"
+
+              try:
+                  existing_issued = dt.datetime.fromisoformat(
+                      str(existing.get("issued_at")).replace("Z", "+00:00")
+                  )
+              except Exception:
+                  existing_issued = None
+
+              if (
+                  skip_reason is None
+                  and existing_run == source_run
+                  and existing_issued is not None
+                  and existing_issued.tzinfo is not None
+                  and existing_issued >= issued
+              ):
+                  skip_reason = "same-run existing handoff is newer or equal"
+
+          if skip_reason:
+              print(f"SKIP: {skip_reason}")
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+                  out.write("accepted=false\n")
+                  out.write(f"reason={skip_reason}\n")
+              raise SystemExit(0)
+
+          path.write_text(
+              json.dumps(candidate, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write("accepted=true\n")
+              out.write(f"source_run={source_run}\n")
+              out.write(f"valid_date={valid_date.isoformat()}\n")
+              out.write(f"index={index}\n")
+              out.write(f"verdict={verdict}\n")
+
+          print(
+              json.dumps(
+                  {
+                      "accepted": True,
+                      "source_run": source_run,
+                      "valid_date": valid_date.isoformat(),
+                      "downburst_index": index,
+                      "verdict": verdict,
+                      "spc_category": spc,
+                  },
+                  indent=2,
+              )
+          )
+          PY
+
+      - name: Commit accepted handoff
+        if: steps.validate.outputs.accepted == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add current/downburst-outlook.json
+
+          if git diff --cached --quiet; then
+            echo "No handoff change to commit"
+            exit 0
+          fi
+
+          git commit -m "Publish ${{ steps.validate.outputs.source_run }} Downburst handoff [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Acknowledge accepted comment
+        if: steps.validate.outputs.accepted == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+        run: |
+          gh api             --method POST             "repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}/reactions"             -f content='+1'             >/dev/null
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Downburst handoff ingestion"
+            echo
+            echo "- Issue: #10"
+            echo "- Comment: ${{ github.event.comment.html_url }}"
+            echo "- Accepted: ${{ steps.validate.outputs.accepted || 'false' }}"
+            echo "- Reason: ${{ steps.validate.outputs.reason || 'validated' }}"
+            echo "- Source run: ${{ steps.validate.outputs.source_run || 'n/a' }}"
+            echo "- Valid date: ${{ steps.validate.outputs.valid_date || 'n/a' }}"
+            echo "- Index: ${{ steps.validate.outputs.index || 'n/a' }}"
+            echo "- Verdict: ${{ steps.validate.outputs.verdict || 'n/a' }}"
+          } >> "${GITHUB_STEP_SUMMARY}"
