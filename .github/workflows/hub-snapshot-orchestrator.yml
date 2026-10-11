@@ -108,18 +108,20 @@ jobs:
           PY
           }
 
-          worker_active() {
+          workflow_active() {
+            local workflow="$1"
             local count
-            count="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow "update-readiness-hub.yml"               --limit 12               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+            count="$(gh run list               --repo "${GITHUB_REPOSITORY}"               --workflow "${workflow}"               --limit 12               --json status               --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
             [[ "${count}" != "0" ]]
           }
 
-          dispatch_worker_if_idle() {
-            if worker_active; then
-              echo "Hub snapshot worker already queued/running"
+          dispatch_refresh_cycle_if_idle() {
+            local workflow="ingest-downburst-handoff.yml"
+            if workflow_active "${workflow}"; then
+              echo "Downburst inbox ingestion already queued/running"
             else
-              gh workflow run update-readiness-hub.yml                 --repo "${GITHUB_REPOSITORY}"                 --ref main
-              echo "Dispatched Hub snapshot worker at $(local_now_iso)"
+              gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main
+              echo "Dispatched Downburst inbox + Hub refresh cycle at $(local_now_iso)"
             fi
           }
 
@@ -203,8 +205,8 @@ jobs:
           AGE_MINUTES="$(snapshot_age_minutes)"
           echo "Current Hub snapshot age: ${AGE_MINUTES} minutes"
           if (( AGE_MINUTES > 45 )); then
-            echo "Snapshot is older than 45 minutes; dispatching catch-up refresh"
-            dispatch_worker_if_idle
+            echo "Snapshot is older than 45 minutes; dispatching catch-up refresh cycle"
+            dispatch_refresh_cycle_if_idle
           fi
 
           # Each run handles at most eight half-hour checkpoints (~4 hours),
@@ -231,7 +233,7 @@ jobs:
               sleep "${WAIT_SECONDS}"
             fi
 
-            dispatch_worker_if_idle
+            dispatch_refresh_cycle_if_idle
             CHECKPOINTS_HANDLED=$((CHECKPOINTS_HANDLED + 1))
 
             # Move beyond the 90-second checkpoint grace before asking for the
