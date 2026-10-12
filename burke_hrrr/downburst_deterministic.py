@@ -54,7 +54,10 @@ CATEGORY_BY_DN = {
 # Categorical risk is intentionally a small floor because a categorical outlook
 # can be driven by hail/tornado risk rather than wind.
 CATEGORY_BASE = {
-    0: 0,
+    # The Hub uses "General" both for an SPC general-thunder contour and for
+    # no higher categorical severe risk at the Morganton point. Preserve a
+    # small LOW-band background floor in either case.
+    0: 5,
     2: 5,
     3: 7,
     4: 9,
