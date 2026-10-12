@@ -73,6 +73,27 @@ class DeterministicDownburstTests(unittest.TestCase):
         self.assertEqual(parts["hrrr_gust"], 0)
         self.assertEqual(parts["hrrr_organization"], 0)
 
+    def test_no_spc_polygon_still_uses_general_low_floor(self):
+        hrrr = hrrr_fixture(
+            {
+                "cape_surface_jkg": metric(p90=0, maximum=200),
+                "composite_reflectivity_dbz": metric(p90=-10, maximum=8.25),
+                "max_reflectivity_1km_dbz": metric(p90=0, maximum=28.4),
+                "max_updraft_velocity_ms": metric(p90=1.74, maximum=3.88),
+                "vil_kg_m2": metric(p90=0, maximum=0.004),
+                "max_downdraft_magnitude_ms": metric(p90=1.82, maximum=3.34),
+                "pwat_inches": metric(p90=0.95, maximum=1.01),
+                "dewpoint_depression_700mb_k": metric(p90=37.96, maximum=44.46),
+                "lapse_rate_0_3km_agl_k_per_km": metric(p90=5.99, maximum=6.23),
+                "bulk_shear_sfc_500mb_kt": metric(p90=42.97, maximum=46.29),
+                "surface_gust_mph": metric(p90=47.0, maximum=59.09),
+            }
+        )
+        score, parts = calculate_score(0, 0, 0, hrrr)
+        self.assertEqual(score, 6)
+        self.assertEqual(parts["official_spc"], 5)
+        self.assertEqual(parts["hrrr_gust"], 0)
+
     def test_general_thunder_initial_is_low_seven(self):
         score, parts = calculate_score(2, 0, 1, None)
         self.assertEqual(score, 7)
