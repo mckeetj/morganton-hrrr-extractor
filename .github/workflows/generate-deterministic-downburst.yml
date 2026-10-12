@@ -1,0 +1,111 @@
+name: Generate Deterministic Downburst Handoff
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: "Run to generate"
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - initial
+          - refresh
+      force:
+        description: "Regenerate even if this run already exists today"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+    paths:
+      - "triggers/downburst-deterministic.txt"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deterministic-downburst-handoff
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Generate deterministic handoff
+        env:
+          SOURCE_RUN: ${{ inputs.source_run || 'auto' }}
+          FORCE: ${{ inputs.force || false }}
+        run: |
+          set -euo pipefail
+          args=(--run "${SOURCE_RUN}" --output current/downburst-outlook.json)
+          if [[ "${FORCE}" == "true" ]]; then
+            args+=(--force)
+          fi
+          python -m burke_hrrr.downburst_deterministic "${args[@]}"
+
+      - name: Validate current handoff when changed
+        run: |
+          if git diff --quiet -- current/downburst-outlook.json; then
+            echo "No new handoff was required"
+            exit 0
+          fi
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(
+              Path("current/downburst-outlook.json").read_text(encoding="utf-8")
+          )
+          assert data["schema_version"] == 1
+          assert data["model_type"] == "Deterministic"
+          assert data["deterministic_model_version"] == "1.0"
+          assert isinstance(data["downburst_index"], int)
+          assert 0 <= data["downburst_index"] <= 100
+          assert data["verdict"] in {"LOW", "CONDITIONAL", "ELEVATED", "HIGH"}
+          assert data["confidence"] in {"Low", "Moderate", "High"}
+          assert data["source_run"] in {
+              "8:30 AM Initial",
+              "11:00 AM Model Refresh",
+          }
+          assert data["spc_category"] in {
+              "General", "Marginal", "Slight", "Enhanced", "Moderate", "High"
+          }
+          expected = (
+              "LOW" if data["downburst_index"] <= 24
+              else "CONDITIONAL" if data["downburst_index"] <= 44
+              else "ELEVATED" if data["downburst_index"] <= 64
+              else "HIGH"
+          )
+          assert data["verdict"] == expected
+          print(json.dumps(data, indent=2))
+          PY
+
+      - name: Commit new handoff
+        run: |
+          git add current/downburst-outlook.json
+          if git diff --cached --quiet; then
+            echo "No handoff change to commit"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish deterministic Downburst handoff"
+          git pull --rebase origin main
+          git push origin HEAD:main
