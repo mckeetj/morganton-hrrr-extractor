@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "downburst_index": 20,
+  "downburst_index": 6,
   "verdict": "LOW",
   "confidence": "Moderate",
   "source_run": "11:00 AM Model Refresh",
-  "trend": "Lower",
-  "valid_date": "2026-10-11",
-  "issued_at": "2026-10-11T11:01:00-04:00",
-  "most_likely_window": "11:00 AM–3:00 PM EDT (isolated lingering convection only)",
+  "trend": "Similar",
+  "valid_date": "2026-10-12",
+  "issued_at": "2026-10-12T11:07:14-04:00",
+  "most_likely_window": "No meaningful convective window; 11:00 AM–midnight EDT monitored",
   "spc_category": "General",
-  "spc_issued_at": "2026-10-11T08:43:00-04:00",
-  "index_basis": "Residual showers and deep-layer shear keep the index in upper LOW, but 12Z HRRR shows weak afternoon CAPE/reflectivity and its late 55-mph county maximum is not convectively corroborated.",
+  "spc_issued_at": "2026-10-12T08:46:00-04:00",
+  "index_basis": "12Z HRRR shows essentially no surface instability or convective echoes, consistent with dry NWS/SPC guidance; the 59-mph county gust maximum lacks a storm signal.",
   "handoff_status": "Automated reviewed handoff",
   "notes": "11:00 AM Daily Downburst Model handoff for the Operational Readiness Hub."
 }
