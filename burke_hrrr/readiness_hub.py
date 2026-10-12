@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from .econet import MAX_CURRENT_AGE_MINUTES
+
 EASTERN = ZoneInfo("America/New_York")
 LAT = 35.745
 LON = -81.684
@@ -887,16 +889,19 @@ def _econet_context(
     latest = _parse_time(
         econet.get("freshness", {}).get("latest_accepted_observation_time")
     )
-    threshold_minutes = _finite_number(
+    source_threshold_minutes = _finite_number(
         econet.get("freshness", {}).get("maximum_current_age_minutes")
     )
+    # An ECONet source file may predate a freshness-policy change.
+    # Apply the current approved policy in the Hub without rewriting source history.
+    threshold_minutes = MAX_CURRENT_AGE_MINUTES
     status = "Available"
     age_hours = None
     if latest is not None:
         age_hours = (now - latest).total_seconds() / 3600.0
     if (
         latest is None
-        or threshold_minutes is None
+        or source_threshold_minutes is None
         or age_hours is None
         or age_hours * 60.0 > threshold_minutes
     ):

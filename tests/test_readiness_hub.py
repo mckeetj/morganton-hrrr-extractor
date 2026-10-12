@@ -16,6 +16,48 @@ from burke_hrrr.readiness_hub import (
 
 
 class ReadinessHubTests(unittest.TestCase):
+    def test_econet_freshness_uses_current_policy_for_legacy_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "current").mkdir()
+            econet_path = root / "current" / "morg-econet-1030.json"
+            legacy_source = {
+                "generated_at": "2026-10-12T10:05:51-04:00",
+                "freshness": {
+                    "latest_accepted_observation_time": "2026-10-12T09:05:00-04:00",
+                    "maximum_current_age_minutes": 90,
+                },
+                "rainfall": {"72h": {"total_inches": 7.37, "coverage_percent": 98.6}},
+            }
+            econet_path.write_text(json.dumps(legacy_source), encoding="utf-8")
+
+            cases = (
+                ("2026-10-12T11:00:00-04:00", "Available"),
+                ("2026-10-12T12:05:00-04:00", "Available"),
+                ("2026-10-12T12:05:01-04:00", "Stale"),
+                ("2026-10-12T13:47:00-04:00", "Stale"),
+            )
+            for snapshot_time, expected_status in cases:
+                with self.subTest(snapshot_time=snapshot_time):
+                    rainfall, source = _econet_context(
+                        root, dt.datetime.fromisoformat(snapshot_time)
+                    )
+                    self.assertEqual(rainfall, 7.37)
+                    self.assertEqual(source["status"], expected_status)
+                    self.assertEqual(source["freshness_threshold_hours"], 3.0)
+                    self.assertIn("Freshness threshold=180.0 minutes.", source["notes"])
+                    self.assertEqual(
+                        source["observation_time"], "2026-10-12T09:05:00-04:00"
+                    )
+
+            # Preserve the previous fail-closed behavior when provenance is missing.
+            del legacy_source["freshness"]["maximum_current_age_minutes"]
+            econet_path.write_text(json.dumps(legacy_source), encoding="utf-8")
+            _, source = _econet_context(
+                root, dt.datetime.fromisoformat("2026-10-12T10:00:00-04:00")
+            )
+            self.assertEqual(source["status"], "Stale")
+
     def test_source_aligned_qpf_uses_24_contiguous_hourly_slots(self) -> None:
         starts = []
         values = []
