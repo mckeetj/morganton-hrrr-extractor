@@ -35,7 +35,7 @@ API_ENDPOINT = "https://api.climate.ncsu.edu/data.php"
 STATION = "MORG"
 VARIABLES = ("precip1m", "soilmoist", "soilmoist20cm")
 QC_ACCEPTED = {0, 1}
-MAX_CURRENT_AGE_MINUTES = 90.0
+MAX_CURRENT_AGE_MINUTES = 180.0
 SOIL_DEPTHS_CM = {"soilmoist": 10, "soilmoist20cm": 20}
 CSV_ATTRS = ("location", "datetime", "var", "value", "unit", "score", "flag", "obtime")
 
@@ -654,7 +654,7 @@ def build_summary(observations: list[Observation], now: dt.datetime) -> dict[str
         },
         "notes": [
             "Only CLOUDS observations with QC score 0 or 1 are used.",
-            "Current MORG soil-moisture context is considered usable only when the latest accepted observation is no more than 90 minutes old.",
+            "Current MORG soil-moisture context is considered usable only when the latest accepted observation is no more than 180 minutes (3 hours) old.",
             "Rolling rainfall totals and 24-hour soil-moisture changes are derived from accepted hourly observations.",
             "The public JSON does not redistribute raw hourly observations or exact current soil-moisture values; it publishes derived context, freshness, depth, units, and QC status.",
             "MORG sensor inventory identifies soil-moisture sensors at 10 cm and 20 cm; this extractor maps soilmoist to 10 cm and soilmoist20cm to 20 cm for MORG.",
