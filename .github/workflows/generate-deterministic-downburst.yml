@@ -48,8 +48,8 @@ jobs:
 
       - name: Generate deterministic handoff
         env:
-          SOURCE_RUN: ${{ inputs.source_run || 'auto' }}
-          FORCE: ${{ inputs.force || false }}
+          SOURCE_RUN: ${{ github.event_name == 'push' && 'auto' || inputs.source_run || 'auto' }}
+          FORCE: ${{ github.event_name == 'push' && 'true' || inputs.force || false }}
         run: |
           set -euo pipefail
           args=(--run "${SOURCE_RUN}" --output current/downburst-outlook.json)
