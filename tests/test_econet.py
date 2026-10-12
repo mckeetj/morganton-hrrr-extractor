@@ -177,9 +177,22 @@ MORG,2026-08-21 09:00:00,soilmoist,0.31,m3/m3,,2026-08-21 09:00:00
         self.assertFalse(result["soil_moisture"]["10cm"]["current_value_published"])
         self.assertNotIn("value", result["soil_moisture"]["10cm"])
 
-    def test_stale_soil_marks_summary_stale(self) -> None:
+    def test_two_hour_soil_remains_current_under_three_hour_limit(self) -> None:
         now = dt.datetime(2026, 8, 21, 10, 15, tzinfo=EASTERN)
         old = now - dt.timedelta(hours=2)
+        obs = [
+            Observation("precip1m", old, 0.0, "in", 0, "", True),
+            Observation("soilmoist", old, 0.3, "m3/m3", 0, "", True),
+            Observation("soilmoist20cm", old, 0.4, "m3/m3", 0, "", True),
+        ]
+        result = build_summary(obs, now)
+        self.assertEqual(result["status"], "current")
+        self.assertEqual(result["freshness"]["maximum_current_age_minutes"], 180.0)
+        self.assertEqual(result["soil_moisture"]["10cm"]["status"], "current")
+
+    def test_soil_older_than_three_hours_marks_summary_stale(self) -> None:
+        now = dt.datetime(2026, 8, 21, 10, 15, tzinfo=EASTERN)
+        old = now - dt.timedelta(hours=3, minutes=1)
         obs = [
             Observation("precip1m", old, 0.0, "in", 0, "", True),
             Observation("soilmoist", old, 0.3, "m3/m3", 0, "", True),
