@@ -141,6 +141,17 @@ jobs:
             fi
           }
 
+          dispatch_downburst_if_idle() {
+            local source_run="$1"
+            local workflow="generate-downburst-handoff.yml"
+            if workflow_active "${workflow}"; then
+              echo "${workflow} already queued/running"
+            else
+              gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main                 -f source_run="${source_run}"                 -f force=false
+              echo "Dispatched GitHub-native Downburst ${source_run} at $(local_now_iso)"
+            fi
+          }
+
           ensure_hub_clock() {
             local workflow="hub-snapshot-orchestrator.yml"
             if workflow_active "${workflow}"; then
@@ -210,6 +221,20 @@ jobs:
             fi
           done
 
+          # Generate the GitHub-native 8:30 Daily Downburst handoff after the
+          # morning ECONet window. If the clock arrived late but still before
+          # the late-morning refresh, dispatch immediately; the generator is
+          # idempotent and exits before an API call when today's Initial or
+          # Refresh handoff already exists.
+          TO_INITIAL="$(seconds_until "08:35")"
+          TO_REFRESH="$(seconds_until "11:05")"
+          if (( TO_REFRESH > 0 )); then
+            if (( TO_INITIAL > 0 )); then
+              wait_until "08:35"
+            fi
+            dispatch_downburst_if_idle initial
+          fi
+
           # Late MORG + 12Z HRRR attempts. The production workflow independently
           # decides which product still needs recovery.
           for checkpoint in "10:05" "10:25" "10:40"; do
@@ -219,6 +244,17 @@ jobs:
               dispatch_if_idle update-hrrr.yml
             fi
           done
+
+          # Generate the late-morning GitHub-native Downburst handoff. A delayed
+          # clock arriving between 11:05 and noon dispatches it immediately.
+          TO_REFRESH="$(seconds_until "11:05")"
+          TO_NOON="$(seconds_until "12:00")"
+          if (( TO_NOON > 0 )); then
+            if (( TO_REFRESH > 0 )); then
+              wait_until "11:05"
+            fi
+            dispatch_downburst_if_idle refresh
+          fi
 
           # If a heavily delayed relay first arrives after the normal checkpoints
           # but before noon, make one best-effort late recovery dispatch.
