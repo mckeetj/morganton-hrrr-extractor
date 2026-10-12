@@ -11,6 +11,18 @@ on:
       - ".github/workflows/weather-orchestrator.yml"
       - ".github/workflows/hub-snapshot-orchestrator.yml"
       - ".github/workflows/test-deterministic-downburst.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "burke_hrrr/downburst_deterministic.py"
+      - "burke_hrrr/readiness_hub.py"
+      - "tests/test_downburst_deterministic.py"
+      - "tests/test_readiness_hub.py"
+      - ".github/workflows/generate-deterministic-downburst.yml"
+      - ".github/workflows/weather-orchestrator.yml"
+      - ".github/workflows/hub-snapshot-orchestrator.yml"
+      - ".github/workflows/test-deterministic-downburst.yml"
 
 permissions:
   contents: read
