@@ -43,14 +43,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify OpenAI API secret
+      - name: Check OpenAI API configuration
+        id: config
         run: |
           if [[ -z "${OPENAI_API_KEY}" ]]; then
-            echo "::error::OPENAI_API_KEY repository secret is not configured."
-            exit 2
+            echo "::notice::OPENAI_API_KEY is not configured; GitHub-native Downburst generation is not active yet."
+            echo "configured=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "configured=true" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Generate validated handoff
+        if: steps.config.outputs.configured == 'true'
         env:
           SOURCE_RUN: ${{ inputs.source_run }}
           FORCE: ${{ inputs.force }}
@@ -63,6 +67,7 @@ jobs:
           python -m burke_hrrr.downburst_ai "${args[@]}"
 
       - name: Validate output shape
+        if: steps.config.outputs.configured == 'true'
         run: |
           python - <<'PY'
           import json
@@ -95,6 +100,7 @@ jobs:
           PY
 
       - name: Commit accepted handoff
+        if: steps.config.outputs.configured == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -118,6 +124,7 @@ jobs:
             echo "- Requested run: ${{ inputs.source_run }}"
             echo "- Model: ${OPENAI_MODEL}"
             echo "- Force: ${{ inputs.force }}"
+            echo "- API configured: ${{ steps.config.outputs.configured || 'false' }}"
             echo "- Output: current/downburst-outlook.json"
             echo
             echo "The committed handoff triggers the Operational Readiness Hub snapshot workflow through the existing current/downburst-outlook.json push path."
