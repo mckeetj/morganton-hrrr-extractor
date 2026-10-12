@@ -564,7 +564,7 @@ jobs:
 
           for depth in ("10cm", "20cm"):
               age = soil[depth].get("age_minutes")
-              if soil[depth].get("status") != "current" or age is None or float(age) > 90.0:
+              if soil[depth].get("status") != "current" or age is None or float(age) > 180.0:
                   emit(False, "stale_observation")
                   print(f"Stale current soil-moisture context for {depth}")
                   raise SystemExit(0)
@@ -946,7 +946,7 @@ jobs:
                           soil.get(depth, {}).get("status") == "current"
                           and float(
                               soil.get(depth, {}).get("age_minutes", 1e9)
-                          ) <= 90.0
+                          ) <= 180.0
                           for depth in ("10cm", "20cm")
                       )
                   )
