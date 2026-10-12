@@ -115,14 +115,33 @@ jobs:
             [[ "${count}" != "0" ]]
           }
 
-          dispatch_refresh_cycle_if_idle() {
-            local workflow="ingest-downburst-handoff.yml"
+          dispatch_downburst_auto_if_idle() {
+            local workflow="generate-deterministic-downburst.yml"
             if workflow_active "${workflow}"; then
-              echo "Downburst inbox ingestion already queued/running"
+              echo "Deterministic Downburst generator already queued/running"
+            else
+              gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main                 -f source_run=auto                 -f force=false
+              echo "Dispatched deterministic Downburst recovery at $(local_now_iso)"
+            fi
+          }
+
+          dispatch_hub_if_idle() {
+            local workflow="update-readiness-hub.yml"
+            if workflow_active "${workflow}"; then
+              echo "Hub snapshot worker already queued/running"
             else
               gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main
-              echo "Dispatched Downburst inbox + Hub refresh cycle at $(local_now_iso)"
+              echo "Dispatched Hub snapshot worker at $(local_now_iso)"
             fi
+          }
+
+          dispatch_refresh_cycle_if_idle() {
+            # Give the deterministic generator a brief opportunity to publish a
+            # missing/superseding handoff first. If it commits a new handoff,
+            # that push independently triggers the Hub worker.
+            dispatch_downburst_auto_if_idle
+            sleep 20
+            dispatch_hub_if_idle
           }
 
           dispatch_successor() {

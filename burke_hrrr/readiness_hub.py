@@ -1024,12 +1024,23 @@ def _downburst_handoff(
         }
         return None, None, stale, stale.copy()
 
+    model_type = value.get("model_type")
+    model_version = value.get("deterministic_model_version")
+    if model_type == "Deterministic":
+        model_label = (
+            f"Deterministic Downburst Model v{model_version}"
+            if model_version
+            else "Deterministic Downburst Model"
+        )
+    else:
+        model_label = "Daily Downburst Model"
+
     downburst_source = {
         "status": "Available",
         "observation_time": issued.isoformat(),
         "retrieved_at": now.isoformat(),
         "notes": (
-            f"Daily Downburst Model handoff from {source_run or 'current run'}; "
+            f"{model_label} handoff from {source_run or 'current run'}; "
             f"verdict={verdict}; index={int(index)}; confidence={confidence}. "
             f"{basis or ''}"
         ).strip(),
@@ -1047,7 +1058,7 @@ def _downburst_handoff(
             "observation_time": spc_time.isoformat(),
             "retrieved_at": now.isoformat(),
             "notes": (
-                "SPC category carried by the reviewed Daily Downburst Model handoff: "
+                f"SPC category carried by the {model_label} handoff: "
                 f"{spc_category}."
             ),
         }
