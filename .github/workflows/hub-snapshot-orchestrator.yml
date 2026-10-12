@@ -125,45 +125,6 @@ jobs:
             fi
           }
 
-          desired_downburst_run() {
-            python - <<'PY'
-          import datetime as dt
-          from zoneinfo import ZoneInfo
-
-          now = dt.datetime.now(dt.UTC).astimezone(
-              ZoneInfo("America/New_York")
-          )
-          minutes = now.hour * 60 + now.minute
-          if minutes >= 11 * 60 + 5:
-              print("refresh")
-          elif minutes >= 8 * 60 + 35:
-              print("initial")
-          else:
-              print("none")
-          PY
-          }
-
-          dispatch_native_downburst_if_idle() {
-            local source_run
-            source_run="$(desired_downburst_run)"
-            if [[ "${source_run}" == "none" ]]; then
-              return
-            fi
-
-            local workflow="generate-downburst-handoff.yml"
-            if workflow_active "${workflow}"; then
-              echo "GitHub-native Downburst generation already queued/running"
-            else
-              gh workflow run "${workflow}"                 --repo "${GITHUB_REPOSITORY}"                 --ref main                 -f source_run="${source_run}"                 -f force=false
-              echo "Dispatched GitHub-native Downburst ${source_run} recovery at $(local_now_iso)"
-            fi
-          }
-
-          dispatch_checkpoint_cycle() {
-            dispatch_native_downburst_if_idle
-            dispatch_refresh_cycle_if_idle
-          }
-
           dispatch_successor() {
             local next_date="$1"
             echo "Relaying Hub clock for ${next_date}"
@@ -245,7 +206,7 @@ jobs:
           echo "Current Hub snapshot age: ${AGE_MINUTES} minutes"
           if (( AGE_MINUTES > 45 )); then
             echo "Snapshot is older than 45 minutes; dispatching catch-up refresh cycle"
-            dispatch_checkpoint_cycle
+            dispatch_refresh_cycle_if_idle
           fi
 
           # Each run handles at most eight half-hour checkpoints (~4 hours),
@@ -272,7 +233,7 @@ jobs:
               sleep "${WAIT_SECONDS}"
             fi
 
-            dispatch_checkpoint_cycle
+            dispatch_refresh_cycle_if_idle
             CHECKPOINTS_HANDLED=$((CHECKPOINTS_HANDLED + 1))
 
             # Move beyond the 90-second checkpoint grace before asking for the
