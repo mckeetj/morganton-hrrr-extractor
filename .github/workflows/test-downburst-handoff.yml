@@ -1,0 +1,28 @@
+name: Test Downburst Handoff
+
+on:
+  pull_request:
+    paths:
+      - "burke_hrrr/downburst_ai.py"
+      - "tests/test_downburst_ai.py"
+      - "burke_hrrr/readiness_hub.py"
+      - ".github/workflows/generate-downburst-handoff.yml"
+      - ".github/workflows/weather-orchestrator.yml"
+      - ".github/workflows/hub-snapshot-orchestrator.yml"
+      - ".github/workflows/test-downburst-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Run focused unit tests
+        run: |
+          python -m unittest tests.test_downburst_ai tests.test_readiness_hub
