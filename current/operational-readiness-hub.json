@@ -116,7 +116,7 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-12T06:17:19.292243-04:00",
+    "generated_at": "2026-10-12T06:47:25.376641-04:00",
     "mode": "REVIEWED",
     "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.spc_category."
   },
@@ -147,18 +147,18 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-12T06:17:19.292243-04:00",
+      "retrieved_at": "2026-10-12T06:47:25.376641-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-12T06:17:19.292243-04:00",
+      "retrieved_at": "2026-10-12T06:47:25.376641-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-12T06:00:00-04:00 through 2026-10-13T06:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
-      "observation_time": "2026-10-12T06:23:33+00:00",
-      "retrieved_at": "2026-10-12T06:17:19.292243-04:00",
+      "observation_time": "2026-10-12T10:28:57+00:00",
+      "retrieved_at": "2026-10-12T06:47:25.376641-04:00",
       "status": "Available",
       "valid_time": "2026-10-12T06:00:00-04:00"
     },
