@@ -110,8 +110,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Publish deterministic Downburst handoff"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          for attempt in 1 2 3; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              break
+            fi
+            if [[ "${attempt}" == "3" ]]; then
+              echo "::error::Deterministic handoff push failed after 3 attempts"
+              exit 1
+            fi
+            echo "Push raced another main commit; retrying after refresh"
+            sleep 2
+          done
           echo "changed=true" >> "${GITHUB_OUTPUT}"
 
       - name: Rebuild Hub after new handoff
