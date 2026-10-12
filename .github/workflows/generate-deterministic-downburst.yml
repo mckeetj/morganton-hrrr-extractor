@@ -24,6 +24,7 @@ on:
       - "triggers/downburst-deterministic.txt"
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -97,10 +98,12 @@ jobs:
           PY
 
       - name: Commit new handoff
+        id: commit
         run: |
           git add current/downburst-outlook.json
           if git diff --cached --quiet; then
             echo "No handoff change to commit"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
 
@@ -109,3 +112,18 @@ jobs:
           git commit -m "Publish deterministic Downburst handoff"
           git pull --rebase origin main
           git push origin HEAD:main
+          echo "changed=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Rebuild Hub after new handoff
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ACTIVE="$(gh run list             --repo "${GITHUB_REPOSITORY}"             --workflow "update-readiness-hub.yml"             --limit 12             --json status             --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')"
+
+          if [[ "${ACTIVE}" == "0" ]]; then
+            gh workflow run update-readiness-hub.yml               --repo "${GITHUB_REPOSITORY}"               --ref main
+            echo "Dispatched Hub rebuild after deterministic handoff"
+          else
+            echo "Hub snapshot workflow already queued/running"
+          fi
