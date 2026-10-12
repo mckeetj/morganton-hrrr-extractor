@@ -471,7 +471,7 @@ jobs:
                           soil.get(depth, {}).get("status") == "current"
                           and float(
                               soil.get(depth, {}).get("age_minutes", 1e9)
-                          ) <= 90.0
+                          ) <= 180.0
                           for depth in ("10cm", "20cm")
                       )
                   )
