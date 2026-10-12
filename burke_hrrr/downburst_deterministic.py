@@ -586,7 +586,12 @@ def _auto_run(now: dt.datetime) -> str | None:
 def _trend(index: int, prior: dict[str, Any] | None, run: str) -> str | None:
     if run == "initial":
         return None
-    prior_index = _finite(prior.get("downburst_index")) if prior else None
+    # Trend is a morning-to-late-morning comparison. A forced re-run of the
+    # same 11:00 product is a technical recalculation, not a new meteorological
+    # trend observation.
+    if not prior or prior.get("source_run") != "8:30 AM Initial":
+        return "Similar"
+    prior_index = _finite(prior.get("downburst_index"))
     if prior_index is None:
         return "Similar"
     difference = index - prior_index
