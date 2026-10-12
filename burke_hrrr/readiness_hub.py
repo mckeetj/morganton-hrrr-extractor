@@ -615,7 +615,7 @@ def build_timeline(
         )
         complete = downburst_available and required_available
         note = (
-            "Daily Downburst Model applies to this local date."
+            "Current Downburst assessment applies to this local date."
             if downburst_available
             else "Downburst is not assessed beyond the current Daily Downburst Model valid date."
         )
@@ -1052,16 +1052,19 @@ def _downburst_handoff(
             "notes": "Current Downburst handoff did not include a supported SPC category.",
         }
     else:
-        spc_time = _parse_time(value.get("spc_issued_at")) or issued
+        spc_time = _parse_time(value.get("spc_issued_at"))
         spc_source = {
             "status": "Available",
-            "observation_time": spc_time.isoformat(),
             "retrieved_at": now.isoformat(),
             "notes": (
                 f"SPC category carried by the {model_label} handoff: "
                 f"{spc_category}."
             ),
         }
+        if spc_time is not None:
+            spc_source["observation_time"] = spc_time.isoformat()
+        else:
+            spc_source["notes"] += " Exact SPC issue time was not established."
     return int(index), spc_category, downburst_source, spc_source
 
 
