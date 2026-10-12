@@ -112,7 +112,7 @@ as OPERATIONAL.
 Inputs are deliberately separated by responsibility:
 
 - NWS Digital Forecast / NDFD and api.weather.gov grid data: wind gust, source-aligned 24-hour QPF, minimum temperature, snowfall, ice accumulation, and active NWS alerts.
-- Daily Downburst Model: reviewed 0-100 Downburst Index plus the current SPC categorical handoff in `current/downburst-outlook.json`.
+- Deterministic Downburst Model v1.0: free, rule-based 0-100 Downburst Index plus the current SPC categorical handoff in `current/downburst-outlook.json`. The production score uses official SPC/NWS data and, for the late-morning refresh, validated 12Z HRRR diagnostics. It does not depend on a paid AI API or on a ChatGPT task writing to GitHub.
 - MORG ECONet: rolling 72-hour antecedent rainfall and source freshness.
 - Morganton Electric: manual Load Stress Level 1-5 in `current/load-stress.json`.
 
@@ -133,14 +133,50 @@ job limit, and hands off to the next Eastern date after the final daily checkpoi
 The Weather Data Orchestrator also checks that the Hub clock is alive and can restart
 it if necessary.
 
+### Deterministic Downburst Model v1.0
+
+The machine score is intentionally transparent and conservative.
+
+- The primary official baseline is the SPC Day 1 **wind probability** at the
+  Morganton point. The broader SPC categorical outlook supplies only a small
+  floor because a categorical risk can be driven by hail or tornado risk rather
+  than damaging wind.
+- NWS hourly thunderstorm wording can add a small confirmation signal.
+- The 8:35 AM Initial does not use 12Z HRRR.
+- The 11:05 AM Refresh can add HRRR support from county p90/max diagnostics for
+  surface CAPE, simulated reflectivity, updraft/downdraft magnitude, PWAT,
+  low-level lapse rate, 700-mb dryness, deep-layer shear proxy, and surface gust.
+- HRRR organization and gust points are gated by actual instability or convective
+  support. An isolated modeled gust spike cannot raise the index by itself.
+- A multi-signal synergy term is allowed only when instability, convection and
+  downdraft support are all present.
+- Antecedent rainfall and ECONet soil moisture never raise the meteorological
+  Downburst Index; they remain separate tree/utility-impact modifiers.
+
+The existing handoff bands remain:
+
+- 0-24 = LOW
+- 25-44 = CONDITIONAL
+- 45-64 = ELEVATED
+- 65-100 = HIGH
+
+This deterministic score is a machine decision-support index, not an NWS product
+or warning. The twice-daily ChatGPT briefing remains useful as an independent
+human-readable cross-check during the pilot.
+
 ### Controlled-pilot operating routine
 
 - The resilient Hub clock dispatches snapshot builds at approximately :17 and :47
   each hour.
-- The 8:30 AM Daily Downburst Outlook publishes the morning Downburst handoff,
-  which immediately triggers a Hub snapshot refresh.
-- The 11:00 AM Daily Downburst Model Refresh publishes the late-morning handoff,
-  which immediately triggers another Hub snapshot refresh.
+- At approximately 8:35 AM Eastern, GitHub generates the deterministic Initial
+  Downburst handoff from current SPC/NWS information.
+- At approximately 11:05 AM Eastern, GitHub generates the deterministic Model
+  Refresh using current SPC/NWS information plus the validated 12Z HRRR extraction.
+- The :17/:47 resilient Hub clock also runs the deterministic generator in
+  idempotent recovery mode before each Hub refresh. If the required same-day
+  handoff already exists, it exits without changing the file.
+- The separate ChatGPT 8:30/11:00 briefings remain human-readable decision-support
+  products only; production Hub publication no longer depends on those tasks.
 - Load Stress remains an explicit manual Morganton Electric Level 1-5
   assessment until changed by an operator.
 - The Site checks for a newer repository snapshot while open and warns when the
