@@ -1,0 +1,29 @@
+name: Test Deterministic Downburst
+
+on:
+  pull_request:
+    paths:
+      - "burke_hrrr/downburst_deterministic.py"
+      - "burke_hrrr/readiness_hub.py"
+      - "tests/test_downburst_deterministic.py"
+      - "tests/test_readiness_hub.py"
+      - ".github/workflows/generate-deterministic-downburst.yml"
+      - ".github/workflows/weather-orchestrator.yml"
+      - ".github/workflows/hub-snapshot-orchestrator.yml"
+      - ".github/workflows/test-deterministic-downburst.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Run focused unit tests
+        run: |
+          python -m unittest             tests.test_downburst_deterministic             tests.test_readiness_hub
