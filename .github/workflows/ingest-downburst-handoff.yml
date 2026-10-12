@@ -288,7 +288,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Publish ${{ steps.validate.outputs.source_run }} Downburst handoff [skip ci]"
+          git commit -m "Publish ${{ steps.validate.outputs.source_run }} Downburst handoff"
           git pull --rebase origin main
           git push origin HEAD:main
 
