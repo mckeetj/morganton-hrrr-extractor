@@ -6,6 +6,7 @@ from unittest.mock import patch
 from burke_hrrr.downburst_deterministic import (
     EASTERN,
     _auto_run,
+    _trend,
     calculate_score,
     hrrr_components,
     verdict_for_index,
@@ -138,6 +139,24 @@ class DeterministicDownburstTests(unittest.TestCase):
         self.assertEqual(
             _auto_run(dt.datetime(2026, 10, 12, 11, 5, tzinfo=EASTERN)),
             "refresh",
+        )
+
+    def test_refresh_trend_only_compares_against_initial(self):
+        self.assertEqual(
+            _trend(
+                30,
+                {"source_run": "8:30 AM Initial", "downburst_index": 20},
+                "refresh",
+            ),
+            "Higher",
+        )
+        self.assertEqual(
+            _trend(
+                30,
+                {"source_run": "11:00 AM Model Refresh", "downburst_index": 20},
+                "refresh",
+            ),
+            "Similar",
         )
 
     def test_hrrr_component_gate_blocks_uncorroborated_gust(self):
