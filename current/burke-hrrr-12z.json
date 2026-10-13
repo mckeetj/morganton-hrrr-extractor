@@ -1,5 +1,5 @@
 {
-  "cycle_initialized": "2026-10-12T12:00:00+00:00",
+  "cycle_initialized": "2026-10-13T12:00:00+00:00",
   "domain": null,
   "extractor_version": "0.3.3",
   "forecast_hour_count": 17,
@@ -11,10 +11,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 46.285515132285376,
-            "median": 38.937825326565005,
-            "min": 14.026984999404394,
-            "p90": 42.966492001732846
+            "max": 27.478973209149107,
+            "median": 17.78393199636472,
+            "min": 7.23063453159744,
+            "p90": 21.072200824731816
           },
           "units": "kt"
         },
@@ -26,7 +26,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 490.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -41,7 +41,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 610.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -56,7 +56,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -71,7 +71,7 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -88,7 +88,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": -395.0,
+            "min": 0.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -103,7 +103,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": -422.0,
+            "min": 0.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -146,7 +146,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": 8.25,
+            "max": -10.0,
             "median": -10.0,
             "min": -10.0,
             "p90": -10.0
@@ -157,10 +157,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 32.147552490234375,
-            "median": 14.585052490234375,
-            "min": 9.585052490234375,
-            "p90": 23.07255249023438
+            "max": 30.289886474609375,
+            "median": 25.946136474609375,
+            "min": 21.727386474609375,
+            "p90": 28.477386474609375
           },
           "units": "K"
         },
@@ -168,10 +168,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 3.827031218475137,
-            "median": 3.0553255153194527,
-            "min": 2.1927252824309753,
-            "p90": 3.4877824807066493
+            "max": 4.491473718880627,
+            "median": 2.5677360829167055,
+            "min": 1.410606962244022,
+            "p90": 3.8590759391682017
           },
           "units": "K/km"
         },
@@ -179,10 +179,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.789710521697998,
-            "median": 5.793457746505737,
-            "min": 4.804788112640381,
-            "p90": 6.621817874908447
+            "max": 5.279463768005371,
+            "median": 5.166289806365967,
+            "min": 5.002744674682617,
+            "p90": 5.233377599716187
           },
           "units": "K/km"
         },
@@ -209,10 +209,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 31.460829095150935,
-            "median": 5.1768276635117365,
-            "min": 0.2835294913097882,
-            "p90": 16.207719753705
+            "max": 14.402817084094655,
+            "median": 3.078327372232842,
+            "min": 0.2821569071659974,
+            "p90": 6.853157098411056
           },
           "units": "mph"
         },
@@ -224,10 +224,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.7857298851013184,
-            "median": 0.03572988510131836,
-            "min": 0.0,
-            "p90": 0.16072988510131836
+            "max": 0.9615569114685059,
+            "median": 0.02405691146850586,
+            "min": 0.02405691146850586,
+            "p90": 0.14905691146850586
           },
           "units": "m/s"
         },
@@ -239,7 +239,7 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 25.75,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -254,7 +254,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.125,
+            "max": 0.0625,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -269,10 +269,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.976937812144362,
-            "median": 0.8539063160813699,
-            "min": 0.47989053050364094,
-            "p90": 0.9321543475774331
+            "max": 0.9043298556110052,
+            "median": 0.7222432414377769,
+            "min": 0.5204716254407027,
+            "p90": 0.8206684382881705
           },
           "units": "in"
         },
@@ -280,10 +280,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 50.37320843633835,
-            "median": 34.97144984021379,
-            "min": 8.556115710821096,
-            "p90": 42.52366644024266
+            "max": 19.59045890468285,
+            "median": 13.833815052105543,
+            "min": 9.563014076359588,
+            "p90": 18.13067028965315
           },
           "units": "percent"
         },
@@ -295,10 +295,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 430.29998779296875,
-            "median": 243.0,
-            "min": 136.5,
-            "p90": 303.69999389648444
+            "max": 50.400001525878906,
+            "median": 1.600000023841858,
+            "min": -26.299999237060547,
+            "p90": 19.15000076293947
           },
           "units": "m^2/s^2"
         },
@@ -310,10 +310,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 433.0,
-            "median": 263.0,
-            "min": 152.0,
-            "p90": 324.0
+            "max": 150.0,
+            "median": 79.0,
+            "min": 32.0,
+            "p90": 107.0
           },
           "units": "m^2/s^2"
         },
@@ -325,10 +325,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 51.599642849855904,
-            "median": 10.495939550010654,
-            "min": 1.2685769452908746,
-            "p90": 38.1360825420535
+            "max": 19.984131808270682,
+            "median": 3.7663444908670427,
+            "min": 0.41093998611954635,
+            "p90": 9.484513154094692
           },
           "units": "mph"
         },
@@ -355,7 +355,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": 0.00279999990016222,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -363,7 +363,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T12:00:00+00:00"
+      "valid_time": "2026-10-13T12:00:00+00:00"
     },
     {
       "forecast_hour": 1,
@@ -372,10 +372,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 46.23000276806556,
-            "median": 36.69651116195845,
-            "min": 11.402806499857592,
-            "p90": 41.84743558994082
+            "max": 26.512160430976994,
+            "median": 16.338539619506488,
+            "min": 6.18363801263671,
+            "p90": 19.790880222772888
           },
           "units": "kt"
         },
@@ -507,7 +507,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": -1.0,
+            "max": -10.0,
             "median": -10.0,
             "min": -10.0,
             "p90": -10.0
@@ -518,10 +518,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 35.444427490234375,
-            "median": 16.163177490234375,
-            "min": 9.694427490234375,
-            "p90": 25.93192749023438
+            "max": 28.75494384765625,
+            "median": 23.97369384765625,
+            "min": 18.94244384765625,
+            "p90": 27.12994384765625
           },
           "units": "K"
         },
@@ -529,10 +529,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.1497344523911766,
-            "median": 3.641945351582668,
-            "min": 2.6209579175233935,
-            "p90": 3.9246303299512286
+            "max": 4.982346560665917,
+            "median": 3.2519658462786745,
+            "min": 1.9462950952220315,
+            "p90": 4.384558626715891
           },
           "units": "K/km"
         },
@@ -540,10 +540,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.689199447631836,
-            "median": 5.649355411529541,
-            "min": 4.885164737701416,
-            "p90": 6.438257312774659
+            "max": 5.47471809387207,
+            "median": 5.227114677429199,
+            "min": 5.087193965911865,
+            "p90": 5.383652687072754
           },
           "units": "K/km"
         },
@@ -570,10 +570,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 33.79821222683487,
-            "median": 7.514210795195673,
-            "min": 2.0616787166448662,
-            "p90": 20.222805104429735
+            "max": 16.03914271445467,
+            "median": 4.015610677989445,
+            "min": 1.079631794668045,
+            "p90": 7.790440670831244
           },
           "units": "mph"
         },
@@ -585,10 +585,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.1280441284179688,
-            "median": 0.6280441284179688,
-            "min": 0.25304412841796875,
-            "p90": 1.8155441284179688
+            "max": 1.2905569076538086,
+            "median": 0.1030569076538086,
+            "min": 0.040556907653808594,
+            "p90": 0.2905569076538086
           },
           "units": "m/s"
         },
@@ -600,7 +600,7 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 28.4375,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -615,10 +615,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.625,
-            "median": 0.625,
-            "min": 0.1875,
-            "p90": 1.7437500000000021
+            "max": 0.7027320861816406,
+            "median": 0.14023205637931824,
+            "min": 0.07773205637931824,
+            "p90": 0.26523205637931824
           },
           "units": "m/s"
         },
@@ -630,10 +630,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 1.0093017638198973,
-            "median": 0.8272151496466689,
-            "min": 0.4138293228750154,
-            "p90": 0.9453253858671413
+            "max": 0.9320673604649822,
+            "median": 0.7696657856618325,
+            "min": 0.54328787045216,
+            "p90": 0.8631697226697066
           },
           "units": "in"
         },
@@ -641,10 +641,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 50.101878239670626,
-            "median": 31.02194289603995,
-            "min": 6.436045863064744,
-            "p90": 41.3046267590128
+            "max": 24.531856924828087,
+            "median": 16.312422829796844,
+            "min": 10.866823107745965,
+            "p90": 21.203203822064534
           },
           "units": "percent"
         },
@@ -656,10 +656,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 405.1000061035156,
-            "median": 230.75,
-            "min": 123.19999694824219,
-            "p90": 295.05000610351567
+            "max": 50.29999923706055,
+            "median": -1.5,
+            "min": -30.399999618530273,
+            "p90": 19.590000343322757
           },
           "units": "m^2/s^2"
         },
@@ -671,10 +671,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 413.0,
-            "median": 238.5,
-            "min": 124.0,
-            "p90": 300.90000000000003
+            "max": 122.0,
+            "median": 67.5,
+            "min": -21.0,
+            "p90": 91.0
           },
           "units": "m^2/s^2"
         },
@@ -686,10 +686,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 55.430105266693865,
-            "median": 19.499316075570064,
-            "min": 1.7436345240518527,
-            "p90": 41.71488962603533
+            "max": 20.301024147503338,
+            "median": 4.223044015035168,
+            "min": 1.0074480952069675,
+            "p90": 8.976534168977938
           },
           "units": "mph"
         },
@@ -701,7 +701,7 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.5,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -724,7 +724,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T13:00:00+00:00"
+      "valid_time": "2026-10-13T13:00:00+00:00"
     },
     {
       "forecast_hour": 2,
@@ -733,10 +733,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 42.89727462215612,
-            "median": 30.96564002051227,
-            "min": 8.328920845902317,
-            "p90": 35.20189808915238
+            "max": 23.582449256369433,
+            "median": 18.37610502870595,
+            "min": 7.612763129613688,
+            "p90": 20.660244423377886
           },
           "units": "kt"
         },
@@ -748,7 +748,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -763,7 +763,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -793,7 +793,7 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -879,10 +879,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 36.87921142578125,
-            "median": 15.62921142578125,
-            "min": 11.06671142578125,
-            "p90": 27.466711425781263
+            "max": 26.717681884765625,
+            "median": 21.061431884765625,
+            "min": 18.592681884765625,
+            "p90": 24.530181884765625
           },
           "units": "K"
         },
@@ -890,10 +890,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 5.029813965656103,
-            "median": 4.484668846362325,
-            "min": 2.8777538083804948,
-            "p90": 4.699804776845858
+            "max": 5.572314085282983,
+            "median": 4.315185530209163,
+            "min": 3.1335393375176372,
+            "p90": 5.193704440135605
           },
           "units": "K/km"
         },
@@ -901,10 +901,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.51190710067749,
-            "median": 5.221257925033569,
-            "min": 4.909514904022217,
-            "p90": 6.099474525451661
+            "max": 5.513049125671387,
+            "median": 5.307352304458618,
+            "min": 5.194536209106445,
+            "p90": 5.421730995178223
           },
           "units": "K/km"
         },
@@ -931,10 +931,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 33.14532376905805,
-            "median": 9.72739696161355,
-            "min": 2.8068753080702513,
-            "p90": 21.26159971751905
+            "max": 15.522317751527412,
+            "median": 3.3589769301451997,
+            "min": 1.1220406380908001,
+            "p90": 6.714381634890386
           },
           "units": "mph"
         },
@@ -946,10 +946,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.337827682495117,
-            "median": 0.5253276824951172,
-            "min": 0.08782768249511719,
-            "p90": 1.7128276824951172
+            "max": 1.2706513404846191,
+            "median": 0.08315134048461914,
+            "min": 0.08315134048461914,
+            "p90": 0.27065134048461914
           },
           "units": "m/s"
         },
@@ -961,7 +961,7 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 14.875,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -976,10 +976,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.5,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 1.6187500000000021
+            "max": 0.625,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -991,10 +991,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 1.0087435264287032,
-            "median": 0.7872868335153174,
-            "min": 0.33945215029979314,
-            "p90": 0.920160849263349
+            "max": 0.9372488907941683,
+            "median": 0.8191386545736958,
+            "min": 0.5484693632351132,
+            "p90": 0.8875441663847197
           },
           "units": "in"
         },
@@ -1002,10 +1002,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 45.39132777058483,
-            "median": 32.20226449955338,
-            "min": 5.642749261661299,
-            "p90": 41.51768397029353
+            "max": 25.272686854461085,
+            "median": 20.82277486782054,
+            "min": 12.992076318743331,
+            "p90": 24.152334410656177
           },
           "units": "percent"
         },
@@ -1017,10 +1017,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 320.79998779296875,
-            "median": 176.0,
-            "min": 93.4000015258789,
-            "p90": 242.10000610351562
+            "max": 49.099998474121094,
+            "median": 6.300000190734863,
+            "min": -37.29999923706055,
+            "p90": 27.62000064849856
           },
           "units": "m^2/s^2"
         },
@@ -1032,10 +1032,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 380.20001220703125,
-            "median": 176.89999389648438,
-            "min": 66.0,
-            "p90": 241.82999420166018
+            "max": 141.0,
+            "median": 68.0,
+            "min": -25.0,
+            "p90": 91.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -1047,10 +1047,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 57.23851530912007,
-            "median": 26.41073703424537,
-            "min": 2.4335750871329256,
-            "p90": 47.0045317729712
+            "max": 23.57477619550698,
+            "median": 4.980243801131956,
+            "min": 1.0656052900367567,
+            "p90": 14.892667211970847
           },
           "units": "mph"
         },
@@ -1085,7 +1085,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T14:00:00+00:00"
+      "valid_time": "2026-10-13T14:00:00+00:00"
     },
     {
       "forecast_hour": 3,
@@ -1094,10 +1094,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 40.003076046127724,
-            "median": 27.559520018997524,
-            "min": 4.2093594828015926,
-            "p90": 31.843417159395266
+            "max": 22.552906540318286,
+            "median": 17.899660926926963,
+            "min": 7.44677201778629,
+            "p90": 20.203906398505932
           },
           "units": "kt"
         },
@@ -1109,7 +1109,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1124,7 +1124,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 20.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1154,7 +1154,7 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 10.0,
+            "max": 20.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1171,7 +1171,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": -1.0,
+            "min": 0.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1186,7 +1186,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -303.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1216,7 +1216,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -303.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1240,10 +1240,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 35.802276611328125,
-            "median": 17.239776611328125,
-            "min": 9.864776611328125,
-            "p90": 29.15852661132813
+            "max": 23.504913330078125,
+            "median": 19.692413330078125,
+            "min": 18.004913330078125,
+            "p90": 21.129913330078125
           },
           "units": "K"
         },
@@ -1251,10 +1251,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 5.640454234393341,
-            "median": 5.097183272042324,
-            "min": 3.305349406319692,
-            "p90": 5.342901459701867
+            "max": 6.163503387260239,
+            "median": 5.12456308299312,
+            "min": 4.469457175589715,
+            "p90": 5.745251045992789
           },
           "units": "K/km"
         },
@@ -1262,10 +1262,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.661989688873291,
-            "median": 4.987149477005005,
-            "min": 4.38261604309082,
-            "p90": 6.174658203125
+            "max": 5.554879188537598,
+            "median": 5.370973110198975,
+            "min": 5.140669822692871,
+            "p90": 5.485498714447021
           },
           "units": "K/km"
         },
@@ -1292,10 +1292,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 33.72014379535472,
-            "median": 10.092504210530121,
-            "min": 1.4243766121464947,
-            "p90": 21.10941544889805
+            "max": 15.650540270289934,
+            "median": 3.906625003667921,
+            "min": 1.2502631568533216,
+            "p90": 6.968431820080972
           },
           "units": "mph"
         },
@@ -1307,10 +1307,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.3383378982543945,
-            "median": 0.46333789825439453,
-            "min": 0.08833789825439453,
-            "p90": 1.4633378982543945
+            "max": 1.2705802917480469,
+            "median": 0.14558029174804688,
+            "min": 0.08308029174804688,
+            "p90": 0.3330802917480469
           },
           "units": "m/s"
         },
@@ -1337,10 +1337,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.5,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 1.6875
+            "max": 0.875,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -1352,10 +1352,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.9657645037793737,
-            "median": 0.7098589919683501,
-            "min": 0.3063157224279689,
-            "p90": 0.8574967872439407
+            "max": 0.9564838259238896,
+            "median": 0.8629798889160156,
+            "min": 0.5627830009760819,
+            "p90": 0.9220350070262519
           },
           "units": "in"
         },
@@ -1363,10 +1363,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 49.41422381280163,
-            "median": 28.3413326510071,
-            "min": 6.201637287916704,
-            "p90": 43.58238503324318
+            "max": 26.477628805891094,
+            "median": 23.26181652293331,
+            "min": 17.04243867310818,
+            "p90": 25.059374748440447
           },
           "units": "percent"
         },
@@ -1378,10 +1378,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 324.79998779296875,
-            "median": 132.8499984741211,
-            "min": 70.9000015258789,
-            "p90": 214.09000549316406
+            "max": 62.0,
+            "median": 12.849999904632568,
+            "min": -24.100000381469727,
+            "p90": 40.39000129699707
           },
           "units": "m^2/s^2"
         },
@@ -1393,10 +1393,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 437.3999938964844,
-            "median": 139.10000610351562,
-            "min": 65.4000015258789,
-            "p90": 227.46999969482422
+            "max": 142.0,
+            "median": 72.0,
+            "min": -37.0,
+            "p90": 102.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -1408,10 +1408,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 57.888257136580364,
-            "median": 25.103159606158066,
-            "min": 5.879488346315568,
-            "p90": 45.16568197552096
+            "max": 22.985259805650625,
+            "median": 6.6276626366756535,
+            "min": 2.2935985708202535,
+            "p90": 14.303150822114489
           },
           "units": "mph"
         },
@@ -1423,7 +1423,7 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.10000000149011612,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1446,7 +1446,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T15:00:00+00:00"
+      "valid_time": "2026-10-13T15:00:00+00:00"
     },
     {
       "forecast_hour": 4,
@@ -1455,10 +1455,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 37.32037885454903,
-            "median": 23.68062266427433,
-            "min": 1.2901383024739677,
-            "p90": 28.272774237267292
+            "max": 23.82334232011416,
+            "median": 19.720807546627505,
+            "min": 11.508606496308097,
+            "p90": 21.69731262762861
           },
           "units": "kt"
         },
@@ -1470,7 +1470,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 60.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1485,10 +1485,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 170.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 10.0
           },
           "units": "J/kg"
         },
@@ -1515,10 +1515,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 170.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 10.0
           },
           "units": "J/kg"
         },
@@ -1532,7 +1532,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -387.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1547,7 +1547,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -412.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1577,7 +1577,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -412.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1601,10 +1601,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 36.484405517578125,
-            "median": 21.859405517578125,
-            "min": 11.484405517578125,
-            "p90": 31.484405517578125
+            "max": 21.189605712890625,
+            "median": 19.439605712890625,
+            "min": 16.502105712890625,
+            "p90": 20.439605712890625
           },
           "units": "K"
         },
@@ -1612,10 +1612,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 5.834814049530375,
-            "median": 5.345205342347677,
-            "min": 3.5908169126768144,
-            "p90": 5.655021052739983
+            "max": 6.539345227948938,
+            "median": 5.614550738904322,
+            "min": 5.14254791549602,
+            "p90": 6.0532892127302365
           },
           "units": "K/km"
         },
@@ -1623,10 +1623,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.4581756591796875,
-            "median": 4.9908363819122314,
-            "min": 4.3138556480407715,
-            "p90": 5.987683200836183
+            "max": 5.713896751403809,
+            "median": 5.529830455780029,
+            "min": 5.136076927185059,
+            "p90": 5.6458409309387205
           },
           "units": "K/km"
         },
@@ -1653,10 +1653,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 34.43903255735706,
-            "median": 10.391968484426608,
-            "min": 2.00345698922723,
-            "p90": 20.863625434951928
+            "max": 14.194049362463858,
+            "median": 4.1278360482190575,
+            "min": 1.331665683151058,
+            "p90": 6.756236191382987
           },
           "units": "mph"
         },
@@ -1668,10 +1668,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.3410043716430664,
-            "median": 0.4035043716430664,
-            "min": 0.0910043716430664,
-            "p90": 1.2160043716430664
+            "max": 1.1875991821289062,
+            "median": 0.12509918212890625,
+            "min": 0.06259918212890625,
+            "p90": 0.31259918212890625
           },
           "units": "m/s"
         },
@@ -1698,10 +1698,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.4375,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 1.625
+            "max": 0.875,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.3125
           },
           "units": "m/s"
         },
@@ -1713,10 +1713,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.9372584275373324,
-            "median": 0.6321403173011119,
-            "min": 0.2728883487971749,
-            "p90": 0.7989710259625293
+            "max": 0.9751750165083277,
+            "median": 0.8865923393429733,
+            "min": 0.6306868275319497,
+            "p90": 0.9407261976106899
           },
           "units": "in"
         },
@@ -1724,10 +1724,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 43.78583369717661,
-            "median": 19.680890020648704,
-            "min": 5.846472477763498,
-            "p90": 28.760827281795052
+            "max": 29.85271561334052,
+            "median": 23.808972238894235,
+            "min": 20.768939274107233,
+            "p90": 27.44737402086265
           },
           "units": "percent"
         },
@@ -1739,10 +1739,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 218.39999389648438,
-            "median": 91.70000076293945,
-            "min": -14.100000381469727,
-            "p90": 141.6699966430664
+            "max": 72.0999984741211,
+            "median": 18.25,
+            "min": -10.300000190734863,
+            "p90": 46.19000053405762
           },
           "units": "m^2/s^2"
         },
@@ -1754,10 +1754,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 341.5,
-            "median": 116.0,
-            "min": 7.400000095367432,
-            "p90": 180.32999420166018
+            "max": 117.0,
+            "median": 74.0,
+            "min": -18.0,
+            "p90": 99.0
           },
           "units": "m^2/s^2"
         },
@@ -1769,10 +1769,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 59.088704068914964,
-            "median": 23.297723396044564,
-            "min": 8.19840235802302,
-            "p90": 44.255020282229225
+            "max": 16.83977986542598,
+            "median": 6.284237270621454,
+            "min": 2.439503018652955,
+            "p90": 10.548396544022982
           },
           "units": "mph"
         },
@@ -1807,7 +1807,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T16:00:00+00:00"
+      "valid_time": "2026-10-13T16:00:00+00:00"
     },
     {
       "forecast_hour": 5,
@@ -1816,10 +1816,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 36.8043184905814,
-            "median": 22.734493958591486,
-            "min": 5.247119116010208,
-            "p90": 28.668460374296313
+            "max": 25.106209208860413,
+            "median": 21.523149392188092,
+            "min": 14.269820560921504,
+            "p90": 23.623390048518907
           },
           "units": "kt"
         },
@@ -1831,10 +1831,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 160.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 40.0
           },
           "units": "J/kg"
         },
@@ -1846,10 +1846,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 240.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 80.0
           },
           "units": "J/kg"
         },
@@ -1861,7 +1861,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 30.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -1876,10 +1876,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 240.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 80.0
           },
           "units": "J/kg"
         },
@@ -1893,7 +1893,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -361.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1907,8 +1907,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -31.0,
+            "min": -393.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1923,7 +1923,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -332.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1937,8 +1937,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -31.0,
+            "min": -393.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -1962,10 +1962,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 39.78631591796875,
-            "median": 25.59881591796875,
-            "min": 16.34881591796875,
-            "p90": 32.58006591796875
+            "max": 20.768890380859375,
+            "median": 18.768890380859375,
+            "min": 15.581390380859375,
+            "p90": 20.206390380859375
           },
           "units": "K"
         },
@@ -1973,10 +1973,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 6.022081312828884,
-            "median": 5.597713659933712,
-            "min": 3.8956127470015267,
-            "p90": 5.849602373205679
+            "max": 6.66960527391645,
+            "median": 5.79258607720638,
+            "min": 5.333090707179887,
+            "p90": 6.155777865156414
           },
           "units": "K/km"
         },
@@ -1984,10 +1984,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.5415215492248535,
-            "median": 5.063900947570801,
-            "min": 4.5005083084106445,
-            "p90": 5.988314056396485
+            "max": 5.958783149719238,
+            "median": 5.818764925003052,
+            "min": 5.314798831939697,
+            "p90": 5.9344690322875975
           },
           "units": "K/km"
         },
@@ -2014,10 +2014,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 33.313309028477995,
-            "median": 9.825477961906799,
-            "min": 1.7165833698824273,
-            "p90": 19.0528401666312
+            "max": 9.908313271652899,
+            "median": 5.015015132783899,
+            "min": 1.6596109613658856,
+            "p90": 6.273291797064499
           },
           "units": "mph"
         },
@@ -2029,10 +2029,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.161770820617676,
-            "median": 0.4117708206176758,
-            "min": 0.09927082061767578,
-            "p90": 0.9680208206176779
+            "max": 0.6724948883056641,
+            "median": 0.17249488830566406,
+            "min": 0.04749488830566406,
+            "p90": 0.29749488830566406
           },
           "units": "m/s"
         },
@@ -2059,10 +2059,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.6875,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 1.3125
+            "max": 0.6875,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -2074,10 +2074,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.8466784409650667,
-            "median": 0.5956941889965628,
-            "min": 0.2462847214045487,
-            "p90": 0.7187256850595549
+            "max": 1.0528571962371587,
+            "median": 0.9199831804891271,
+            "min": 0.703447747418261,
+            "p90": 0.983959558441883
           },
           "units": "in"
         },
@@ -2085,10 +2085,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 30.242476088273946,
-            "median": 14.467183015462846,
-            "min": 4.338499946393426,
-            "p90": 22.121461599506734
+            "max": 32.215822761324944,
+            "median": 25.293683285566775,
+            "min": 21.64695121975454,
+            "p90": 28.88616523908399
           },
           "units": "percent"
         },
@@ -2100,10 +2100,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 172.60000610351562,
-            "median": 54.70000076293945,
-            "min": -33.5,
-            "p90": 88.74000244140628
+            "max": 71.0,
+            "median": 25.0,
+            "min": -2.0,
+            "p90": 48.0
           },
           "units": "m^2/s^2"
         },
@@ -2115,10 +2115,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 291.0,
-            "median": 73.9000015258789,
-            "min": -19.100000381469727,
-            "p90": 118.48000030517579
+            "max": 116.0,
+            "median": 81.0,
+            "min": 1.0,
+            "p90": 104.0
           },
           "units": "m^2/s^2"
         },
@@ -2130,10 +2130,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 57.94615086778704,
-            "median": 21.665842514338433,
-            "min": 6.776234253696988,
-            "p90": 37.93955190572551
+            "max": 13.717869263336997,
+            "median": 7.007060387173797,
+            "min": 3.3720391792489837,
+            "p90": 9.383805197481596
           },
           "units": "mph"
         },
@@ -2168,7 +2168,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T17:00:00+00:00"
+      "valid_time": "2026-10-13T17:00:00+00:00"
     },
     {
       "forecast_hour": 6,
@@ -2177,10 +2177,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 37.2003958693065,
-            "median": 24.79533650575175,
-            "min": 10.416634718256837,
-            "p90": 29.285461835087126
+            "max": 27.2394522649098,
+            "median": 23.713184278792426,
+            "min": 16.290884131890962,
+            "p90": 25.55747856116877
           },
           "units": "kt"
         },
@@ -2192,10 +2192,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 280.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 70.0
           },
           "units": "J/kg"
         },
@@ -2207,10 +2207,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
-            "median": 0.0,
+            "max": 360.0,
+            "median": 10.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -2222,10 +2222,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 80.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 10.0
           },
           "units": "J/kg"
         },
@@ -2237,10 +2237,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
-            "median": 0.0,
+            "max": 360.0,
+            "median": 10.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -2254,7 +2254,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -360.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2268,8 +2268,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -9.5,
+            "min": -367.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2284,7 +2284,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -373.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2298,8 +2298,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -9.5,
+            "min": -367.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2323,10 +2323,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 39.581451416015625,
-            "median": 27.112701416015625,
-            "min": 18.268951416015625,
-            "p90": 32.94395141601563
+            "max": 20.440185546875,
+            "median": 18.440185546875,
+            "min": 16.752685546875,
+            "p90": 19.690185546875
           },
           "units": "K"
         },
@@ -2334,10 +2334,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 6.1411952078292416,
-            "median": 5.700030930645539,
-            "min": 4.2547064726580475,
-            "p90": 5.957893959610139
+            "max": 6.630041379158683,
+            "median": 5.850390482446679,
+            "min": 5.434747495358181,
+            "p90": 6.172082117049644
           },
           "units": "K/km"
         },
@@ -2345,10 +2345,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.502503871917725,
-            "median": 5.114964485168457,
-            "min": 4.5040435791015625,
-            "p90": 5.903001403808594
+            "max": 6.284461498260498,
+            "median": 6.125068426132202,
+            "min": 5.709322452545166,
+            "p90": 6.239782285690308
           },
           "units": "K/km"
         },
@@ -2375,10 +2375,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 32.45134991923651,
-            "median": 9.382943340771172,
-            "min": 2.112900391594373,
-            "p90": 16.093752216934373
+            "max": 8.845698347071185,
+            "median": 5.490293908989585,
+            "min": 1.855272701064772,
+            "p90": 6.748570573270185
           },
           "units": "mph"
         },
@@ -2390,10 +2390,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.6499557495117188,
-            "median": 0.39995574951171875,
-            "min": 0.08745574951171875,
-            "p90": 0.8999557495117188
+            "max": 0.48653316497802734,
+            "median": 0.17403316497802734,
+            "min": 0.049033164978027344,
+            "p90": 0.23653316497802734
           },
           "units": "m/s"
         },
@@ -2420,10 +2420,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.875,
-            "median": 0.4375,
+            "max": 0.5625,
+            "median": 0.125,
             "min": 0.0625,
-            "p90": 1.125
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -2435,10 +2435,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.8102373438557302,
-            "median": 0.5740168714147853,
-            "min": 0.22952868243840735,
-            "p90": 0.6970483674777774
+            "max": 1.1352238692636565,
+            "median": 0.9629797747754675,
+            "min": 0.7070742629644439,
+            "p90": 1.0564837117833414
           },
           "units": "in"
         },
@@ -2446,10 +2446,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 26.0581158916175,
-            "median": 12.826460537470556,
-            "min": 4.398058058839889,
-            "p90": 17.389707143726582
+            "max": 29.60586879326033,
+            "median": 26.079873496540586,
+            "min": 22.30732523356003,
+            "p90": 28.233072503583873
           },
           "units": "percent"
         },
@@ -2461,10 +2461,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 108.30000305175781,
-            "median": 28.200000762939453,
-            "min": -59.900001525878906,
-            "p90": 52.38000144958497
+            "max": 73.19999694824219,
+            "median": 34.14999961853027,
+            "min": 6.5,
+            "p90": 52.5
           },
           "units": "m^2/s^2"
         },
@@ -2476,10 +2476,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 186.3000030517578,
-            "median": 49.95000076293945,
-            "min": -55.70000076293945,
-            "p90": 78.94000015258791
+            "max": 121.0,
+            "median": 84.0,
+            "min": 12.0,
+            "p90": 105.0
           },
           "units": "m^2/s^2"
         },
@@ -2491,10 +2491,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 53.09088535622855,
-            "median": 18.418372829385355,
-            "min": 4.9967561437132995,
-            "p90": 29.980537288941548
+            "max": 12.092288042189981,
+            "median": 7.478606406500609,
+            "min": 2.86492530413841,
+            "p90": 9.715543231882181
           },
           "units": "mph"
         },
@@ -2529,7 +2529,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T18:00:00+00:00"
+      "valid_time": "2026-10-13T18:00:00+00:00"
     },
     {
       "forecast_hour": 7,
@@ -2538,10 +2538,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 37.20265191707694,
-            "median": 27.258727003265008,
-            "min": 14.549045099272721,
-            "p90": 30.417716430879533
+            "max": 27.189246557267843,
+            "median": 24.46717215192755,
+            "min": 15.51117077272934,
+            "p90": 25.912444616194207
           },
           "units": "kt"
         },
@@ -2553,10 +2553,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 370.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 100.0
           },
           "units": "J/kg"
         },
@@ -2568,10 +2568,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 460.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 160.0
           },
           "units": "J/kg"
         },
@@ -2583,10 +2583,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 230.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 30.0
           },
           "units": "J/kg"
         },
@@ -2598,10 +2598,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 460.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 160.0
           },
           "units": "J/kg"
         },
@@ -2615,7 +2615,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -333.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2630,7 +2630,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -346.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2645,7 +2645,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -341.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2660,7 +2660,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -346.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2684,10 +2684,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 39.878326416015625,
-            "median": 28.940826416015625,
-            "min": 21.378326416015625,
-            "p90": 34.565826416015625
+            "max": 19.57421875,
+            "median": 18.26171875,
+            "min": 16.32421875,
+            "p90": 19.07421875
           },
           "units": "K"
         },
@@ -2695,10 +2695,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 6.219122128945211,
-            "median": 5.788776303131792,
-            "min": 4.411125323854246,
-            "p90": 5.993718587367263
+            "max": 6.586511237525012,
+            "median": 5.872554319187495,
+            "min": 5.457701874608044,
+            "p90": 6.138845570113991
           },
           "units": "K/km"
         },
@@ -2706,10 +2706,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.400336265563965,
-            "median": 5.200093746185303,
-            "min": 4.590511798858643,
-            "p90": 5.8719575881958015
+            "max": 6.49408483505249,
+            "median": 6.308647632598877,
+            "min": 6.080414772033691,
+            "p90": 6.4479660987854
           },
           "units": "K/km"
         },
@@ -2736,10 +2736,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 29.357508326225275,
-            "median": 8.386230054888104,
-            "min": 0.9763784541261126,
-            "p90": 13.419336178683333
+            "max": 8.730431945305162,
+            "median": 5.934261580237162,
+            "min": 2.019623202473755,
+            "p90": 7.052729726264362
           },
           "units": "mph"
         },
@@ -2751,10 +2751,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.0631866455078125,
-            "median": 0.3756866455078125,
-            "min": 0.1256866455078125,
-            "p90": 0.9381866455078125
+            "max": 0.5119128227233887,
+            "median": 0.13691282272338867,
+            "min": 0.011912822723388672,
+            "p90": 0.26191282272338867
           },
           "units": "m/s"
         },
@@ -2781,10 +2781,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 3.5625,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 1.0625
+            "max": 0.5625,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -2796,10 +2796,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.7900847787932148,
-            "median": 0.5587856037410225,
-            "min": 0.2142974147646446,
-            "p90": 0.6572107630451833
+            "max": 1.1632247233954,
+            "median": 1.0008231485922505,
+            "min": 0.666177479300912,
+            "p90": 1.0992483454426443
           },
           "units": "in"
         },
@@ -2807,10 +2807,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 20.36938185720167,
-            "median": 10.95184950377971,
-            "min": 4.261131427334847,
-            "p90": 13.507019689849855
+            "max": 30.871614160825633,
+            "median": 26.633663856524485,
+            "min": 24.042757152072404,
+            "p90": 28.919765913394105
           },
           "units": "percent"
         },
@@ -2822,10 +2822,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 82.9000015258789,
-            "median": 14.100000381469727,
-            "min": -57.70000076293945,
-            "p90": 32.89000129699707
+            "max": 81.0,
+            "median": 41.0,
+            "min": 12.0,
+            "p90": 58.0
           },
           "units": "m^2/s^2"
         },
@@ -2837,10 +2837,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 99.39999389648438,
-            "median": 32.749996185302734,
-            "min": -40.10000228881836,
-            "p90": 54.999996185302734
+            "max": 124.0,
+            "median": 88.0,
+            "min": 29.0,
+            "p90": 107.0
           },
           "units": "m^2/s^2"
         },
@@ -2852,10 +2852,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 45.486058007843035,
-            "median": 16.545695796043578,
-            "min": 3.1240777770535946,
-            "p90": 26.332291007127235
+            "max": 12.911424179459424,
+            "median": 8.157935092170996,
+            "min": 4.662722135835996,
+            "p90": 10.674487887405023
           },
           "units": "mph"
         },
@@ -2890,7 +2890,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T19:00:00+00:00"
+      "valid_time": "2026-10-13T19:00:00+00:00"
     },
     {
       "forecast_hour": 8,
@@ -2899,10 +2899,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 33.44980656581318,
-            "median": 26.641850563046944,
-            "min": 15.321918696439859,
-            "p90": 28.90640316074339
+            "max": 26.68609538638518,
+            "median": 23.063257375623138,
+            "min": 13.50354337684031,
+            "p90": 25.93186003545744
           },
           "units": "kt"
         },
@@ -2914,10 +2914,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 300.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 70.0
           },
           "units": "J/kg"
         },
@@ -2929,10 +2929,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 390.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -2944,10 +2944,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 160.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 20.0
           },
           "units": "J/kg"
         },
@@ -2959,10 +2959,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 390.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -2976,7 +2976,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -343.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -2991,7 +2991,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -320.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3006,7 +3006,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -330.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3021,7 +3021,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -320.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3045,10 +3045,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 42.05316162109375,
-            "median": 30.92816162109375,
-            "min": 25.17816162109375,
-            "p90": 36.22191162109375
+            "max": 19.385467529296875,
+            "median": 17.697967529296875,
+            "min": 15.010467529296875,
+            "p90": 18.760467529296875
           },
           "units": "K"
         },
@@ -3056,10 +3056,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 6.226550622816433,
-            "median": 5.763456103194652,
-            "min": 4.6519687628984725,
-            "p90": 5.964783444573427
+            "max": 6.353409051430845,
+            "median": 5.669882313648296,
+            "min": 5.28934081596545,
+            "p90": 6.013892519841667
           },
           "units": "K/km"
         },
@@ -3067,10 +3067,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.3147292137146,
-            "median": 5.179202079772949,
-            "min": 4.779256343841553,
-            "p90": 5.831373882293701
+            "max": 6.599914073944092,
+            "median": 6.4613518714904785,
+            "min": 6.302140235900879,
+            "p90": 6.5764837741851805
           },
           "units": "K/km"
         },
@@ -3097,10 +3097,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 23.802605030275508,
-            "median": 7.72462543113451,
-            "min": 1.1536252065565031,
-            "p90": 12.478115051750109
+            "max": 8.640577516644521,
+            "median": 6.263832706336722,
+            "min": 1.6501518706381089,
+            "p90": 7.382300852363922
           },
           "units": "mph"
         },
@@ -3112,10 +3112,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.0035085678100586,
-            "median": 0.3785085678100586,
-            "min": 0.1285085678100586,
-            "p90": 0.9410085678100586
+            "max": 0.4182300567626953,
+            "median": 0.1682300567626953,
+            "min": 0.04323005676269531,
+            "p90": 0.2932300567626953
           },
           "units": "m/s"
         },
@@ -3142,10 +3142,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.8125,
-            "median": 0.4375,
-            "min": 0.125,
-            "p90": 0.9375
+            "max": 0.5625,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.3125
           },
           "units": "m/s"
         },
@@ -3157,10 +3157,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.7363642294575848,
-            "median": 0.5690414323581485,
-            "min": 0.2836083614920068,
-            "p90": 0.6527028121347502
+            "max": 1.1524192930206538,
+            "median": 1.0047814977450633,
+            "min": 0.6652145686112051,
+            "p90": 1.0982854347529374
           },
           "units": "in"
         },
@@ -3168,10 +3168,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 14.991115017621132,
-            "median": 9.192042652578094,
-            "min": 3.440192740335732,
-            "p90": 11.623073567806015
+            "max": 34.36247432526395,
+            "median": 27.893130117431113,
+            "min": 24.3675133552382,
+            "p90": 32.134586412411906
           },
           "units": "percent"
         },
@@ -3183,10 +3183,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 69.5999984741211,
-            "median": 10.199996948242188,
-            "min": -28.500003814697266,
-            "p90": 30.079996681213387
+            "max": 93.5,
+            "median": 45.80000114440918,
+            "min": 16.700000762939453,
+            "p90": 62.58999862670899
           },
           "units": "m^2/s^2"
         },
@@ -3198,10 +3198,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 81.5,
-            "median": 26.949997901916504,
-            "min": -13.20000171661377,
-            "p90": 50.67999725341797
+            "max": 124.0,
+            "median": 89.0,
+            "min": 43.0,
+            "p90": 112.0
           },
           "units": "m^2/s^2"
         },
@@ -3213,10 +3213,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 32.18215196236762,
-            "median": 15.54493829021302,
-            "min": 1.5640868648683999,
-            "p90": 23.080617424071285
+            "max": 13.26950430955387,
+            "median": 8.935440777025644,
+            "min": 4.461568192916843,
+            "p90": 11.03256801749947
           },
           "units": "mph"
         },
@@ -3251,7 +3251,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T20:00:00+00:00"
+      "valid_time": "2026-10-13T20:00:00+00:00"
     },
     {
       "forecast_hour": 9,
@@ -3260,10 +3260,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 33.93026451256939,
-            "median": 26.540223296013938,
-            "min": 18.264258284482093,
-            "p90": 29.740759333139977
+            "max": 25.672172572631244,
+            "median": 22.199088733538858,
+            "min": 15.525178336048645,
+            "p90": 23.89662597616626
           },
           "units": "kt"
         },
@@ -3275,10 +3275,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 230.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 59.00000000000034
           },
           "units": "J/kg"
         },
@@ -3290,10 +3290,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
-            "median": 0.0,
+            "max": 330.0,
+            "median": 10.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -3305,7 +3305,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 120.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -3320,10 +3320,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
-            "median": 0.0,
+            "max": 330.0,
+            "median": 10.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -3337,7 +3337,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -316.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3351,8 +3351,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -144.0,
+            "min": -326.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3367,7 +3367,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -308.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3381,8 +3381,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": 0.0,
+            "median": -142.0,
+            "min": -326.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3406,10 +3406,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 44.4649658203125,
-            "median": 33.2149658203125,
-            "min": 27.8399658203125,
-            "p90": 37.9649658203125
+            "max": 18.618560791015625,
+            "median": 16.806060791015625,
+            "min": 14.306060791015625,
+            "p90": 18.118560791015625
           },
           "units": "K"
         },
@@ -3417,10 +3417,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 6.041716402753518,
-            "median": 5.625635816182998,
-            "min": 4.57550036894916,
-            "p90": 5.811787099944829
+            "max": 6.102947308882942,
+            "median": 5.391022671675236,
+            "min": 5.061562351583253,
+            "p90": 5.685171487822856
           },
           "units": "K/km"
         },
@@ -3428,10 +3428,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.279327392578125,
-            "median": 5.223644733428955,
-            "min": 4.868916988372803,
-            "p90": 5.800256538391113
+            "max": 6.689216136932373,
+            "median": 6.482440233230591,
+            "min": 6.410654544830322,
+            "p90": 6.642436981201172
           },
           "units": "K/km"
         },
@@ -3458,10 +3458,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 15.429797220332484,
-            "median": 6.761669088621685,
-            "min": 1.5887541799094715,
-            "p90": 10.256882044956685
+            "max": 8.652881907836479,
+            "median": 6.136328579275279,
+            "min": 1.1032218554869826,
+            "p90": 7.254796725302478
           },
           "units": "mph"
         },
@@ -3473,10 +3473,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.086848258972168,
-            "median": 0.39934825897216797,
-            "min": 0.08684825897216797,
-            "p90": 0.899348258972168
+            "max": 0.4482078552246094,
+            "median": 0.19820785522460938,
+            "min": 0.010707855224609375,
+            "p90": 0.3232078552246094
           },
           "units": "m/s"
         },
@@ -3503,10 +3503,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.25,
-            "median": 0.375,
-            "min": 0.125,
-            "p90": 0.875
+            "max": 0.4375,
+            "median": 0.1875,
+            "min": 0.0625,
+            "p90": 0.3125
           },
           "units": "m/s"
         },
@@ -3518,10 +3518,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.7257681568776528,
-            "median": 0.597815400972141,
-            "min": 0.30746107026347963,
-            "p90": 0.6568705190823773
+            "max": 1.1602619501549427,
+            "median": 1.0077028950368325,
+            "min": 0.6140020700890249,
+            "p90": 1.1012068320447066
           },
           "units": "in"
         },
@@ -3529,10 +3529,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 11.971172443564003,
-            "median": 7.512134094083542,
-            "min": 2.7083884386086696,
-            "p90": 10.517276534357748
+            "max": 36.27001356751788,
+            "median": 29.98951283772731,
+            "min": 26.021421291496384,
+            "p90": 34.79880809008801
           },
           "units": "percent"
         },
@@ -3544,10 +3544,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 57.39999771118164,
-            "median": 21.19999885559082,
-            "min": -16.60000228881836,
-            "p90": 40.859997940063494
+            "max": 98.30000305175781,
+            "median": 56.45000076293945,
+            "min": 24.200000762939453,
+            "p90": 71.47000045776369
           },
           "units": "m^2/s^2"
         },
@@ -3559,10 +3559,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 69.30000305175781,
-            "median": 31.649999618530273,
-            "min": -19.899999618530273,
-            "p90": 52.990000152587896
+            "max": 137.0,
+            "median": 94.0,
+            "min": 48.0,
+            "p90": 115.0
           },
           "units": "m^2/s^2"
         },
@@ -3574,10 +3574,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 27.3291968241195,
-            "median": 13.068729028927045,
-            "min": 3.14232396627206,
-            "p90": 20.6183879479563
+            "max": 14.40598504749807,
+            "median": 9.512686908629071,
+            "min": 4.899005806266872,
+            "p90": 11.749623200683471
           },
           "units": "mph"
         },
@@ -3612,7 +3612,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T21:00:00+00:00"
+      "valid_time": "2026-10-13T21:00:00+00:00"
     },
     {
       "forecast_hour": 10,
@@ -3621,10 +3621,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 36.24476050553562,
-            "median": 30.449256381802208,
-            "min": 20.409398134346322,
-            "p90": 33.765976907819095
+            "max": 27.8381349701974,
+            "median": 23.24625985756707,
+            "min": 16.562082455414494,
+            "p90": 24.438423975160738
           },
           "units": "kt"
         },
@@ -3636,10 +3636,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 280.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 120.0
           },
           "units": "J/kg"
         },
@@ -3651,10 +3651,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 200.0,
-            "median": 0.0,
+            "max": 420.0,
+            "median": 120.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 280.0
           },
           "units": "J/kg"
         },
@@ -3666,10 +3666,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 140.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 40.0
           },
           "units": "J/kg"
         },
@@ -3681,10 +3681,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 200.0,
-            "median": 0.0,
+            "max": 420.0,
+            "median": 120.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 280.0
           },
           "units": "J/kg"
         },
@@ -3698,7 +3698,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -340.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3712,9 +3712,9 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": -197.0,
-            "p90": 0.0
+            "median": -172.5,
+            "min": -345.0,
+            "p90": -55.099999999999966
           },
           "units": "J/kg"
         },
@@ -3728,7 +3728,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -335.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -3742,9 +3742,9 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": -197.0,
-            "p90": 0.0
+            "median": -172.5,
+            "min": -345.0,
+            "p90": -55.099999999999966
           },
           "units": "J/kg"
         },
@@ -3767,10 +3767,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 41.219085693359375,
-            "median": 35.906585693359375,
-            "min": 30.094085693359375,
-            "p90": 37.83783569335938
+            "max": 18.362518310546875,
+            "median": 15.737518310546875,
+            "min": 13.237518310546875,
+            "p90": 17.175018310546875
           },
           "units": "K"
         },
@@ -3778,10 +3778,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 5.570737000902834,
-            "median": 5.211538582840689,
-            "min": 4.163325261032696,
-            "p90": 5.379766843230277
+            "max": 5.613257201764611,
+            "median": 4.906941639739776,
+            "min": 4.583440118882152,
+            "p90": 5.181720385261283
           },
           "units": "K/km"
         },
@@ -3789,10 +3789,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.400025844573975,
-            "median": 5.461282253265381,
-            "min": 5.098560333251953,
-            "p90": 5.994152355194092
+            "max": 6.759261608123779,
+            "median": 6.595244407653809,
+            "min": 6.499719619750977,
+            "p90": 6.710659503936768
           },
           "units": "K/km"
         },
@@ -3819,10 +3819,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 13.499807782401833,
-            "median": 5.111297220525006,
-            "min": 0.9170416062571093,
-            "p90": 8.187084622099805
+            "max": 10.466390024702624,
+            "median": 5.712900404087025,
+            "min": 0.9594110501350114,
+            "p90": 6.691560031860825
           },
           "units": "mph"
         },
@@ -3834,10 +3834,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.3748359680175781,
-            "median": 0.4373359680175781,
-            "min": 0.062335968017578125,
-            "p90": 0.8685859680175803
+            "max": 0.5399007797241211,
+            "median": 0.1649007797241211,
+            "min": 0.039900779724121094,
+            "p90": 0.2899007797241211
           },
           "units": "m/s"
         },
@@ -3864,10 +3864,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 2.0625,
-            "median": 0.375,
-            "min": 0.125,
-            "p90": 1.0
+            "max": 0.5,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -3879,10 +3879,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.7288570103682871,
-            "median": 0.5713766954076571,
-            "min": 0.32039244343915324,
-            "p90": 0.620589293832854
+            "max": 1.1408806598092627,
+            "median": 1.0080066440612312,
+            "min": 0.5700145180769792,
+            "p90": 1.0965893212265856
           },
           "units": "in"
         },
@@ -3890,10 +3890,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 9.885106480916473,
-            "median": 5.892184958498202,
-            "min": 3.7105237554008146,
-            "p90": 8.047891148944057
+            "max": 39.24907878521858,
+            "median": 32.51112100042421,
+            "min": 26.598610527920012,
+            "p90": 36.990693585233416
           },
           "units": "percent"
         },
@@ -3905,10 +3905,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 62.400001525878906,
-            "median": 26.25,
-            "min": -2.200000047683716,
-            "p90": 44.65000076293947
+            "max": 123.0,
+            "median": 62.0,
+            "min": 25.0,
+            "p90": 80.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -3920,10 +3920,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 73.0,
-            "median": 35.5,
-            "min": -15.0,
-            "p90": 55.0
+            "max": 148.0,
+            "median": 106.0,
+            "min": 52.0,
+            "p90": 130.0
           },
           "units": "m^2/s^2"
         },
@@ -3935,10 +3935,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 22.59019023619467,
-            "median": 7.3510617465740715,
-            "min": 0.36063576723817553,
-            "p90": 15.306166435192536
+            "max": 15.177422535786377,
+            "median": 10.563741433424177,
+            "min": 2.3150391231371636,
+            "p90": 12.940486243731977
           },
           "units": "mph"
         },
@@ -3973,7 +3973,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T22:00:00+00:00"
+      "valid_time": "2026-10-13T22:00:00+00:00"
     },
     {
       "forecast_hour": 11,
@@ -3982,10 +3982,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 36.1478713171886,
-            "median": 29.45518962472478,
-            "min": 19.99142261922296,
-            "p90": 32.92889891557684
+            "max": 29.146839489420678,
+            "median": 23.584147925363006,
+            "min": 18.768855435991913,
+            "p90": 25.126863013984078
           },
           "units": "kt"
         },
@@ -3997,10 +3997,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 220.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 80.0
           },
           "units": "J/kg"
         },
@@ -4012,10 +4012,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 110.0,
-            "median": 0.0,
+            "max": 300.0,
+            "median": 50.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 170.0
           },
           "units": "J/kg"
         },
@@ -4027,7 +4027,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 120.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -4042,10 +4042,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 110.0,
-            "median": 0.0,
+            "max": 300.0,
+            "median": 50.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 170.0
           },
           "units": "J/kg"
         },
@@ -4059,7 +4059,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -335.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4073,8 +4073,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": -259.0,
+            "median": -229.0,
+            "min": -367.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4089,7 +4089,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -312.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4103,8 +4103,8 @@
           "summary": {
             "count": 492,
             "max": 0.0,
-            "median": 0.0,
-            "min": -259.0,
+            "median": -226.5,
+            "min": -367.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4117,7 +4117,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": -1.5,
+            "max": -10.0,
             "median": -10.0,
             "min": -10.0,
             "p90": -10.0
@@ -4128,10 +4128,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 38.24432373046875,
-            "median": 34.93182373046875,
-            "min": 31.30682373046875,
-            "p90": 37.05682373046875
+            "max": 18.136871337890625,
+            "median": 14.636871337890625,
+            "min": 12.824371337890625,
+            "p90": 16.886871337890625
           },
           "units": "K"
         },
@@ -4139,10 +4139,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.955143478698328,
-            "median": 4.622875917202634,
-            "min": 3.583610848864718,
-            "p90": 4.7889870440345685
+            "max": 4.908463521556182,
+            "median": 4.271492315864171,
+            "min": 3.9073825401557465,
+            "p90": 4.512090576485273
           },
           "units": "K/km"
         },
@@ -4150,10 +4150,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.285092353820801,
-            "median": 5.361068248748779,
-            "min": 5.098506450653076,
-            "p90": 5.8728322982788095
+            "max": 6.817708492279053,
+            "median": 6.654943943023682,
+            "min": 6.533880233764648,
+            "p90": 6.790300178527832
           },
           "units": "K/km"
         },
@@ -4180,10 +4180,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 11.569888743657923,
-            "median": 3.880420239720924,
-            "min": 0.5250157349734277,
-            "p90": 6.396973568282124
+            "max": 11.560857381322325,
+            "median": 4.570430935325153,
+            "min": 1.0752181789878432,
+            "p90": 5.828707599605753
           },
           "units": "mph"
         },
@@ -4195,10 +4195,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.2753024101257324,
-            "median": 0.4003024101257324,
-            "min": 0.08780241012573242,
-            "p90": 0.7753024101257324
+            "max": 0.644444465637207,
+            "median": 0.14444446563720703,
+            "min": 0.01944446563720703,
+            "p90": 0.26944446563720703
           },
           "units": "m/s"
         },
@@ -4225,10 +4225,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.9375,
-            "median": 0.3125,
+            "max": 0.5,
+            "median": 0.125,
             "min": 0.0625,
-            "p90": 0.8125
+            "p90": 0.1875
           },
           "units": "m/s"
         },
@@ -4240,10 +4240,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.6802158656082754,
-            "median": 0.576869408915362,
-            "min": 0.29635759789174,
-            "p90": 0.6211607474980392
+            "max": 1.097931599053811,
+            "median": 0.9896638825183778,
+            "min": 0.5418292743953194,
+            "p90": 1.0437977407860943
           },
           "units": "in"
         },
@@ -4251,10 +4251,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 8.902435461366586,
-            "median": 6.4533165791542775,
-            "min": 4.75501040347455,
-            "p90": 7.736488087704454
+            "max": 40.53759182220302,
+            "median": 35.40254237199355,
+            "min": 27.09421381460029,
+            "p90": 38.531734666185535
           },
           "units": "percent"
         },
@@ -4266,10 +4266,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 71.69999694824219,
-            "median": 20.600000381469727,
-            "min": -5.0,
-            "p90": 41.47999992370606
+            "max": 127.0,
+            "median": 61.0,
+            "min": 20.0,
+            "p90": 89.0
           },
           "units": "m^2/s^2"
         },
@@ -4281,10 +4281,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 73.0,
-            "median": 27.0,
-            "min": -15.0,
-            "p90": 48.0
+            "max": 172.0,
+            "median": 109.0,
+            "min": 52.0,
+            "p90": 137.0
           },
           "units": "m^2/s^2"
         },
@@ -4296,10 +4296,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 18.472061809165677,
-            "median": 5.330062160000423,
-            "min": 0.5765722727212373,
-            "p90": 10.782594371883023
+            "max": 15.023971508465738,
+            "median": 7.893737077542339,
+            "min": 0.6236939283678502,
+            "p90": 10.55009892435694
           },
           "units": "mph"
         },
@@ -4326,7 +4326,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": 0.004000000189989805,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -4334,7 +4334,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-12T23:00:00+00:00"
+      "valid_time": "2026-10-13T23:00:00+00:00"
     },
     {
       "forecast_hour": 12,
@@ -4343,10 +4343,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 35.6997688785369,
-            "median": 29.139445322778663,
-            "min": 19.938379402421194,
-            "p90": 32.20159243129266
+            "max": 30.15062668897265,
+            "median": 23.606571105887145,
+            "min": 17.477858753145803,
+            "p90": 26.338546005738873
           },
           "units": "kt"
         },
@@ -4358,10 +4358,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 150.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 49.00000000000034
           },
           "units": "J/kg"
         },
@@ -4373,10 +4373,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 40.0,
+            "max": 200.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 89.00000000000034
           },
           "units": "J/kg"
         },
@@ -4388,7 +4388,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 40.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -4403,10 +4403,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 40.0,
+            "max": 200.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 89.00000000000034
           },
           "units": "J/kg"
         },
@@ -4420,7 +4420,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -336.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4435,7 +4435,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": -122.0,
+            "min": -383.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4450,7 +4450,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -319.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4465,7 +4465,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": -122.0,
+            "min": -383.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4478,7 +4478,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": -6.1875,
+            "max": -10.0,
             "median": -10.0,
             "min": -10.0,
             "p90": -10.0
@@ -4489,10 +4489,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 40.578521728515625,
-            "median": 33.766021728515625,
-            "min": 30.891021728515625,
-            "p90": 36.32227172851563
+            "max": 19.48193359375,
+            "median": 14.48193359375,
+            "min": 12.60693359375,
+            "p90": 17.844433593750004
           },
           "units": "K"
         },
@@ -4500,10 +4500,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.578911759405249,
-            "median": 4.2160960881444485,
-            "min": 3.3725824773685154,
-            "p90": 4.39594554384132
+            "max": 4.5724361799427315,
+            "median": 3.878784077511748,
+            "min": 3.3754605359937195,
+            "p90": 4.17344278839419
           },
           "units": "K/km"
         },
@@ -4511,10 +4511,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.242274761199951,
-            "median": 5.226040363311768,
-            "min": 5.003002166748047,
-            "p90": 5.714554119110107
+            "max": 6.9422807693481445,
+            "median": 6.7751312255859375,
+            "min": 6.586936950683594,
+            "p90": 6.8869704246521
           },
           "units": "K/km"
         },
@@ -4541,10 +4541,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 14.269415958489175,
-            "median": 4.9022452355113755,
-            "min": 0.9876068577479691,
-            "p90": 6.719755972805576
+            "max": 11.876387602956946,
+            "median": 4.4665366688539185,
+            "min": 0.9713237125189189,
+            "p90": 5.864621851387919
           },
           "units": "mph"
         },
@@ -4556,10 +4556,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.0740842819213867,
-            "median": 0.3240842819213867,
-            "min": 0.07408428192138672,
-            "p90": 0.5740842819213867
+            "max": 0.6258659362792969,
+            "median": 0.12586593627929688,
+            "min": 0.06336593627929688,
+            "p90": 0.2508659362792969
           },
           "units": "m/s"
         },
@@ -4586,10 +4586,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.1875,
-            "median": 0.3125,
-            "min": 0.0625,
-            "p90": 0.6875
+            "max": 0.4375,
+            "median": 0.125,
+            "min": 0.0,
+            "p90": 0.1875
           },
           "units": "m/s"
         },
@@ -4601,10 +4601,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.6637050598625123,
-            "median": 0.5505160459383266,
-            "min": 0.2749254947572243,
-            "p90": 0.6194136837336022
+            "max": 1.0635436050535187,
+            "median": 0.9626577782818652,
+            "min": 0.5271263197651059,
+            "p90": 1.0192522664708414
           },
           "units": "in"
         },
@@ -4612,10 +4612,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 9.145180475183306,
-            "median": 7.121534735359915,
-            "min": 3.893933528644209,
-            "p90": 8.227833051346598
+            "max": 41.2056575726946,
+            "median": 35.82745368350768,
+            "min": 24.457900966822788,
+            "p90": 38.82832961781391
           },
           "units": "percent"
         },
@@ -4627,10 +4627,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 56.5,
-            "median": 15.549999237060547,
-            "min": -10.90000057220459,
-            "p90": 34.599998474121094
+            "max": 121.0,
+            "median": 62.75,
+            "min": 18.100000381469727,
+            "p90": 89.29000244140626
           },
           "units": "m^2/s^2"
         },
@@ -4642,10 +4642,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 65.0,
-            "median": 21.0,
-            "min": -16.0,
-            "p90": 42.0
+            "max": 170.0,
+            "median": 112.0,
+            "min": 33.0,
+            "p90": 137.0
           },
           "units": "m^2/s^2"
         },
@@ -4657,10 +4657,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 19.457838154726545,
-            "median": 5.3371767444788025,
-            "min": 0.8633042937017963,
-            "p90": 9.797068476762266
+            "max": 15.394208298125417,
+            "median": 6.446462596580646,
+            "min": 0.8541219997764392,
+            "p90": 9.522250531482618
           },
           "units": "mph"
         },
@@ -4687,7 +4687,7 @@
           "source_type_of_level": "atmosphere",
           "summary": {
             "count": 492,
-            "max": 0.0015999999595806003,
+            "max": 0.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -4695,7 +4695,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-13T00:00:00+00:00"
+      "valid_time": "2026-10-14T00:00:00+00:00"
     },
     {
       "forecast_hour": 13,
@@ -4704,10 +4704,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 35.27987079828748,
-            "median": 28.753340295670238,
-            "min": 20.62347375385079,
-            "p90": 32.225466347883184
+            "max": 32.523844253709306,
+            "median": 24.035221927605207,
+            "min": 17.99965931379814,
+            "p90": 27.233565933147947
           },
           "units": "kt"
         },
@@ -4719,10 +4719,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 100.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 20.0
           },
           "units": "J/kg"
         },
@@ -4734,10 +4734,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 130.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 30.0
           },
           "units": "J/kg"
         },
@@ -4749,7 +4749,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 10.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -4764,10 +4764,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 130.0,
             "median": 0.0,
             "min": 0.0,
-            "p90": 0.0
+            "p90": 30.0
           },
           "units": "J/kg"
         },
@@ -4781,7 +4781,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -390.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4796,7 +4796,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -426.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4811,7 +4811,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -348.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4826,7 +4826,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -430.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -4850,10 +4850,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 37.311065673828125,
-            "median": 33.186065673828125,
-            "min": 30.623565673828125,
-            "p90": 34.998565673828125
+            "max": 20.305389404296875,
+            "median": 15.742889404296875,
+            "min": 12.805389404296875,
+            "p90": 19.430389404296875
           },
           "units": "K"
         },
@@ -4861,10 +4861,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.413772191621793,
-            "median": 3.977173863413763,
-            "min": 3.258821763478352,
-            "p90": 4.201737220222207
+            "max": 4.33033048687768,
+            "median": 3.5600497391350716,
+            "min": 2.9950094518882224,
+            "p90": 3.9997144602604178
           },
           "units": "K/km"
         },
@@ -4872,10 +4872,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.1721391677856445,
-            "median": 5.232415199279785,
-            "min": 5.001219749450684,
-            "p90": 5.577305936813355
+            "max": 7.013006687164307,
+            "median": 6.8284687995910645,
+            "min": 6.638444423675537,
+            "p90": 6.968167352676391
           },
           "units": "K/km"
         },
@@ -4902,10 +4902,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 14.884159790249305,
-            "median": 5.0975635125113055,
-            "min": 1.0431167498262923,
-            "p90": 6.915074249805506
+            "max": 12.050857054137625,
+            "median": 4.501197068454025,
+            "min": 0.8661753272020389,
+            "p90": 6.318707805748224
           },
           "units": "mph"
         },
@@ -4917,10 +4917,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.1439151763916016,
-            "median": 0.26891517639160156,
-            "min": 0.018915176391601562,
-            "p90": 0.5189151763916016
+            "max": 0.7928667068481445,
+            "median": 0.10536670684814453,
+            "min": 0.04286670684814453,
+            "p90": 0.29286670684814453
           },
           "units": "m/s"
         },
@@ -4947,10 +4947,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.9375,
-            "median": 0.25,
-            "min": 0.0625,
-            "p90": 0.5625
+            "max": 0.5,
+            "median": 0.125,
+            "min": 0.0,
+            "p90": 0.1875
           },
           "units": "m/s"
         },
@@ -4962,10 +4962,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.6473876172163355,
-            "median": 0.5194348237645907,
-            "min": 0.28321435132364586,
-            "p90": 0.5883324615598664
+            "max": 1.0478769137164738,
+            "median": 0.9248454176534818,
+            "min": 0.4966958113542692,
+            "p90": 0.9789792759211983
           },
           "units": "in"
         },
@@ -4973,10 +4973,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 9.336547378060574,
-            "median": 7.459052440350911,
-            "min": 5.238942521418414,
-            "p90": 8.078748897891085
+            "max": 40.700284268221296,
+            "median": 32.67644595410245,
+            "min": 22.89367948942104,
+            "p90": 38.1211227774581
           },
           "units": "percent"
         },
@@ -4988,10 +4988,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 52.099998474121094,
-            "median": 10.600000381469727,
-            "min": -20.0,
-            "p90": 31.759999275207534
+            "max": 123.0,
+            "median": 62.5,
+            "min": 11.0,
+            "p90": 80.0
           },
           "units": "m^2/s^2"
         },
@@ -5003,10 +5003,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 68.0,
-            "median": 20.0,
-            "min": -7.0,
-            "p90": 41.0
+            "max": 169.0,
+            "median": 110.0,
+            "min": 15.0,
+            "p90": 134.0
           },
           "units": "m^2/s^2"
         },
@@ -5018,10 +5018,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 19.89070995415458,
-            "median": 5.350624589128154,
-            "min": 0.31751793200575423,
-            "p90": 9.125454048642782
+            "max": 15.665823293739143,
+            "median": 5.809322223547271,
+            "min": 0.7063113739640686,
+            "p90": 10.213291081856543
           },
           "units": "mph"
         },
@@ -5056,7 +5056,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-13T01:00:00+00:00"
+      "valid_time": "2026-10-14T01:00:00+00:00"
     },
     {
       "forecast_hour": 14,
@@ -5065,10 +5065,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 36.066423402360165,
-            "median": 28.839103105426467,
-            "min": 20.242975864159163,
-            "p90": 32.156135424016504
+            "max": 30.788151851684844,
+            "median": 22.314517434454736,
+            "min": 11.864781951155956,
+            "p90": 25.45254051353158
           },
           "units": "kt"
         },
@@ -5080,7 +5080,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 50.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5095,7 +5095,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 70.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5125,7 +5125,7 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 70.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5142,7 +5142,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -358.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5157,7 +5157,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -382.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5187,7 +5187,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -382.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5211,10 +5211,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 35.6170654296875,
-            "median": 32.4295654296875,
-            "min": 28.3670654296875,
-            "p90": 33.9920654296875
+            "max": 20.85882568359375,
+            "median": 16.92132568359375,
+            "min": 13.35882568359375,
+            "p90": 20.040075683593752
           },
           "units": "K"
         },
@@ -5222,10 +5222,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.442727420017225,
-            "median": 3.8373492770156,
-            "min": 3.260998116332227,
-            "p90": 4.159956367809395
+            "max": 4.316587845535328,
+            "median": 3.3555445359803096,
+            "min": 2.7335531980587575,
+            "p90": 3.901193385352025
           },
           "units": "K/km"
         },
@@ -5233,10 +5233,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 6.071470260620117,
-            "median": 5.262328863143921,
-            "min": 4.969946384429932,
-            "p90": 5.407836484909057
+            "max": 6.984941005706787,
+            "median": 6.881726264953613,
+            "min": 6.606144905090332,
+            "p90": 6.937382316589355
           },
           "units": "K/km"
         },
@@ -5263,10 +5263,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 16.129574736442905,
-            "median": 5.014797535297604,
-            "min": 0.890446446819994,
-            "p90": 7.042021049971904
+            "max": 13.94971298505854,
+            "median": 4.5825422620807394,
+            "min": 0.6679037509855401,
+            "p90": 7.09909559064194
           },
           "units": "mph"
         },
@@ -5278,10 +5278,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.0950746536254883,
-            "median": 0.2825746536254883,
-            "min": 0.03257465362548828,
-            "p90": 0.4700746536254883
+            "max": 1.058115005493164,
+            "median": 0.12061500549316406,
+            "min": 0.0,
+            "p90": 0.30811500549316406
           },
           "units": "m/s"
         },
@@ -5308,10 +5308,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.875,
-            "median": 0.25,
-            "min": 0.0625,
-            "p90": 0.4375
+            "max": 0.6875,
+            "median": 0.125,
+            "min": 0.0,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -5323,10 +5323,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.6285897202379122,
-            "median": 0.520322003702479,
-            "min": 0.30870781170101613,
-            "p90": 0.5788849958284635
+            "max": 0.9998481480155404,
+            "median": 0.8841985417163278,
+            "min": 0.53724972281869,
+            "p90": 0.9550646834486114
           },
           "units": "in"
         },
@@ -5334,10 +5334,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 11.280647055722639,
-            "median": 7.988775326370514,
-            "min": 5.99412492968246,
-            "p90": 10.165665419414747
+            "max": 39.043528087618114,
+            "median": 29.796138769171897,
+            "min": 21.9617815004083,
+            "p90": 35.895846976907094
           },
           "units": "percent"
         },
@@ -5349,10 +5349,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 50.0,
-            "median": 10.199999809265137,
-            "min": -18.200000762939453,
-            "p90": 32.27999916076661
+            "max": 124.0,
+            "median": 62.0,
+            "min": 6.0,
+            "p90": 85.0
           },
           "units": "m^2/s^2"
         },
@@ -5364,10 +5364,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 72.0,
-            "median": 19.0,
-            "min": -10.0,
-            "p90": 40.0
+            "max": 158.0,
+            "median": 109.0,
+            "min": 0.0,
+            "p90": 130.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -5379,10 +5379,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 21.796782868370954,
-            "median": 6.138228823990156,
-            "min": 0.9653133819507705,
-            "p90": 9.89907796500662
+            "max": 20.718657722964636,
+            "median": 5.898955854758582,
+            "min": 0.4464234095453443,
+            "p90": 11.770913621401382
           },
           "units": "mph"
         },
@@ -5417,7 +5417,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-13T02:00:00+00:00"
+      "valid_time": "2026-10-14T02:00:00+00:00"
     },
     {
       "forecast_hour": 15,
@@ -5426,10 +5426,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 37.652413204329335,
-            "median": 30.297059385570343,
-            "min": 19.708218548471205,
-            "p90": 33.61728489585528
+            "max": 27.535675630028706,
+            "median": 21.582482634677223,
+            "min": 10.704107671786598,
+            "p90": 24.06779654955917
           },
           "units": "kt"
         },
@@ -5441,7 +5441,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 20.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5456,7 +5456,7 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 30.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5486,7 +5486,7 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 0.0,
+            "max": 30.0,
             "median": 0.0,
             "min": 0.0,
             "p90": 0.0
@@ -5503,7 +5503,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -423.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5518,7 +5518,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -447.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5548,7 +5548,7 @@
             "count": 492,
             "max": 0.0,
             "median": 0.0,
-            "min": 0.0,
+            "min": -447.0,
             "p90": 0.0
           },
           "units": "J/kg"
@@ -5572,10 +5572,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 34.961334228515625,
-            "median": 30.273834228515625,
-            "min": 25.398834228515625,
-            "p90": 33.398834228515625
+            "max": 20.887298583984375,
+            "median": 18.637298583984375,
+            "min": 14.074798583984375,
+            "p90": 20.262298583984375
           },
           "units": "K"
         },
@@ -5583,10 +5583,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.4520783150306515,
-            "median": 3.7215815550825653,
-            "min": 3.0868457162994027,
-            "p90": 4.170286918658599
+            "max": 4.304917225957543,
+            "median": 3.1715745085780043,
+            "min": 2.5210000214931747,
+            "p90": 3.8234461336806893
           },
           "units": "K/km"
         },
@@ -5594,10 +5594,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 5.961758613586426,
-            "median": 5.200664281845093,
-            "min": 4.904517650604248,
-            "p90": 5.292996740341186
+            "max": 6.959859371185303,
+            "median": 6.860313177108765,
+            "min": 6.649970531463623,
+            "p90": 6.911913967132568
           },
           "units": "K/km"
         },
@@ -5624,10 +5624,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 16.752904069022595,
-            "median": 5.148797053990396,
-            "min": 1.2341588095587823,
-            "p90": 7.371752494219461
+            "max": 17.64307831898703,
+            "median": 4.780694639674231,
+            "min": 0.4466303071552455,
+            "p90": 7.856482041249031
           },
           "units": "mph"
         },
@@ -5639,10 +5639,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.1030259132385254,
-            "median": 0.2280259132385254,
-            "min": 0.04052591323852539,
-            "p90": 0.4155259132385254
+            "max": 1.2603864669799805,
+            "median": 0.13538646697998047,
+            "min": 0.010386466979980469,
+            "p90": 0.38538646697998047
           },
           "units": "m/s"
         },
@@ -5669,10 +5669,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.875,
-            "median": 0.1875,
-            "min": 0.0,
-            "p90": 0.4375
+            "max": 0.75,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -5684,10 +5684,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.611185201509731,
-            "median": 0.5226025243443767,
-            "min": 0.3011458314309909,
-            "p90": 0.5718151227695736
+            "max": 0.9613331471841167,
+            "median": 0.8530654306486836,
+            "min": 0.5282622810423844,
+            "p90": 0.9318055881289985
           },
           "units": "in"
         },
@@ -5695,10 +5695,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 14.458000973008874,
-            "median": 9.615396971264623,
-            "min": 6.342508321899812,
-            "p90": 11.977621144830703
+            "max": 36.985546003879534,
+            "median": 26.11473239742561,
+            "min": 21.971555739380957,
+            "p90": 33.51061010871369
           },
           "units": "percent"
         },
@@ -5710,10 +5710,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 55.29999923706055,
-            "median": 13.050000190734863,
-            "min": -28.299999237060547,
-            "p90": 34.89000129699707
+            "max": 132.0,
+            "median": 78.0,
+            "min": 1.0,
+            "p90": 107.0
           },
           "units": "m^2/s^2"
         },
@@ -5725,10 +5725,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 69.0,
-            "median": 22.0,
-            "min": -29.0,
-            "p90": 43.900000000000034
+            "max": 140.0,
+            "median": 100.0,
+            "min": 6.0,
+            "p90": 123.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -5740,10 +5740,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 22.48453812336356,
-            "median": 6.686175027402189,
-            "min": 0.9540257790127896,
-            "p90": 10.321197035317761
+            "max": 24.721958676490402,
+            "median": 6.267233200387258,
+            "min": 0.3952755337433036,
+            "p90": 12.684444188218322
           },
           "units": "mph"
         },
@@ -5778,7 +5778,7 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-13T03:00:00+00:00"
+      "valid_time": "2026-10-14T03:00:00+00:00"
     },
     {
       "forecast_hour": 16,
@@ -5787,10 +5787,10 @@
           "method": "HRRR-derived vector wind difference from 10 m AGL to 500 mb; deep-layer shear proxy, not an exact 0-6 km AGL calculation",
           "summary": {
             "count": 492,
-            "max": 37.494867122060704,
-            "median": 30.00029690016546,
-            "min": 18.364178609520472,
-            "p90": 32.983249094375445
+            "max": 28.077415140009133,
+            "median": 21.518901057834057,
+            "min": 12.78958199528308,
+            "p90": 24.619596739278485
           },
           "units": "kt"
         },
@@ -5933,10 +5933,10 @@
           "method": "HRRR-derived 700-mb temperature minus dewpoint",
           "summary": {
             "count": 492,
-            "max": 32.934112548828125,
-            "median": 28.496612548828125,
-            "min": 23.559112548828125,
-            "p90": 30.677862548828127
+            "max": 20.813629150390625,
+            "median": 18.876129150390625,
+            "min": 14.126129150390625,
+            "p90": 20.126129150390625
           },
           "units": "K"
         },
@@ -5944,10 +5944,10 @@
           "method": "HRRR-derived using 2-m temperature and pressure-level interpolation to 3 km AGL",
           "summary": {
             "count": 492,
-            "max": 4.638308701981828,
-            "median": 3.6986491040505785,
-            "min": 2.992031358548824,
-            "p90": 4.223406852624295
+            "max": 4.36149133376379,
+            "median": 3.0426852936168416,
+            "min": 2.3938713622070886,
+            "p90": 3.858272838217842
           },
           "units": "K/km"
         },
@@ -5955,10 +5955,10 @@
           "method": "HRRR-derived from 700/500-mb temperature and geopotential height",
           "summary": {
             "count": 492,
-            "max": 5.833763599395752,
-            "median": 5.188167572021484,
-            "min": 4.86853551864624,
-            "p90": 5.2580114841461185
+            "max": 6.943408489227295,
+            "median": 6.868890285491943,
+            "min": 6.63614559173584,
+            "p90": 6.918469047546386
           },
           "units": "K/km"
         },
@@ -5985,10 +5985,10 @@
           "source_type_of_level": "heightAboveGround",
           "summary": {
             "count": 492,
-            "max": 16.87007818208391,
-            "median": 5.26597116705171,
-            "min": 0.37267316151450297,
-            "p90": 7.22329042259931
+            "max": 19.62219038944884,
+            "median": 5.082105024422413,
+            "min": 0.4684236887295751,
+            "p90": 8.157892425997213
           },
           "units": "mph"
         },
@@ -6000,10 +6000,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 1.1982407569885254,
-            "median": 0.1357407569885254,
-            "min": 0.01074075698852539,
-            "p90": 0.3857407569885254
+            "max": 1.449462890625,
+            "median": 0.074462890625,
+            "min": 0.011962890625,
+            "p90": 0.386962890625
           },
           "units": "m/s"
         },
@@ -6030,10 +6030,10 @@
           "source_type_of_level": "pressureFromGroundLayer",
           "summary": {
             "count": 492,
-            "max": 0.9375,
-            "median": 0.1875,
-            "min": 0.0,
-            "p90": 0.4375
+            "max": 0.75,
+            "median": 0.125,
+            "min": 0.0625,
+            "p90": 0.25
           },
           "units": "m/s"
         },
@@ -6045,10 +6045,10 @@
           "source_type_of_level": "atmosphereSingleLayer",
           "summary": {
             "count": 492,
-            "max": 0.5899950463002123,
-            "median": 0.530939928189976,
-            "min": 0.30456199420718694,
-            "p90": 0.5653887470876138
+            "max": 0.950522084874431,
+            "median": 0.8176480691263994,
+            "min": 0.5174512187326987,
+            "p90": 0.9013094864492341
           },
           "units": "in"
         },
@@ -6056,10 +6056,10 @@
           "method": "HRRR-derived from 700-mb temperature and dewpoint",
           "summary": {
             "count": 492,
-            "max": 16.790186739697425,
-            "median": 11.13832368288842,
-            "min": 7.567170332514044,
-            "p90": 13.59087355932364
+            "max": 36.821702430892856,
+            "median": 25.684241432625594,
+            "min": 22.096792582072773,
+            "p90": 31.399406247580607
           },
           "units": "percent"
         },
@@ -6071,10 +6071,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 83.4000015258789,
-            "median": 17.15000057220459,
-            "min": -32.29999923706055,
-            "p90": 39.69000053405762
+            "max": 172.0,
+            "median": 86.0,
+            "min": 20.0,
+            "p90": 126.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -6086,10 +6086,10 @@
           "source_type_of_level": "heightAboveGroundLayer",
           "summary": {
             "count": 492,
-            "max": 91.0,
-            "median": 27.0,
-            "min": -31.0,
-            "p90": 44.0
+            "max": 180.0,
+            "median": 91.0,
+            "min": 22.0,
+            "p90": 127.90000000000003
           },
           "units": "m^2/s^2"
         },
@@ -6101,10 +6101,10 @@
           "source_type_of_level": "surface",
           "summary": {
             "count": 492,
-            "max": 22.38851149933798,
-            "median": 7.009575024791156,
-            "min": 0.858000354973349,
-            "p90": 11.189850253894992
+            "max": 25.753315295504063,
+            "median": 6.459740309862036,
+            "min": 0.727591061472636,
+            "p90": 13.170548652698063
           },
           "units": "mph"
         },
@@ -6139,94 +6139,94 @@
           "units": "kg/m^2"
         }
       },
-      "valid_time": "2026-10-13T04:00:00+00:00"
+      "valid_time": "2026-10-14T04:00:00+00:00"
     }
   ],
-  "generated_at": "2026-10-12T14:06:01.447828+00:00",
+  "generated_at": "2026-10-13T14:05:57.610075+00:00",
   "operational_summary": {
     "interpretation_note": "County maxima can be isolated grid cells. Pair peak_county_max with peak_county_p90, reflectivity/coverage, radar trends, and observed mesoanalysis before making an operational wind-risk verdict.",
     "metrics": {
       "bulk_shear_sfc_500mb_kt": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 13,
           "units": "kt",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 46.285515132285376
+          "valid_time": "2026-10-14T01:00:00+00:00",
+          "value": 32.523844253709306
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 13,
           "units": "kt",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 42.966492001732846
+          "valid_time": "2026-10-14T01:00:00+00:00",
+          "value": 27.233565933147947
         }
       },
       "cape_180_0mb_jkg": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 7,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 490.0
+          "valid_time": "2026-10-13T19:00:00+00:00",
+          "value": 370.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 10,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 0.0
+          "valid_time": "2026-10-13T22:00:00+00:00",
+          "value": 120.0
         }
       },
       "cape_255_0mb_jkg": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 7,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 610.0
+          "valid_time": "2026-10-13T19:00:00+00:00",
+          "value": 460.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 10,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 0.0
+          "valid_time": "2026-10-13T22:00:00+00:00",
+          "value": 280.0
         }
       },
       "cape_90_0mb_jkg": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 7,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 10.0
+          "valid_time": "2026-10-13T19:00:00+00:00",
+          "value": 230.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 10,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 0.0
+          "valid_time": "2026-10-13T22:00:00+00:00",
+          "value": 40.0
         }
       },
       "cape_surface_jkg": {
         "peak_county_max": {
-          "forecast_hour": 10,
+          "forecast_hour": 7,
           "units": "J/kg",
-          "valid_time": "2026-10-12T22:00:00+00:00",
-          "value": 200.0
+          "valid_time": "2026-10-13T19:00:00+00:00",
+          "value": 460.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 10,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 0.0
+          "valid_time": "2026-10-13T22:00:00+00:00",
+          "value": 280.0
         }
       },
       "cin_180_0mb_jkg": {
         "peak_county_max": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
@@ -6234,13 +6234,13 @@
         "peak_county_max": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
@@ -6248,13 +6248,13 @@
         "peak_county_max": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
@@ -6262,13 +6262,13 @@
         "peak_county_max": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "J/kg",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
@@ -6276,210 +6276,210 @@
         "peak_county_max": {
           "forecast_hour": 0,
           "units": "dBZ",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 8.25
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": -10.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "dBZ",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": -10.0
         }
       },
       "dewpoint_depression_700mb_k": {
         "peak_county_max": {
-          "forecast_hour": 9,
+          "forecast_hour": 0,
           "units": "K",
-          "valid_time": "2026-10-12T21:00:00+00:00",
-          "value": 44.4649658203125
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 30.289886474609375
         },
         "peak_county_p90": {
-          "forecast_hour": 9,
+          "forecast_hour": 0,
           "units": "K",
-          "valid_time": "2026-10-12T21:00:00+00:00",
-          "value": 37.9649658203125
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 28.477386474609375
         }
       },
       "lapse_rate_0_3km_agl_k_per_km": {
         "peak_county_max": {
-          "forecast_hour": 8,
+          "forecast_hour": 5,
           "units": "K/km",
-          "valid_time": "2026-10-12T20:00:00+00:00",
-          "value": 6.226550622816433
+          "valid_time": "2026-10-13T17:00:00+00:00",
+          "value": 6.66960527391645
         },
         "peak_county_p90": {
-          "forecast_hour": 7,
+          "forecast_hour": 6,
           "units": "K/km",
-          "valid_time": "2026-10-12T19:00:00+00:00",
-          "value": 5.993718587367263
+          "valid_time": "2026-10-13T18:00:00+00:00",
+          "value": 6.172082117049644
         }
       },
       "lapse_rate_700_500mb_k_per_km": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 13,
           "units": "K/km",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 6.789710521697998
+          "valid_time": "2026-10-14T01:00:00+00:00",
+          "value": 7.013006687164307
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 13,
           "units": "K/km",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 6.621817874908447
+          "valid_time": "2026-10-14T01:00:00+00:00",
+          "value": 6.968167352676391
         }
       },
       "max_10m_wind_mph": {
         "peak_county_max": {
-          "forecast_hour": 4,
+          "forecast_hour": 16,
           "units": "mph",
-          "valid_time": "2026-10-12T16:00:00+00:00",
-          "value": 34.43903255735706
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 19.62219038944884
         },
         "peak_county_p90": {
-          "forecast_hour": 2,
+          "forecast_hour": 16,
           "units": "mph",
-          "valid_time": "2026-10-12T14:00:00+00:00",
-          "value": 21.26159971751905
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 8.157892425997213
         }
       },
       "max_downdraft_magnitude_ms": {
         "peak_county_max": {
-          "forecast_hour": 4,
+          "forecast_hour": 16,
           "units": "m/s",
-          "valid_time": "2026-10-12T16:00:00+00:00",
-          "value": 3.3410043716430664
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 1.449462890625
         },
         "peak_county_p90": {
-          "forecast_hour": 1,
+          "forecast_hour": 16,
           "units": "m/s",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 1.8155441284179688
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 0.386962890625
         }
       },
       "max_reflectivity_1km_dbz": {
         "peak_county_max": {
-          "forecast_hour": 1,
+          "forecast_hour": 0,
           "units": "dBZ",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 28.4375
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "dBZ",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
       "max_updraft_velocity_ms": {
         "peak_county_max": {
-          "forecast_hour": 6,
+          "forecast_hour": 3,
           "units": "m/s",
-          "valid_time": "2026-10-12T18:00:00+00:00",
-          "value": 3.875
+          "valid_time": "2026-10-13T15:00:00+00:00",
+          "value": 0.875
         },
         "peak_county_p90": {
-          "forecast_hour": 1,
+          "forecast_hour": 4,
           "units": "m/s",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 1.7437500000000021
+          "valid_time": "2026-10-13T16:00:00+00:00",
+          "value": 0.3125
         }
       },
       "minimum_relative_humidity_700mb_percent": {
         "minimum_county_value": {
-          "forecast_hour": 9,
+          "forecast_hour": 0,
           "units": "percent",
-          "valid_time": "2026-10-12T21:00:00+00:00",
-          "value": 2.7083884386086696
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 9.563014076359588
         }
       },
       "pwat_inches": {
         "peak_county_max": {
-          "forecast_hour": 1,
+          "forecast_hour": 7,
           "units": "in",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 1.0093017638198973
+          "valid_time": "2026-10-13T19:00:00+00:00",
+          "value": 1.1632247233954
         },
         "peak_county_p90": {
-          "forecast_hour": 1,
+          "forecast_hour": 9,
           "units": "in",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 0.9453253858671413
+          "valid_time": "2026-10-13T21:00:00+00:00",
+          "value": 1.1012068320447066
         }
       },
       "srh_0_1km_m2s2": {
         "peak_county_max": {
-          "forecast_hour": 0,
+          "forecast_hour": 16,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 430.29998779296875
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 172.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 16,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 303.69999389648444
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 126.90000000000003
         }
       },
       "srh_0_3km_m2s2": {
         "peak_county_max": {
-          "forecast_hour": 3,
+          "forecast_hour": 16,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T15:00:00+00:00",
-          "value": 437.3999938964844
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 180.0
         },
         "peak_county_p90": {
-          "forecast_hour": 0,
+          "forecast_hour": 11,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T12:00:00+00:00",
-          "value": 324.0
+          "valid_time": "2026-10-13T23:00:00+00:00",
+          "value": 137.0
         }
       },
       "surface_gust_mph": {
         "peak_county_max": {
-          "forecast_hour": 4,
+          "forecast_hour": 16,
           "units": "mph",
-          "valid_time": "2026-10-12T16:00:00+00:00",
-          "value": 59.088704068914964
+          "valid_time": "2026-10-14T04:00:00+00:00",
+          "value": 25.753315295504063
         },
         "peak_county_p90": {
           "forecast_hour": 2,
           "units": "mph",
-          "valid_time": "2026-10-12T14:00:00+00:00",
-          "value": 47.0045317729712
+          "valid_time": "2026-10-13T14:00:00+00:00",
+          "value": 14.892667211970847
         }
       },
       "updraft_helicity_2_5km_m2s2": {
         "peak_county_max": {
-          "forecast_hour": 1,
+          "forecast_hour": 0,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T13:00:00+00:00",
-          "value": 0.5
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "m^2/s^2",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       },
       "vil_kg_m2": {
         "peak_county_max": {
-          "forecast_hour": 11,
+          "forecast_hour": 0,
           "units": "kg/m^2",
-          "valid_time": "2026-10-12T23:00:00+00:00",
-          "value": 0.004000000189989805
+          "valid_time": "2026-10-13T12:00:00+00:00",
+          "value": 0.0
         },
         "peak_county_p90": {
           "forecast_hour": 0,
           "units": "kg/m^2",
-          "valid_time": "2026-10-12T12:00:00+00:00",
+          "valid_time": "2026-10-13T12:00:00+00:00",
           "value": 0.0
         }
       }
     }
   },
   "schema_version": 1,
-  "snapshot_published_at": "2026-10-12T14:07:41.625593+00:00",
+  "snapshot_published_at": "2026-10-13T14:07:33.609687+00:00",
   "snapshot_type": "burke_hrrr_12z_decision_support",
-  "through": "2026-10-13T00:00:00-04:00"
+  "through": "2026-10-14T00:00:00-04:00"
 }
