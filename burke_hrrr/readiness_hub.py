@@ -25,6 +25,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from .econet import MAX_CURRENT_AGE_MINUTES
+from .vegetation_context import evaluated_vegetation_context
 
 EASTERN = ZoneInfo("America/New_York")
 LAT = 35.745
@@ -930,6 +931,39 @@ def _econet_context(
         source["observation_time"] = latest.isoformat()
     if threshold_minutes is not None:
         source["freshness_threshold_hours"] = threshold_minutes / 60.0
+
+    # Use permitted derived observations only; never republish the exact
+    # current/absolute soil moisture readings from NCSCO CLOUDS.
+    soil_context: dict[str, Any] = {}
+    for depth in ("10cm", "20cm"):
+        raw = econet.get("soil_moisture", {}).get(depth, {})
+        if not isinstance(raw, dict):
+            raw = {}
+        soil_context[depth] = {
+            "status": raw.get("status"),
+            "observation_time": raw.get("observation_time"),
+            "seven_day_percentile": _finite_number(raw.get("seven_day_percentile")),
+            "change_24h_m3m3": _finite_number(raw.get("change_24h_m3m3")),
+            "qc_score": raw.get("qc_score"),
+            "qc_status": raw.get("qc_status"),
+        }
+    source["derived_context"] = {
+        "station_id": econet.get("station", {}).get("id"),
+        "qc_metadata_verified": econet.get("quality_control", {}).get(
+            "flag_metadata_verified"
+        ) is True,
+        "rainfall_24_in": _finite_number(
+            econet.get("rainfall", {}).get("24h", {}).get("total_inches")
+        ),
+        "rainfall_72_in": rainfall_value,
+        "rainfall_168_in": _finite_number(
+            econet.get("rainfall", {}).get("168h", {}).get("total_inches")
+        ),
+        "rainfall_168_coverage_percent": _finite_number(
+            econet.get("rainfall", {}).get("168h", {}).get("coverage_percent")
+        ),
+        "soil_moisture": soil_context,
+    }
     return rainfall_value, source
 
 
@@ -1207,6 +1241,19 @@ def build_snapshot(
     else:
         missing.append("severe.rainfall_72_in")
 
+    derived_econet = econet_source.get("derived_context", {})
+    if derived_econet.get("rainfall_168_in") is not None:
+        severe["rainfall_168_in"] = derived_econet["rainfall_168_in"]
+    if derived_econet.get("soil_moisture"):
+        severe["soil_moisture_context"] = derived_econet["soil_moisture"]
+
+    vegetation_assessment, vegetation_source = evaluated_vegetation_context(
+        repo_root, now, econet_source
+    )
+    sources["vegetation_vulnerability"] = vegetation_source
+    if vegetation_assessment is not None:
+        severe["vegetation_vulnerability"] = vegetation_assessment
+
     sources["hrrr"] = _hrrr_source(repo_root, now)
 
     downburst_index, spc_category, downburst_source, spc_source = _downburst_handoff(
@@ -1262,7 +1309,9 @@ def build_snapshot(
         "workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily "
         "Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital "
         "Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet "
-        "supplies antecedent rainfall; Load Stress remains manual."
+        "supplies antecedent rainfall and permitted derived soil context; "
+        "a dated provisional vegetation-vulnerability briefing is separate "
+        "from calculated forecast risk; Load Stress remains manual."
     )
     if missing:
         notes += " Unavailable or unresolved fields: " + ", ".join(missing) + "."

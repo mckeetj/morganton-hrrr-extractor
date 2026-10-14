@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from burke_hrrr.vegetation_context import evaluated_vegetation_context
+
 from burke_hrrr.readiness_hub import (
     EASTERN,
     _downburst_handoff,
@@ -58,6 +60,94 @@ class ReadinessHubTests(unittest.TestCase):
                 root, dt.datetime.fromisoformat("2026-10-12T10:00:00-04:00")
             )
             self.assertEqual(source["status"], "Stale")
+
+    def test_independent_vegetation_handoff_stays_separate_and_expires(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "current").mkdir()
+            econet = {
+                "generated_at": "2026-10-14T10:05:58-04:00",
+                "station": {"id": "MORG"},
+                "quality_control": {"flag_metadata_verified": True},
+                "freshness": {
+                    "latest_accepted_observation_time": "2026-10-14T09:05:00-04:00",
+                    "maximum_current_age_minutes": 180,
+                },
+                "rainfall": {
+                    "24h": {"total_inches": 0.0},
+                    "72h": {"total_inches": 0.06, "coverage_percent": 98.6},
+                    "168h": {"total_inches": 7.37, "coverage_percent": 99.4},
+                },
+                "soil_moisture": {
+                    depth: {
+                        "status": "current",
+                        "observation_time": "2026-10-14T09:00:00-04:00",
+                        "seven_day_percentile": 58.0,
+                        "change_24h_m3m3": 0.0,
+                        "qc_score": 0,
+                        "qc_status": "good",
+                        "current_value_m3m3": 999.0,  # forbidden raw value
+                    }
+                    for depth in ("10cm", "20cm")
+                },
+            }
+            (root / "current" / "morg-econet-1030.json").write_text(
+                json.dumps(econet), encoding="utf-8"
+            )
+            handoff = {
+                "schema_version": 1,
+                "valid_date": "2026-10-14",
+                "issued_at": "2026-10-14T11:02:23-04:00",
+                "source_run": "11:00 AM Model Refresh",
+                "classification": "Elevated",
+                "confidence": "Moderate",
+                "basis": "7-day residual rainfall, near-median stable soils.",
+                "evidence": {
+                    "rainfall_168_in": 7.37,
+                    "soil_10cm_seven_day_percentile": 58.0,
+                    "soil_20cm_seven_day_percentile": 58.0,
+                },
+            }
+            handoff_path = root / "current" / "vegetation-vulnerability.json"
+            handoff_path.write_text(json.dumps(handoff), encoding="utf-8")
+
+            before_expiry = dt.datetime.fromisoformat("2026-10-14T11:47:00-04:00")
+            _, fresh_econet = _econet_context(root, before_expiry)
+            fresh, source = evaluated_vegetation_context(
+                root, before_expiry, fresh_econet
+            )
+            self.assertEqual(source["status"], "Available")
+            self.assertEqual(fresh["classification"], "Elevated")
+            self.assertFalse(fresh["affects_calculated_posture"])
+            self.assertFalse(fresh["affects_meteorological_downburst_index"])
+
+            later = dt.datetime.fromisoformat("2026-10-14T13:47:00-04:00")
+            _, stale_econet = _econet_context(root, later)
+            assessed, stale_source = evaluated_vegetation_context(
+                root, later, stale_econet
+            )
+            self.assertEqual(stale_econet["status"], "Stale")
+            self.assertEqual(stale_econet["derived_context"]["rainfall_168_in"], 7.37)
+            self.assertEqual(assessed["classification"], "Elevated")
+            self.assertEqual(assessed["source_freshness_at_snapshot"], "Stale")
+            self.assertEqual(stale_source["status"], "Stale")
+            self.assertNotIn("999.0", json.dumps(stale_econet))
+            self.assertNotIn("999.0", json.dumps(assessed))
+
+            next_day = dt.datetime.fromisoformat("2026-10-15T08:00:00-04:00")
+            expired, expired_source = evaluated_vegetation_context(
+                root, next_day, stale_econet
+            )
+            self.assertIsNone(expired)
+            self.assertEqual(expired_source["status"], "Not Assessed")
+
+            handoff["evidence"]["rainfall_168_in"] = 2.0
+            handoff_path.write_text(json.dumps(handoff), encoding="utf-8")
+            rejected, rejected_source = evaluated_vegetation_context(
+                root, later, stale_econet
+            )
+            self.assertIsNone(rejected)
+            self.assertEqual(rejected_source["status"], "Unavailable")
 
     def test_source_aligned_qpf_uses_24_contiguous_hourly_slots(self) -> None:
         starts = []
