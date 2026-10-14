@@ -9,8 +9,10 @@ on:
       - main
     paths:
       - "current/downburst-outlook.json"
+      - "current/vegetation-vulnerability.json"
       - "current/load-stress.json"
       - "burke_hrrr/readiness_hub.py"
+      - "burke_hrrr/vegetation_context.py"
       - ".github/workflows/update-readiness-hub.yml"
   pull_request:
     paths:
@@ -18,6 +20,7 @@ on:
       - "tests/test_readiness_hub.py"
       - ".github/workflows/update-readiness-hub.yml"
       - "current/downburst-outlook.json"
+      - "current/vegetation-vulnerability.json"
       - "current/load-stress.json"
 
 permissions:
