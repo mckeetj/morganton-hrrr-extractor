@@ -113,8 +113,11 @@ Inputs are deliberately separated by responsibility:
 
 - NWS Digital Forecast / NDFD and api.weather.gov grid data: wind gust, source-aligned 24-hour QPF, minimum temperature, snowfall, ice accumulation, and active NWS alerts.
 - Deterministic Downburst Model v1.0: free, rule-based 0-100 Downburst Index plus the current SPC categorical handoff in `current/downburst-outlook.json`. The production score uses official SPC/NWS data and, for the late-morning refresh, validated 12Z HRRR diagnostics. It does not depend on a paid AI API or on a ChatGPT task writing to GitHub.
-- MORG ECONet: rolling 72-hour antecedent rainfall and source freshness.
+- MORG ECONet: rolling 72-hour antecedent rainfall, derived 168-hour rainfall and 10-cm/20-cm soil-moisture percentiles/change/QC, and 180-minute source freshness. No absolute soil readings are republished.
+- Independent tree/utility vulnerability: optional date-specific `current/vegetation-vulnerability.json`, a provisional qualitative Downburst briefing assessment validated against the source ECONet evidence at assessment time; stale observations are labeled and outdated assessments expire.
 - Morganton Electric: manual Load Stress Level 1-5 in `current/load-stress.json`.
+
+Additive JSON output fields: `severe.vegetation_vulnerability`, `severe.rainfall_168_in`, `severe.soil_moisture_context`, `sources.vegetation_vulnerability` and `sources.econet.derived_context`. These are presentation-only decision support and do not change meteorological Downburst Index, existing tree composite, forecast-risk classification, or management posture. The ChatGPT briefing does not automatically publish these assessments to GitHub; new dated handoffs must be supplied separately or the classification is `Not Assessed`.
 
 The builder does not turn missing data into a numeric risk level. When an input
 cannot be established conservatively, it is omitted so the Hub's degraded-data
