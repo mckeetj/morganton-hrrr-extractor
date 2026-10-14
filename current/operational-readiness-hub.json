@@ -116,26 +116,84 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Complete controlling inputs",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-14T14:17:30.002331-04:00",
+    "generated_at": "2026-10-14T14:22:50.981825-04:00",
     "mode": "REVIEWED",
-    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall; Load Stress remains manual."
+    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a dated provisional vegetation-vulnerability briefing is separate from calculated forecast risk; Load Stress remains manual."
   },
   "severe": {
     "downburst_index": 6,
     "nws_alert": "None",
     "qpf_24_in": 0.0,
+    "rainfall_168_in": 7.37,
     "rainfall_72_in": 0.06,
+    "soil_moisture_context": {
+      "10cm": {
+        "change_24h_m3m3": 0.0,
+        "observation_time": "2026-10-14T09:00:00-04:00",
+        "qc_score": 0,
+        "qc_status": "good",
+        "seven_day_percentile": 58.0,
+        "status": "current"
+      },
+      "20cm": {
+        "change_24h_m3m3": 0.0,
+        "observation_time": "2026-10-14T09:00:00-04:00",
+        "qc_score": 0,
+        "qc_status": "good",
+        "seven_day_percentile": 58.0,
+        "status": "current"
+      }
+    },
     "spc_category": "General",
+    "vegetation_vulnerability": {
+      "affects_calculated_posture": false,
+      "affects_meteorological_downburst_index": false,
+      "basis": "Independent provisional tree/utility-vulnerability assessment: 7.37 inches of rain over 168 hours; seven-day soil-moisture percentiles near 58 at both 10 and 20 cm; stable 24-hour changes. Residual localized root-zone susceptibility may persist if stronger winds develop. These data do not demonstrate current saturation or increased downburst probability.",
+      "classification": "Elevated",
+      "confidence": "Moderate",
+      "issued_at": "2026-10-14T11:02:23-04:00",
+      "methodology": "Independent qualitative tree/utility-impact briefing assessment",
+      "source_freshness_at_snapshot": "Stale",
+      "source_run": "11:00 AM Model Refresh",
+      "status": "Provisional",
+      "valid_date": "2026-10-14"
+    },
     "wind_gust_mph": 6.9
   },
   "sources": {
     "downburst_workflow": {
       "notes": "Deterministic Downburst Model v1.0 handoff from 11:00 AM Model Refresh; verdict=LOW; index=6; confidence=Moderate. Deterministic v1.0: SPC 5 + NWS thunder 0 + HRRR 1 = 6; SPC wind probability 0%.",
       "observation_time": "2026-10-14T11:05:09.025557-04:00",
-      "retrieved_at": "2026-10-14T14:17:30.002331-04:00",
+      "retrieved_at": "2026-10-14T14:22:50.981825-04:00",
       "status": "Available"
     },
     "econet": {
+      "derived_context": {
+        "qc_metadata_verified": true,
+        "rainfall_168_coverage_percent": 99.4,
+        "rainfall_168_in": 7.37,
+        "rainfall_24_in": 0.0,
+        "rainfall_72_in": 0.06,
+        "soil_moisture": {
+          "10cm": {
+            "change_24h_m3m3": 0.0,
+            "observation_time": "2026-10-14T09:00:00-04:00",
+            "qc_score": 0,
+            "qc_status": "good",
+            "seven_day_percentile": 58.0,
+            "status": "current"
+          },
+          "20cm": {
+            "change_24h_m3m3": 0.0,
+            "observation_time": "2026-10-14T09:00:00-04:00",
+            "qc_score": 0,
+            "qc_status": "good",
+            "seven_day_percentile": 58.0,
+            "status": "current"
+          }
+        },
+        "station_id": "MORG"
+      },
       "freshness_threshold_hours": 3.0,
       "notes": "MORG ECONet source file morg-econet-1030.json. Rolling 72-hour rainfall=0.06 in with 98.6% coverage. Latest accepted observation=2026-10-14T09:05:00-04:00. Freshness threshold=180.0 minutes.",
       "observation_time": "2026-10-14T09:05:00-04:00",
@@ -151,25 +209,32 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-14T14:17:30.002331-04:00",
+      "retrieved_at": "2026-10-14T14:22:50.981825-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-14T14:17:30.002331-04:00",
+      "retrieved_at": "2026-10-14T14:22:50.981825-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-14T14:00:00-04:00 through 2026-10-15T14:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
       "observation_time": "2026-10-14T10:24:31+00:00",
-      "retrieved_at": "2026-10-14T14:17:30.002331-04:00",
+      "retrieved_at": "2026-10-14T14:22:50.981825-04:00",
       "status": "Available",
       "valid_time": "2026-10-14T14:00:00-04:00"
     },
     "spc": {
       "notes": "SPC category carried by the Deterministic Downburst Model v1.0 handoff: General. Exact SPC issue time was not established.",
-      "retrieved_at": "2026-10-14T14:17:30.002331-04:00",
+      "retrieved_at": "2026-10-14T14:22:50.981825-04:00",
       "status": "Available"
+    },
+    "vegetation_vulnerability": {
+      "assessment_time": "2026-10-14T11:02:23-04:00",
+      "notes": "Provisional Elevated tree/utility vulnerability from independent 11:00 AM Model Refresh briefing. Derived ECONet evidence and source QC verified as of review; ECONet status now Stale. No automatic risk/posture escalation.",
+      "observation_time": "2026-10-14T09:05:00-04:00",
+      "retrieved_at": "2026-10-14T14:05:58.007566+00:00",
+      "status": "Stale"
     }
   },
   "timeline": [
