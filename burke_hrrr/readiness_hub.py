@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 
 from .econet import MAX_CURRENT_AGE_MINUTES
 from .vegetation_context import evaluated_vegetation_context
+from .preliminary_outlook import make_preliminary_outlook
 
 EASTERN = ZoneInfo("America/New_York")
 LAT = 35.745
@@ -1329,6 +1330,7 @@ def build_snapshot(
         "sources": sources,
         "timeline": timeline,
         "daily": daily,
+        "preliminary_outlook": make_preliminary_outlook(now, severe, sources, daily),
     }
 
 

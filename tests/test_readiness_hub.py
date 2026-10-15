@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from burke_hrrr.vegetation_context import evaluated_vegetation_context
+from burke_hrrr.preliminary_outlook import make_preliminary_outlook
 
 from burke_hrrr.readiness_hub import (
     EASTERN,
@@ -148,6 +149,83 @@ class ReadinessHubTests(unittest.TestCase):
             )
             self.assertIsNone(rejected)
             self.assertEqual(rejected_source["status"], "Unavailable")
+
+    def test_morning_preliminary_outlook_preserves_partial_risk(self) -> None:
+        now = dt.datetime.fromisoformat("2026-10-15T08:17:31-04:00")
+        daily = []
+        for date, name, gust, risk, hazard in (
+            ("2026-10-15", "Today", 6.9, 0, "None"),
+            ("2026-10-16", "Tomorrow", 27.6, 1, "Forecast Surface Gust"),
+            ("2026-10-17", "Sat", 19.6, 0, "None"),
+        ):
+            start = dt.datetime.fromisoformat(date + "T08:00:00-04:00")
+            daily.append({
+                "label": name,
+                "forecast_date": date,
+                "window_start": start.isoformat(),
+                "window_end": (start + dt.timedelta(days=1)).isoformat(),
+                "data_status": "Partial",
+                "overall_level": risk,
+                "primary_hazard": hazard,
+                "wind_gust_mph": gust,
+                "qpf_24_in": 0.0,
+                "min_temp_f": 46,
+                "ice_accretion_in": 0.0,
+                "snowfall_in": 0.0,
+            })
+        severe = {
+            "nws_alert": "None",
+            "rainfall_72_in": 0.0,
+            "rainfall_168_in": 7.37,
+        }
+        sources = {
+            "downburst_workflow": {"status": "Unavailable"},
+            "nws_nbm": {"status": "Available"},
+            "nws_alerts": {"status": "Available"},
+            "econet": {"status": "Available"},
+        }
+        preview = make_preliminary_outlook(now, severe, sources, daily)
+        self.assertIsNotNone(preview)
+        self.assertEqual(preview["phase"], "Before initial model")
+        self.assertEqual(preview["status"], "Preliminary")
+        floor = preview["known_input_planning_floor"]
+        self.assertEqual(floor["level"], 1)
+        self.assertEqual(floor["label"], "Awareness")
+        self.assertEqual(floor["period"], "Tomorrow")
+        self.assertEqual(floor["primary_hazard"], "Forecast Surface Gust")
+        self.assertEqual(floor["headline"], "At least Awareness — Partial")
+        self.assertEqual(preview["current_day_inputs"]["forecast_gust_mph"], 6.9)
+        self.assertEqual(preview["current_day_inputs"]["antecedent_rainfall_168_in"], 7.37)
+        self.assertFalse(preview["full_forecast_risk_assessed"])
+        self.assertFalse(preview["management_posture_assessed"])
+        self.assertEqual(preview["source_health"]["econet"], "Available")
+
+        # A stale ECONet source must never be presented as fresh, even if
+        # current NWS hazards continue to support a planning floor.
+        sources["econet"]["status"] = "Stale"
+        stale = make_preliminary_outlook(now, severe, sources, daily)
+        self.assertEqual(stale["source_health"]["econet"], "Stale")
+        self.assertIn("Fresh MORG ECONet", stale["pending_inputs"])
+        self.assertEqual(stale["known_input_planning_floor"]["level"], 1)
+
+        # The normal full forecast takes priority once today's model arrives.
+        sources["downburst_workflow"]["status"] = "Available"
+        self.assertIsNone(make_preliminary_outlook(now, severe, sources, daily))
+        sources["downburst_workflow"]["status"] = "Stale"
+        after_refresh = dt.datetime.fromisoformat("2026-10-15T11:47:00-04:00")
+        missing = make_preliminary_outlook(after_refresh, severe, sources, daily)
+        self.assertEqual(missing["phase"], "Late model refresh missing")
+        self.assertFalse(missing["management_posture_assessed"])
+
+        # With no supported current NWS forecast, do not invent a Normal floor.
+        sources["nws_nbm"]["status"] = "Unavailable"
+        blank = make_preliminary_outlook(now, severe, sources, daily)
+        self.assertIsNone(blank["known_input_planning_floor"]["level"])
+        self.assertEqual(blank["known_input_planning_floor"]["label"], "Not established")
+
+        # Previous-day day-0 rows must not masquerade as a new morning outlook.
+        daily[0]["forecast_date"] = "2026-10-14"
+        self.assertIsNone(make_preliminary_outlook(now, severe, sources, daily))
 
     def test_source_aligned_qpf_uses_24_contiguous_hourly_slots(self) -> None:
         starts = []

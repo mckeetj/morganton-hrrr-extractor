@@ -119,6 +119,23 @@ Inputs are deliberately separated by responsibility:
 
 Additive JSON output fields: `severe.vegetation_vulnerability`, `severe.rainfall_168_in`, `severe.soil_moisture_context`, `sources.vegetation_vulnerability` and `sources.econet.derived_context`. These are presentation-only decision support and do not change meteorological Downburst Index, existing tree composite, forecast-risk classification, or management posture. The ChatGPT briefing does not automatically publish these assessments to GitHub; new dated handoffs must be supplied separately or the classification is `Not Assessed`.
 
+### Early-morning preliminary planning view
+
+Before the first valid daily Downburst/SPC handoff, the Hub snapshot includes
+`preliminary_outlook` with an **informational planning floor** derived from
+already-available NWS forecasts, ECONet context, and the existing seven-day
+partial-period planning computations. This keeps objective forecast information
+visible without recycling the previous day's Downburst Index or claiming a
+complete current Forecast Risk Level or Recommended Management Posture.
+
+The summary identifies the strongest supported floor in the first three
+daily forecast periods, its primary supported hazard/time window, current
+observations, and source-health status. Missing, stale, and delayed Downburst
+handoffs are distinguished. **Normal** among assessed inputs is not a
+full-risk clearance. Current NWS alerts and City procedures remain authoritative.
+Once today's Downburst/SPC handoff is available, this separate preview is
+omitted and the normal Hub assessment controls the display.
+
 The builder does not turn missing data into a numeric risk level. When an input
 cannot be established conservatively, it is omitted so the Hub's degraded-data
 propagation can require review.
