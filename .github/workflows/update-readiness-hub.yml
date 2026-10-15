@@ -13,10 +13,13 @@ on:
       - "current/load-stress.json"
       - "burke_hrrr/readiness_hub.py"
       - "burke_hrrr/vegetation_context.py"
+      - "burke_hrrr/preliminary_outlook.py"
+      - "tests/test_readiness_hub.py"
       - ".github/workflows/update-readiness-hub.yml"
   pull_request:
     paths:
       - "burke_hrrr/readiness_hub.py"
+      - "burke_hrrr/preliminary_outlook.py"
       - "tests/test_readiness_hub.py"
       - ".github/workflows/update-readiness-hub.yml"
       - "current/downburst-outlook.json"

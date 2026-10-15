@@ -205,7 +205,7 @@ class ReadinessHubTests(unittest.TestCase):
         sources["econet"]["status"] = "Stale"
         stale = make_preliminary_outlook(now, severe, sources, daily)
         self.assertEqual(stale["source_health"]["econet"], "Stale")
-        self.assertIn("Fresh MORG ECONet", stale["pending_inputs"])
+        self.assertIn("Fresh MORG ECONet antecedent observations", stale["pending_inputs"])
         self.assertEqual(stale["known_input_planning_floor"]["level"], 1)
 
         # The normal full forecast takes priority once today's model arrives.
