@@ -4,11 +4,11 @@
   "deterministic_model_version": "1.0",
   "downburst_index": 5,
   "verdict": "LOW",
-  "confidence": "Moderate",
-  "source_run": "8:30 AM Initial",
-  "trend": null,
+  "confidence": "Low",
+  "source_run": "11:00 AM Model Refresh",
+  "trend": "Similar",
   "valid_date": "2026-10-17",
-  "issued_at": "2026-10-17T08:47:08.824783-04:00",
+  "issued_at": "2026-10-17T11:17:07.461753-04:00",
   "most_likely_window": "No meaningful convective window identified",
   "spc_category": "General",
   "spc_issued_at": null,
@@ -28,5 +28,6 @@
   "spc_wind_probability_percent": 0,
   "spc_categorical_dn": 0,
   "nws_thunder_hours_next_18h": 0,
-  "hrrr_used": false
+  "hrrr_used": false,
+  "hrrr_unavailable_reason": "cycle is not current; generated_at is not current; snapshot_published_at is not current"
 }
