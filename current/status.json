@@ -6,17 +6,17 @@
     "status": "valid"
   },
   "econet_1030": {
-    "generated_at": "2026-10-18T14:05:47.649272+00:00",
+    "generated_at": "2026-10-19T14:05:49.672222+00:00",
     "path": "current/morg-econet-1030.json",
-    "status": "not_current_for_today"
+    "status": "valid"
   },
   "hrrr_12z": {
-    "cycle_initialized": "2026-10-18T12:00:00+00:00",
-    "generated_at": "2026-10-18T14:05:57.134251+00:00",
+    "cycle_initialized": "2026-10-19T12:00:00+00:00",
+    "generated_at": "2026-10-19T14:05:59.629858+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "not_current_for_today",
-    "through": "2026-10-19T00:00:00-04:00"
+    "status": "valid",
+    "through": "2026-10-20T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-19T12:05:26.354669+00:00"
+  "updated_at": "2026-10-19T14:07:32.453870+00:00"
 }
