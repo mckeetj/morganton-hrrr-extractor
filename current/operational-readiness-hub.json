@@ -116,9 +116,9 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Complete controlling inputs",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-20T09:17:30.374191-04:00",
+    "generated_at": "2026-10-20T09:35:17.940120-04:00",
     "mode": "REVIEWED",
-    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a dated provisional vegetation-vulnerability briefing is separate from calculated forecast risk; Load Stress remains manual."
+    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual."
   },
   "preliminary_outlook": null,
   "severe": {
@@ -146,13 +146,29 @@
       }
     },
     "spc_category": "General",
+    "vegetation_vulnerability": {
+      "affects_calculated_posture": false,
+      "affects_meteorological_downburst_index": false,
+      "basis": "Provisional antecedent-moisture screen (pilot-moisture-screen-v1): 24h rainfall 0.00 in; 72h 0.00 in; 168h 0.00 in. 10/20-cm 24h changes -0.010/-0.010 m3/m3; within-week relative ranks 5.1/5.1. Trigger: no elevated rainfall-plus-wetting screening signal. Within-week ranks are NOT climatological soil-saturation percentiles. A Normal screen does not certify root stability or rule out localized saturated ground, erosion, or hazardous trees. MORG source observations are within the 180-minute policy.",
+      "classification": "Normal",
+      "confidence": "Moderate",
+      "issued_at": "2026-10-20T12:05:20.966722+00:00",
+      "methodology": "Rule-based provisional antecedent moisture screening; not a calibrated tree-failure probability or full tree-failure composite",
+      "methodology_version": "pilot-moisture-screen-v1",
+      "screening_only": true,
+      "soil_percentile_reference": "rolling_previous_7_days_not_climatology",
+      "source_freshness_at_snapshot": "Available",
+      "source_run": "Automated MORG ECONet screen",
+      "status": "Provisional",
+      "valid_date": "2026-10-20"
+    },
     "wind_gust_mph": 6.9
   },
   "sources": {
     "downburst_workflow": {
       "notes": "Deterministic Downburst Model v1.0 handoff from 8:30 AM Initial; verdict=LOW; index=5; confidence=Moderate. Deterministic v1.0: SPC 5 + NWS thunder 0 + HRRR 0 = 5; SPC wind probability 0%.",
       "observation_time": "2026-10-20T08:35:06.936033-04:00",
-      "retrieved_at": "2026-10-20T09:17:30.374191-04:00",
+      "retrieved_at": "2026-10-20T09:35:17.940120-04:00",
       "status": "Available"
     },
     "econet": {
@@ -160,7 +176,9 @@
         "qc_metadata_verified": true,
         "rainfall_168_coverage_percent": 99.4,
         "rainfall_168_in": 0.0,
+        "rainfall_24_coverage_percent": 95.8,
         "rainfall_24_in": 0.0,
+        "rainfall_72_coverage_percent": 98.6,
         "rainfall_72_in": 0.0,
         "soil_moisture": {
           "10cm": {
@@ -197,29 +215,32 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-20T09:17:30.374191-04:00",
+      "retrieved_at": "2026-10-20T09:35:17.940120-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-20T09:17:30.374191-04:00",
+      "retrieved_at": "2026-10-20T09:35:17.940120-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-20T09:00:00-04:00 through 2026-10-21T09:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
       "observation_time": "2026-10-20T10:18:35+00:00",
-      "retrieved_at": "2026-10-20T09:17:30.374191-04:00",
+      "retrieved_at": "2026-10-20T09:35:17.940120-04:00",
       "status": "Available",
       "valid_time": "2026-10-20T09:00:00-04:00"
     },
     "spc": {
       "notes": "SPC category carried by the Deterministic Downburst Model v1.0 handoff: General. Exact SPC issue time was not established.",
-      "retrieved_at": "2026-10-20T09:17:30.374191-04:00",
+      "retrieved_at": "2026-10-20T09:35:17.940120-04:00",
       "status": "Available"
     },
     "vegetation_vulnerability": {
-      "notes": "No current dated independent vegetation vulnerability briefing handoff.",
-      "status": "Not Assessed"
+      "assessment_time": "2026-10-20T12:05:20.966722+00:00",
+      "notes": "Automated pilot-moisture-screen-v1: provisional Normal antecedent-moisture signal; MORG source observations are within the 180-minute policy. Site-specific tree failure is NOT predicted and calculated risk/posture remain unchanged.",
+      "observation_time": "2026-10-20T07:05:00-04:00",
+      "retrieved_at": "2026-10-20T12:05:20.966722+00:00",
+      "status": "Available"
     }
   },
   "timeline": [
