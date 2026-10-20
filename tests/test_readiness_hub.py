@@ -4,7 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from burke_hrrr.vegetation_context import evaluated_vegetation_context
+from burke_hrrr.vegetation_context import (
+    automated_vegetation_context,
+    evaluated_vegetation_context,
+)
 from burke_hrrr.preliminary_outlook import make_preliminary_outlook
 
 from burke_hrrr.readiness_hub import (
@@ -149,6 +152,118 @@ class ReadinessHubTests(unittest.TestCase):
             )
             self.assertIsNone(rejected)
             self.assertEqual(rejected_source["status"], "Unavailable")
+
+    def test_automated_econet_vegetation_screen_and_safety_gates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "current").mkdir()
+            path = root / "current" / "morg-econet-0830.json"
+            econet = {
+                "generated_at": "2026-10-20T08:05:20-04:00",
+                "station": {"id": "MORG"},
+                "status": "current",
+                "quality_control": {"flag_metadata_verified": True},
+                "freshness": {
+                    "latest_accepted_observation_time": "2026-10-20T07:05:00-04:00",
+                    "maximum_current_age_minutes": 180,
+                },
+                "rainfall": {
+                    "24h": {"total_inches": 0, "coverage_percent": 95.8},
+                    "72h": {"total_inches": 0, "coverage_percent": 98.6},
+                    "168h": {"total_inches": 0, "coverage_percent": 99.4},
+                },
+                "soil_moisture": {
+                    depth: {
+                        "status": "current",
+                        "observation_time": "2026-10-20T07:00:00-04:00",
+                        "qc_score": 0,
+                        "qc_status": "good",
+                        "change_24h_m3m3": -0.01,
+                        "seven_day_percentile": 5.1,
+                        "current_value_m3m3": 999,  # Must never be republished.
+                    }
+                    for depth in ("10cm", "20cm")
+                },
+            }
+            def check_at(snapshot_time: str):
+                path.write_text(json.dumps(econet), encoding="utf-8")
+                now = dt.datetime.fromisoformat(snapshot_time)
+                _, source = _econet_context(root, now)
+                assessment, status = automated_vegetation_context(now, source)
+                self.assertNotIn("999", json.dumps(source))
+                if assessment is not None:
+                    self.assertNotIn("999", json.dumps(assessment))
+                return assessment, status, source
+
+            # The documented October 20 case produces a provisional
+            # *moisture screening* Normal; NOT proof of stable roots.
+            normal, source, context = check_at("2026-10-20T09:18:00-04:00")
+            self.assertEqual(context["status"], "Available")
+            self.assertEqual(normal["classification"], "Normal")
+            self.assertEqual(normal["confidence"], "Moderate")
+            self.assertEqual(normal["status"], "Provisional")
+            self.assertEqual(normal["source_run"], "Automated MORG ECONet screen")
+            self.assertEqual(normal["valid_date"], "2026-10-20")
+            self.assertEqual(normal["soil_percentile_reference"],
+                             "rolling_previous_7_days_not_climatology")
+            self.assertIn("does not certify root stability", normal["basis"])
+            self.assertFalse(normal["affects_calculated_posture"])
+            self.assertFalse(normal["affects_meteorological_downburst_index"])
+            self.assertEqual(source["status"], "Available")
+
+            # A high rank within the previous week is not automatically
+            # wet climatological soil; it cannot elevate with no rain.
+            for d in ("10cm", "20cm"):
+                econet["soil_moisture"][d]["seven_day_percentile"] = 99
+            relative_rank_only, _, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertEqual(relative_rank_only["classification"], "Normal")
+
+            # Residual heavy rainfall over seven days supports Elevated
+            # despite quiet 24/72-hour weather (October 14 pattern).
+            econet["rainfall"]["168h"]["total_inches"] = 7.37
+            elevated, _, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertEqual(elevated["classification"], "Elevated")
+
+            # Pre-existing 72-hour Major Event rainfall band supports a
+            # high antecedent moisture screening signal.
+            econet["rainfall"]["72h"]["total_inches"] = 5.0
+            high, _, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertEqual(high["classification"], "High")
+
+            # The novel soil-wetting condition requires corroborating
+            # rainfall and both QC-valid soil depth measurements.
+            econet["rainfall"]["168h"]["total_inches"] = 1.1
+            econet["rainfall"]["72h"]["total_inches"] = 1.1
+            for d in ("10cm", "20cm"):
+                econet["soil_moisture"][d]["seven_day_percentile"] = 85
+                econet["soil_moisture"][d]["change_24h_m3m3"] = .03
+            soil_supported, _, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertEqual(soil_supported["classification"], "Elevated")
+
+            # Same-day, formerly accepted observations may remain *visibly*
+            # stale with Low confidence, never silently presented as current.
+            old_assessment, old_source, _ = check_at("2026-10-20T15:00:00-04:00")
+            self.assertEqual(old_assessment["classification"], "Elevated")
+            self.assertEqual(old_assessment["source_freshness_at_snapshot"], "Stale")
+            self.assertEqual(old_assessment["confidence"], "Low")
+            self.assertEqual(old_source["status"], "Stale")
+            self.assertIn("STALE", old_assessment["basis"])
+
+            # Yesterday's source must not become today's daily assessment.
+            missing, unavailable, _ = check_at("2026-10-21T08:30:00-04:00")
+            self.assertIsNone(missing)
+            self.assertEqual(unavailable["status"], "Not Assessed")
+
+            # Fails closed on QC or insufficient rainfall coverage.
+            econet["soil_moisture"]["10cm"]["qc_score"] = 2
+            no_qc, source_qc, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertIsNone(no_qc)
+            self.assertEqual(source_qc["status"], "Unavailable")
+            econet["soil_moisture"]["10cm"]["qc_score"] = 0
+            econet["rainfall"]["72h"]["coverage_percent"] = 83
+            no_coverage, source_cov, _ = check_at("2026-10-20T09:18:00-04:00")
+            self.assertIsNone(no_coverage)
+            self.assertIn("coverage", source_cov["notes"])
 
     def test_morning_preliminary_outlook_preserves_partial_risk(self) -> None:
         now = dt.datetime.fromisoformat("2026-10-15T08:17:31-04:00")

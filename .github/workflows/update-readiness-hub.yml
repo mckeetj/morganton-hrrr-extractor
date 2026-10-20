@@ -19,6 +19,7 @@ on:
   pull_request:
     paths:
       - "burke_hrrr/readiness_hub.py"
+      - "burke_hrrr/vegetation_context.py"
       - "burke_hrrr/preliminary_outlook.py"
       - "tests/test_readiness_hub.py"
       - ".github/workflows/update-readiness-hub.yml"
@@ -80,6 +81,23 @@ jobs:
 
           if "downburst_index" in data["severe"]:
               assert 0 <= data["severe"]["downburst_index"] <= 100
+
+          vegetation = data["severe"].get("vegetation_vulnerability")
+          vegetation_source = data["sources"].get("vegetation_vulnerability", {})
+          if vegetation is not None:
+              assert vegetation["status"] == "Provisional"
+              assert vegetation["classification"] in ("Normal", "Elevated", "High")
+              assert vegetation["confidence"] in ("Low", "Moderate")
+              assert vegetation["valid_date"] == data["meta"]["generated_at"][:10]
+              assert vegetation_source["status"] in ("Available", "Stale")
+              assert vegetation["affects_calculated_posture"] is False
+              assert vegetation["affects_meteorological_downburst_index"] is False
+              if vegetation.get("source_run") == "Automated MORG ECONet screen":
+                  assert vegetation["screening_only"] is True
+                  assert vegetation["methodology_version"] == "pilot-moisture-screen-v1"
+                  assert vegetation["soil_percentile_reference"] == "rolling_previous_7_days_not_climatology"
+          assert "current_value_m3m3" not in json.dumps(data["severe"])
+          assert "current_value_m3m3" not in json.dumps(data["sources"])
 
           if "timeline" in data:
               assert len(data["timeline"]) == 7

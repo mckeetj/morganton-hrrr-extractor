@@ -114,10 +114,24 @@ Inputs are deliberately separated by responsibility:
 - NWS Digital Forecast / NDFD and api.weather.gov grid data: wind gust, source-aligned 24-hour QPF, minimum temperature, snowfall, ice accumulation, and active NWS alerts.
 - Deterministic Downburst Model v1.0: free, rule-based 0-100 Downburst Index plus the current SPC categorical handoff in `current/downburst-outlook.json`. The production score uses official SPC/NWS data and, for the late-morning refresh, validated 12Z HRRR diagnostics. It does not depend on a paid AI API or on a ChatGPT task writing to GitHub.
 - MORG ECONet: rolling 72-hour antecedent rainfall, derived 168-hour rainfall and 10-cm/20-cm soil-moisture percentiles/change/QC, and 180-minute source freshness. No absolute soil readings are republished.
-- Independent tree/utility vulnerability: optional date-specific `current/vegetation-vulnerability.json`, a provisional qualitative Downburst briefing assessment validated against the source ECONet evidence at assessment time; stale observations are labeled and outdated assessments expire.
+- Independent tree/utility vulnerability: automated provisional antecedent-moisture screening from validated MORG ECONet inputs on every Hub snapshot refresh; a separately validated date-specific `current/vegetation-vulnerability.json` human briefing can take precedence for its valid date. Stale same-day context is labeled and previous-day screens expire.
 - Morganton Electric: manual Load Stress Level 1-5 in `current/load-stress.json`.
 
-Additive JSON output fields: `severe.vegetation_vulnerability`, `severe.rainfall_168_in`, `severe.soil_moisture_context`, `sources.vegetation_vulnerability` and `sources.econet.derived_context`. These are presentation-only decision support and do not change meteorological Downburst Index, existing tree composite, forecast-risk classification, or management posture. The ChatGPT briefing does not automatically publish these assessments to GitHub; new dated handoffs must be supplied separately or the classification is `Not Assessed`.
+Additive JSON output fields: `severe.vegetation_vulnerability`, `severe.rainfall_168_in`, `severe.soil_moisture_context`, `sources.vegetation_vulnerability` and `sources.econet.derived_context`. These are presentation-only decision support and **do not change** the meteorological Downburst Index, existing tree composite, forecast-risk classification, or management posture. The independent human Downburst briefing does NOT publish to GitHub automatically. A same-day validated human assessment may supersede the automated one; otherwise an automated pilot screen supplies the assessment. Absent valid evidence, the status is `Unavailable` or `Not Assessed`, not Normal.
+
+### Automated vegetation/antecedent-moisture screen (pilot v1)
+
+The following are **local screening choices requiring validation against Morganton outage and tree-failure history**. They are neither NWS criteria nor empirical probabilities of tree/root failure:
+
+- **High**: rainfall of at least 5.0 inches in 72 hours (the existing Hub rainfall Major Event band), or 24-hour >= 3.0 inches, 72-hour >= 3.0 inches, and 168-hour >= 5.0 inches concurrently.
+- **Elevated**: otherwise 72-hour rainfall >= 2.0 inches or 168-hour >= 3.0 inches, OR at least 1.0 inch in 72 hours together with BOTH soil depths increasing >= 0.02 m3/m3 over 24 hours and each ranking >= 75th percentile within its own rolling week.
+- **Normal**: none of the moisture-specific triggers; *does not certify tree stability, safe soil conditions, or the absence of localized root-zone saturation or erosion*.
+
+**Critical interpretation:** `seven_day_percentile` is computed by `burke_hrrr/econet.py` from the most recent seven days of hourly accepted observations. It is **not** an absolute soil-moisture value or NC State Climate Office long-term climatological percentile. A high within-week percentile alone cannot imply saturated soil or raise the screening level; the soil trend rule needs corroborating rainfall.
+
+The automated screen requires MORG station provenance; today's Eastern source-generation date; verified CLOUDS QC; soil observations at 10 cm and 20 cm with scores 0/1 and valid timing; and at least 90% accepted rainfall coverage separately for 24, 72 and 168 hours. Source observations must have been within 180 minutes **when generated**. If observations subsequently become stale on the same date, the last-known result remains visible with a **Stale** status and Low confidence; it is never presented as fresh or reused the next day. Current valid source screening confidence is capped at Moderate, as the thresholds are not locally calibrated. Absolute soil-moisture readings remain unpublished.
+
+This is a separate **antecedent-moisture impact signal**, not the computed Tree-Failure/Uprooting Composite, a downburst forecast, a utility-wide tree risk certification, a management posture recommendation, or an activation trigger. Validate these pilot rules against actual vegetation outages and site conditions before any operational escalation policy is approved.
 
 ### Early-morning preliminary planning view
 

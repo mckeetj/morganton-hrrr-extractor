@@ -25,7 +25,10 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from .econet import MAX_CURRENT_AGE_MINUTES
-from .vegetation_context import evaluated_vegetation_context
+from .vegetation_context import (
+    automated_vegetation_context,
+    evaluated_vegetation_context,
+)
 from .preliminary_outlook import make_preliminary_outlook
 
 EASTERN = ZoneInfo("America/New_York")
@@ -957,6 +960,12 @@ def _econet_context(
             econet.get("rainfall", {}).get("24h", {}).get("total_inches")
         ),
         "rainfall_72_in": rainfall_value,
+        "rainfall_24_coverage_percent": _finite_number(
+            econet.get("rainfall", {}).get("24h", {}).get("coverage_percent")
+        ),
+        "rainfall_72_coverage_percent": _finite_number(
+            econet.get("rainfall", {}).get("72h", {}).get("coverage_percent")
+        ),
         "rainfall_168_in": _finite_number(
             econet.get("rainfall", {}).get("168h", {}).get("total_inches")
         ),
@@ -1248,9 +1257,21 @@ def build_snapshot(
     if derived_econet.get("soil_moisture"):
         severe["soil_moisture_context"] = derived_econet["soil_moisture"]
 
+    # Prefer a validated, same-date independent briefing if one was provided.
+    # Otherwise derive the conservative daily moisture screening result from
+    # QC-accepted ECONet context. This does NOT alter the downburst score,
+    # calculated tree-failure composite, forecast risk, or management posture.
     vegetation_assessment, vegetation_source = evaluated_vegetation_context(
         repo_root, now, econet_source
     )
+    if vegetation_assessment is None:
+        manual_source = vegetation_source
+        vegetation_assessment, vegetation_source = automated_vegetation_context(
+            now, econet_source
+        )
+        if manual_source.get("status") == "Unavailable":
+            vegetation_source["manual_handoff_status"] = "Rejected"
+            vegetation_source["manual_handoff_note"] = manual_source.get("notes")
     sources["vegetation_vulnerability"] = vegetation_source
     if vegetation_assessment is not None:
         severe["vegetation_vulnerability"] = vegetation_assessment
@@ -1311,8 +1332,9 @@ def build_snapshot(
         "Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital "
         "Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet "
         "supplies antecedent rainfall and permitted derived soil context; "
-        "a dated provisional vegetation-vulnerability briefing is separate "
-        "from calculated forecast risk; Load Stress remains manual."
+        "a QC-validated automated vegetation-moisture screening result (or "
+        "separately validated, same-day qualitative briefing when supplied) "
+        "is kept separate from calculated forecast risk; Load Stress remains manual."
     )
     if missing:
         notes += " Unavailable or unresolved fields: " + ", ".join(missing) + "."
