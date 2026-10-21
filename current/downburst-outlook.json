@@ -5,10 +5,10 @@
   "downburst_index": 5,
   "verdict": "LOW",
   "confidence": "Moderate",
-  "source_run": "8:30 AM Initial",
-  "trend": null,
+  "source_run": "11:00 AM Model Refresh",
+  "trend": "Similar",
   "valid_date": "2026-10-21",
-  "issued_at": "2026-10-21T08:35:07.683771-04:00",
+  "issued_at": "2026-10-21T11:05:07.706254-04:00",
   "most_likely_window": "No meaningful convective window identified",
   "spc_category": "General",
   "spc_issued_at": null,
@@ -28,5 +28,19 @@
   "spc_wind_probability_percent": 0,
   "spc_categorical_dn": 0,
   "nws_thunder_hours_next_18h": 0,
-  "hrrr_used": false
+  "hrrr_used": true,
+  "hrrr_diagnostics": {
+    "cape_surface_p90_jkg": 0.0,
+    "cape_surface_max_jkg": 0.0,
+    "reflectivity_p90_dbz": 0.0,
+    "reflectivity_max_dbz": 0.0,
+    "updraft_p90_ms": 0.1962144523859024,
+    "downdraft_p90_ms": 0.178802490234375,
+    "pwat_p90_in": 0.49321369861993264,
+    "dewpoint_depression_700mb_p90_k": 29.595916748046875,
+    "lapse_rate_0_3km_p90_k_per_km": 6.883911072705375,
+    "shear_10m_500mb_p90_kt": 19.66986778599316,
+    "surface_gust_p90_mph": 10.25675596641316,
+    "surface_gust_max_mph": 14.744609402347294
+  }
 }
