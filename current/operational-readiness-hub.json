@@ -6,8 +6,8 @@
       "forecast_date": "2026-10-22",
       "ice_accretion_in": 0.0,
       "label": "Today",
-      "min_temp_f": 40.0,
-      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 40 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 36.0,
+      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 36 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -116,7 +116,7 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-22T06:17:30.866959-04:00",
+    "generated_at": "2026-10-22T06:47:30.291942-04:00",
     "mode": "REVIEWED",
     "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.spc_category."
   },
@@ -126,12 +126,12 @@
       "antecedent_rainfall_72_in": 0.0,
       "forecast_gust_mph": 4.6,
       "forecast_qpf_24_in": 0.0,
-      "minimum_temperature_f": 40.0,
+      "minimum_temperature_f": 36.0,
       "nws_alert": "None"
     },
     "evaluation_window": "Next 72 hours (first three supplied daily periods)",
     "full_forecast_risk_assessed": false,
-    "generated_at": "2026-10-22T06:17:30.866959-04:00",
+    "generated_at": "2026-10-22T06:47:30.291942-04:00",
     "known_input_completeness": "NWS fields available; source freshness shown separately",
     "known_input_planning_floor": {
       "headline": "No elevated signal in assessed inputs \u2014 Partial",
@@ -232,18 +232,18 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-22T06:17:30.866959-04:00",
+      "retrieved_at": "2026-10-22T06:47:30.291942-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-22T06:17:30.866959-04:00",
+      "retrieved_at": "2026-10-22T06:47:30.291942-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-22T06:00:00-04:00 through 2026-10-23T06:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
-      "observation_time": "2026-10-22T06:23:44+00:00",
-      "retrieved_at": "2026-10-22T06:17:30.866959-04:00",
+      "observation_time": "2026-10-22T10:14:58+00:00",
+      "retrieved_at": "2026-10-22T06:47:30.291942-04:00",
       "status": "Available",
       "valid_time": "2026-10-22T06:00:00-04:00"
     },
@@ -265,7 +265,7 @@
       "label": "Today 6 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 40.0,
+      "min_temp_f": 36.0,
       "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -394,7 +394,7 @@
   "winter": {
     "ice_accretion_in": 0.0,
     "load_stress_level": 1,
-    "min_temp_f": 38.0,
+    "min_temp_f": 36.0,
     "snowfall_in": 0.0
   }
 }
