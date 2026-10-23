@@ -2,12 +2,12 @@
   "daily": [
     {
       "data_status": "Partial",
-      "downburst_status": "Not Assessed",
+      "downburst_status": "Available",
       "forecast_date": "2026-10-23",
       "ice_accretion_in": 0.0,
       "label": "Today",
       "min_temp_f": 40.0,
-      "note": "Max gust 8 mph; 24h QPF 0.00 in; Min temp 40 F; Downburst not assessed for this planning period; planning floor only.",
+      "note": "Max gust 8 mph; 24h QPF 0.00 in; Min temp 40 F; Downburst Index 5; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -116,49 +116,13 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-23T08:17:31.167550-04:00",
+    "generated_at": "2026-10-23T08:35:23.319107-04:00",
     "mode": "REVIEWED",
-    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.rainfall_72_in, severe.spc_category."
+    "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual. Unavailable or unresolved fields: severe.rainfall_72_in."
   },
-  "preliminary_outlook": {
-    "current_day_inputs": {
-      "antecedent_rainfall_168_in": null,
-      "antecedent_rainfall_72_in": null,
-      "forecast_gust_mph": 8.1,
-      "forecast_qpf_24_in": 0.0,
-      "minimum_temperature_f": 40.0,
-      "nws_alert": "None"
-    },
-    "evaluation_window": "Next 72 hours (first three supplied daily periods)",
-    "full_forecast_risk_assessed": false,
-    "generated_at": "2026-10-23T08:17:31.167550-04:00",
-    "known_input_completeness": "NWS fields available; source freshness shown separately",
-    "known_input_planning_floor": {
-      "headline": "No elevated signal in assessed inputs \u2014 Partial",
-      "label": "Normal",
-      "level": 0,
-      "period": "Today",
-      "primary_hazard": "None",
-      "window_end": "2026-10-24T08:00:00-04:00",
-      "window_start": "2026-10-23T08:00:00-04:00"
-    },
-    "management_posture_assessed": false,
-    "notes": "This is a conservative floor from available weather and other assessed hazard inputs, not an all-hazards forecast risk or a management posture. The unassessed Downburst/SPC inputs could raise the eventual risk level. Never treat a Normal known-input floor as clearance; follow current NWS alerts and City procedures.",
-    "pending_inputs": [
-      "Today's Downburst Index and SPC handoff",
-      "Fresh MORG ECONet antecedent observations"
-    ],
-    "phase": "Before initial model",
-    "source_health": {
-      "downburst": "Unavailable",
-      "econet": "Stale",
-      "nws_alerts": "Available",
-      "nws_forecast": "Available"
-    },
-    "status": "Preliminary",
-    "valid_date": "2026-10-23"
-  },
+  "preliminary_outlook": null,
   "severe": {
+    "downburst_index": 5,
     "nws_alert": "None",
     "qpf_24_in": 0.0,
     "soil_moisture_context": {
@@ -179,12 +143,15 @@
         "status": null
       }
     },
+    "spc_category": "General",
     "wind_gust_mph": 8.1
   },
   "sources": {
     "downburst_workflow": {
-      "notes": "No valid current Daily Downburst Model handoff was available.",
-      "status": "Unavailable"
+      "notes": "Deterministic Downburst Model v1.0 handoff from 8:30 AM Initial; verdict=LOW; index=5; confidence=Moderate. Deterministic v1.0: SPC 5 + NWS thunder 0 + HRRR 0 = 5; SPC wind probability 0%.",
+      "observation_time": "2026-10-23T08:35:08.542528-04:00",
+      "retrieved_at": "2026-10-23T08:35:23.319107-04:00",
+      "status": "Available"
     },
     "econet": {
       "derived_context": {
@@ -217,7 +184,7 @@
       },
       "freshness_threshold_hours": 3.0,
       "notes": "MORG ECONet source file morg-econet-0830.json. Rolling 72-hour rainfall=unavailable in. Freshness threshold=180.0 minutes.",
-      "retrieved_at": "2026-10-23T12:05:19.956362+00:00",
+      "retrieved_at": "2026-10-23T12:25:18.342812+00:00",
       "status": "Stale"
     },
     "hrrr": {
@@ -229,24 +196,25 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-23T08:17:31.167550-04:00",
+      "retrieved_at": "2026-10-23T08:35:23.319107-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-23T08:17:31.167550-04:00",
+      "retrieved_at": "2026-10-23T08:35:23.319107-04:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-23T08:00:00-04:00 through 2026-10-24T08:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
       "observation_time": "2026-10-23T10:38:50+00:00",
-      "retrieved_at": "2026-10-23T08:17:31.167550-04:00",
+      "retrieved_at": "2026-10-23T08:35:23.319107-04:00",
       "status": "Available",
       "valid_time": "2026-10-23T08:00:00-04:00"
     },
     "spc": {
-      "notes": "No valid current Daily Downburst Model handoff was available.",
-      "status": "Unavailable"
+      "notes": "SPC category carried by the Deterministic Downburst Model v1.0 handoff: General. Exact SPC issue time was not established.",
+      "retrieved_at": "2026-10-23T08:35:23.319107-04:00",
+      "status": "Available"
     },
     "vegetation_vulnerability": {
       "notes": "Automated vegetation-moisture screen not established: ECONet quality-control metadata unavailable.",
@@ -256,77 +224,77 @@
   "timeline": [
     {
       "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "downburst_index": 5,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 8 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 40.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "note": "Current Downburst assessment applies to this local date. One or more NWS timeline fields are unavailable.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": null,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-23T08:00:00-04:00",
       "wind_gust_mph": 2.3
     },
     {
       "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "downburst_index": 5,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 11 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "note": "Current Downburst assessment applies to this local date. One or more NWS timeline fields are unavailable.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": null,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-23T11:00:00-04:00",
       "wind_gust_mph": 8.1
     },
     {
       "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "downburst_index": 5,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 2 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "note": "Current Downburst assessment applies to this local date. One or more NWS timeline fields are unavailable.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": null,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-23T14:00:00-04:00",
       "wind_gust_mph": 8.1
     },
     {
       "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
+      "downburst_index": 5,
+      "downburst_status": "Available",
       "ice_accretion_in": 0.0,
       "label": "Today 8 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "note": "Current Downburst assessment applies to this local date. One or more NWS timeline fields are unavailable.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": null,
       "rainfall_72_status": "Current observed baseline",
       "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
+      "spc_category": "General",
+      "spc_status": "Available",
       "valid_time": "2026-10-23T20:00:00-04:00",
       "wind_gust_mph": 3.5
     },
