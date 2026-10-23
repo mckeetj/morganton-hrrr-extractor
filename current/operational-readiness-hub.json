@@ -13,8 +13,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 11.5,
-      "window_end": "2026-10-24T11:00:00-04:00",
-      "window_start": "2026-10-23T11:00:00-04:00"
+      "window_end": "2026-10-24T12:00:00-04:00",
+      "window_start": "2026-10-23T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -23,14 +23,14 @@
       "ice_accretion_in": 0.0,
       "label": "Tomorrow",
       "min_temp_f": 37.0,
-      "note": "Max gust 12 mph; 24h QPF 0.00 in; Min temp 37 F; Downburst not assessed for this planning period; planning floor only.",
+      "note": "Max gust 10 mph; 24h QPF 0.00 in; Min temp 37 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
-      "wind_gust_mph": 11.5,
-      "window_end": "2026-10-25T11:00:00-04:00",
-      "window_start": "2026-10-24T11:00:00-04:00"
+      "wind_gust_mph": 10.4,
+      "window_end": "2026-10-25T12:00:00-04:00",
+      "window_start": "2026-10-24T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -45,8 +45,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 10.4,
-      "window_end": "2026-10-26T11:00:00-04:00",
-      "window_start": "2026-10-25T11:00:00-04:00"
+      "window_end": "2026-10-26T12:00:00-04:00",
+      "window_start": "2026-10-25T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -61,8 +61,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 3.5,
-      "window_end": "2026-10-27T11:00:00-04:00",
-      "window_start": "2026-10-26T11:00:00-04:00"
+      "window_end": "2026-10-27T12:00:00-04:00",
+      "window_start": "2026-10-26T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -77,8 +77,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 6.9,
-      "window_end": "2026-10-28T11:00:00-04:00",
-      "window_start": "2026-10-27T11:00:00-04:00"
+      "window_end": "2026-10-28T12:00:00-04:00",
+      "window_start": "2026-10-27T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -93,8 +93,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 6.9,
-      "window_end": "2026-10-29T11:00:00-04:00",
-      "window_start": "2026-10-28T11:00:00-04:00"
+      "window_end": "2026-10-29T12:00:00-04:00",
+      "window_start": "2026-10-28T12:00:00-04:00"
     },
     {
       "data_status": "Partial",
@@ -109,14 +109,14 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 4.6,
-      "window_end": "2026-10-30T11:00:00-04:00",
-      "window_start": "2026-10-29T11:00:00-04:00"
+      "window_end": "2026-10-30T12:00:00-04:00",
+      "window_start": "2026-10-29T12:00:00-04:00"
     }
   ],
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
     "forecast_window": "72 hours",
-    "generated_at": "2026-10-23T11:47:33.777078-04:00",
+    "generated_at": "2026-10-23T12:17:32.403538-04:00",
     "mode": "REVIEWED",
     "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual. Unavailable or unresolved fields: severe.rainfall_72_in."
   },
@@ -150,7 +150,7 @@
     "downburst_workflow": {
       "notes": "Deterministic Downburst Model v1.0 handoff from 11:00 AM Model Refresh; verdict=LOW; index=5; confidence=Moderate. Deterministic v1.0: SPC 5 + NWS thunder 0 + HRRR 0 = 5; SPC wind probability 0%.",
       "observation_time": "2026-10-23T11:05:08.574321-04:00",
-      "retrieved_at": "2026-10-23T11:47:33.777078-04:00",
+      "retrieved_at": "2026-10-23T12:17:32.403538-04:00",
       "status": "Available"
     },
     "econet": {
@@ -196,24 +196,24 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-10-23T11:47:33.777078-04:00",
+      "retrieved_at": "2026-10-23T12:17:32.403538-04:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-10-23T11:47:33.777078-04:00",
+      "retrieved_at": "2026-10-23T12:17:32.403538-04:00",
       "status": "Available"
     },
     "nws_nbm": {
-      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-23T11:00:00-04:00 through 2026-10-24T11:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
+      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-10-23T12:00:00-04:00 through 2026-10-24T12:00:00-04:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated.",
       "observation_time": "2026-10-23T10:38:50+00:00",
-      "retrieved_at": "2026-10-23T11:47:33.777078-04:00",
+      "retrieved_at": "2026-10-23T12:17:32.403538-04:00",
       "status": "Available",
-      "valid_time": "2026-10-23T11:00:00-04:00"
+      "valid_time": "2026-10-23T12:00:00-04:00"
     },
     "spc": {
       "notes": "SPC category carried by the Deterministic Downburst Model v1.0 handoff: General. Exact SPC issue time was not established.",
-      "retrieved_at": "2026-10-23T11:47:33.777078-04:00",
+      "retrieved_at": "2026-10-23T12:17:32.403538-04:00",
       "status": "Available"
     },
     "vegetation_vulnerability": {
@@ -227,7 +227,7 @@
       "downburst_index": 5,
       "downburst_status": "Available",
       "ice_accretion_in": 0.0,
-      "label": "Today 11 AM",
+      "label": "Today 12 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
@@ -238,7 +238,7 @@
       "snowfall_in": 0.0,
       "spc_category": "General",
       "spc_status": "Available",
-      "valid_time": "2026-10-23T11:00:00-04:00",
+      "valid_time": "2026-10-23T12:00:00-04:00",
       "wind_gust_mph": 8.1
     },
     {
@@ -246,7 +246,7 @@
       "downburst_index": 5,
       "downburst_status": "Available",
       "ice_accretion_in": 0.0,
-      "label": "Today 2 PM",
+      "label": "Today 3 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
@@ -257,7 +257,7 @@
       "snowfall_in": 0.0,
       "spc_category": "General",
       "spc_status": "Available",
-      "valid_time": "2026-10-23T14:00:00-04:00",
+      "valid_time": "2026-10-23T15:00:00-04:00",
       "wind_gust_mph": 8.1
     },
     {
@@ -265,7 +265,7 @@
       "downburst_index": 5,
       "downburst_status": "Available",
       "ice_accretion_in": 0.0,
-      "label": "Today 5 PM",
+      "label": "Today 6 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 41.0,
@@ -276,34 +276,34 @@
       "snowfall_in": 0.0,
       "spc_category": "General",
       "spc_status": "Available",
-      "valid_time": "2026-10-23T17:00:00-04:00",
-      "wind_gust_mph": 6.9
-    },
-    {
-      "data_status": "Partial",
-      "downburst_index": 5,
-      "downburst_status": "Available",
-      "ice_accretion_in": 0.0,
-      "label": "Today 11 PM",
-      "load_stress_level": 1,
-      "load_stress_status": "Manual",
-      "min_temp_f": 41.0,
-      "note": "Current Downburst assessment applies to this local date. One or more NWS timeline fields are unavailable.",
-      "qpf_24_in": 0.0,
-      "rainfall_72_in": null,
-      "rainfall_72_status": "Current observed baseline",
-      "snowfall_in": 0.0,
-      "spc_category": "General",
-      "spc_status": "Available",
-      "valid_time": "2026-10-23T23:00:00-04:00",
-      "wind_gust_mph": 3.5
+      "valid_time": "2026-10-23T18:00:00-04:00",
+      "wind_gust_mph": 5.8
     },
     {
       "data_status": "Partial",
       "downburst_index": null,
       "downburst_status": "Not Assessed",
       "ice_accretion_in": 0.0,
-      "label": "Tomorrow 11 AM",
+      "label": "Tomorrow 12 AM",
+      "load_stress_level": 1,
+      "load_stress_status": "Manual",
+      "min_temp_f": 41.0,
+      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "qpf_24_in": 0.0,
+      "rainfall_72_in": null,
+      "rainfall_72_status": "Current observed baseline",
+      "snowfall_in": 0.0,
+      "spc_category": null,
+      "spc_status": "Not Assessed",
+      "valid_time": "2026-10-24T00:00:00-04:00",
+      "wind_gust_mph": 4.6
+    },
+    {
+      "data_status": "Partial",
+      "downburst_index": null,
+      "downburst_status": "Not Assessed",
+      "ice_accretion_in": 0.0,
+      "label": "Tomorrow 12 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 37.0,
@@ -314,26 +314,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-10-24T11:00:00-04:00",
-      "wind_gust_mph": 11.5
-    },
-    {
-      "data_status": "Partial",
-      "downburst_index": null,
-      "downburst_status": "Not Assessed",
-      "ice_accretion_in": 0.0,
-      "label": "Sun 11 AM",
-      "load_stress_level": 1,
-      "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
-      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
-      "qpf_24_in": 0.0,
-      "rainfall_72_in": null,
-      "rainfall_72_status": "Current observed baseline",
-      "snowfall_in": 0.0,
-      "spc_category": null,
-      "spc_status": "Not Assessed",
-      "valid_time": "2026-10-25T11:00:00-04:00",
+      "valid_time": "2026-10-24T12:00:00-04:00",
       "wind_gust_mph": 10.4
     },
     {
@@ -341,7 +322,26 @@
       "downburst_index": null,
       "downburst_status": "Not Assessed",
       "ice_accretion_in": 0.0,
-      "label": "Mon 11 AM",
+      "label": "Sun 12 PM",
+      "load_stress_level": 1,
+      "load_stress_status": "Manual",
+      "min_temp_f": 37.0,
+      "note": "Downburst is not assessed beyond the current Daily Downburst Model valid date. One or more NWS timeline fields are unavailable.",
+      "qpf_24_in": 0.0,
+      "rainfall_72_in": null,
+      "rainfall_72_status": "Current observed baseline",
+      "snowfall_in": 0.0,
+      "spc_category": null,
+      "spc_status": "Not Assessed",
+      "valid_time": "2026-10-25T12:00:00-04:00",
+      "wind_gust_mph": 10.4
+    },
+    {
+      "data_status": "Partial",
+      "downburst_index": null,
+      "downburst_status": "Not Assessed",
+      "ice_accretion_in": 0.0,
+      "label": "Mon 12 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 38.0,
@@ -352,7 +352,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-10-26T11:00:00-04:00",
+      "valid_time": "2026-10-26T12:00:00-04:00",
       "wind_gust_mph": 3.5
     }
   ],
