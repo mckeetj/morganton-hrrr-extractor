@@ -1,23 +1,29 @@
 {
   "date_eastern": "2026-10-23",
   "econet_0830": {
-    "generated_at": "2026-10-23T12:05:19.956362+00:00",
+    "generated_at": "2026-10-23T12:25:18.342812+00:00",
     "path": "current/morg-econet-0830.json",
     "status": "upstream_unavailable",
     "upstream_tested": true
   },
   "econet_1030": {
+    "actual_start_time": "2026-10-23T10:05:13.696739-04:00",
     "generated_at": "2026-10-21T14:05:59.050932+00:00",
+    "intended_schedule": null,
     "path": "current/morg-econet-1030.json",
-    "status": "not_current_for_today"
+    "reason": "ECONet/CLOUDS was tested in-window and reported upstream unavailable.",
+    "scheduler_delay_minutes": null,
+    "status": "upstream_unavailable",
+    "trigger_schedule": null,
+    "upstream_tested": true
   },
   "hrrr_12z": {
-    "cycle_initialized": "2026-10-22T12:00:00+00:00",
-    "generated_at": "2026-10-22T14:08:59.294311+00:00",
+    "cycle_initialized": "2026-10-23T12:00:00+00:00",
+    "generated_at": "2026-10-23T14:06:39.391912+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "not_current_for_today",
-    "through": "2026-10-23T00:00:00-04:00"
+    "status": "valid",
+    "through": "2026-10-24T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-23T12:05:59.861318+00:00"
+  "updated_at": "2026-10-23T14:08:18.671817+00:00"
 }
