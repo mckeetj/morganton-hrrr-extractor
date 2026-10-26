@@ -1,26 +1,21 @@
 {
   "date_eastern": "2026-10-26",
   "econet_0830": {
-    "actual_start_time": "2026-10-26T14:45:45.679616-04:00",
     "generated_at": "2026-10-26T12:25:17.200149+00:00",
-    "intended_schedule": "2026-10-26T08:27:00-04:00",
     "path": "current/morg-econet-0830.json",
-    "reason": "GitHub delivered the scheduled run after the protected 08:30 snapshot window; ECONet/CLOUDS was not tested in this run.",
-    "scheduler_delay_minutes": 378.8,
-    "status": "scheduler_missed_window",
-    "trigger_schedule": "27 8 * * *",
-    "upstream_tested": false
+    "status": "upstream_unavailable",
+    "upstream_tested": true
   },
   "econet_1030": {
-    "actual_start_time": "2026-10-26T10:05:14.475892-04:00",
+    "actual_start_time": "2026-10-26T16:11:27.016964-04:00",
     "generated_at": "2026-10-21T14:05:59.050932+00:00",
-    "intended_schedule": null,
+    "intended_schedule": "2026-10-26T10:57:00-04:00",
     "path": "current/morg-econet-1030.json",
-    "reason": "ECONet/CLOUDS was tested in-window and reported upstream unavailable.",
-    "scheduler_delay_minutes": null,
-    "status": "upstream_unavailable",
-    "trigger_schedule": null,
-    "upstream_tested": true
+    "reason": "GitHub delivered the scheduled run after the protected 10:30/noon recovery window; ECONet/CLOUDS was not tested in this run.",
+    "scheduler_delay_minutes": 314.5,
+    "status": "scheduler_missed_window",
+    "trigger_schedule": "57 10 * * *",
+    "upstream_tested": false
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-10-26T12:00:00+00:00",
@@ -30,5 +25,5 @@
     "through": "2026-10-27T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-26T18:45:46.003244+00:00"
+  "updated_at": "2026-10-26T20:11:30.562364+00:00"
 }
