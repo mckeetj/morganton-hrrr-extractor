@@ -4,8 +4,8 @@
     "if_morg_unavailable": "Nearby rainfall observations may be used as context only.",
     "soil_moisture_substitution": "Do not substitute another station's soil moisture for MORG."
   },
-  "generated_at": "2026-10-26T12:25:17.200149+00:00",
-  "reason": "CLOUDS API returned HTTP 500",
+  "generated_at": "2026-10-27T12:05:19.251746+00:00",
+  "reason": "CLOUDS API returned HTTP 502",
   "schema_version": 1,
   "source": {
     "api": "CLOUDS",
