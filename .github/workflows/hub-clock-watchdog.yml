@@ -1,0 +1,173 @@
+name: Hub Clock Watchdog
+
+# Independent recovery for the long-running Hub snapshot clock.
+# The clock itself is responsible for building snapshots; this watchdog does
+# not fetch weather data, alter ECONet handling, or send notifications.
+on:
+  workflow_run:
+    workflows:
+      - Hub Snapshot Orchestrator
+    types:
+      - completed
+  schedule:
+    # Backup for a runner that stalls without reaching workflow completion.
+    # GitHub schedules can be delayed; workflow_run is the faster recovery path.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      # Bootstrap the watchdog when first installed or subsequently updated.
+      - ".github/workflows/hub-clock-watchdog.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: hub-clock-watchdog
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check clock health and recover if required
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import datetime as dt
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+          from zoneinfo import ZoneInfo
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          now = dt.datetime.now(dt.timezone.utc)
+          today = now.astimezone(ZoneInfo("America/New_York")).date().isoformat()
+          root = f"https://api.github.com/repos/{repo}"
+
+          def api(method, path, payload=None):
+              body = None if payload is None else json.dumps(payload).encode("utf-8")
+              headers = {
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "morganton-hub-clock-watchdog",
+              }
+              if body is not None:
+                  headers["Content-Type"] = "application/json"
+              request = urllib.request.Request(
+                  root + path, data=body, headers=headers, method=method
+              )
+              for attempt in range(3):
+                  try:
+                      with urllib.request.urlopen(request, timeout=20) as response:
+                          result = response.read()
+                          return json.loads(result) if result else None
+                  except urllib.error.HTTPError as error:
+                      if error.code not in (429, 500, 502, 503, 504) or attempt == 2:
+                          raise
+                      print(f"GitHub API {error.code}; retry {attempt + 1}/2", flush=True)
+                  except (TimeoutError, urllib.error.URLError) as error:
+                      if attempt == 2:
+                          raise
+                      print(f"GitHub API transport error; retry {attempt + 1}/2: {error}", flush=True)
+                  time.sleep(5 * (attempt + 1))
+
+          def parse_time(value):
+              if not value:
+                  return None
+              return dt.datetime.fromisoformat(
+                  value.replace("Z", "+00:00")
+              ).astimezone(dt.timezone.utc)
+
+          def age_minutes(timestamp):
+              parsed = parse_time(timestamp)
+              return float("inf") if parsed is None else max(
+                  0, (now - parsed).total_seconds() / 60
+              )
+
+          def dispatch_clock(reason):
+              print(f"::warning::Hub clock recovery: {reason}", flush=True)
+              api(
+                  "POST",
+                  "/actions/workflows/hub-snapshot-orchestrator.yml/dispatches",
+                  {"ref": "main", "inputs": {"target_date": today}},
+              )
+              print(f"Dispatched a new Hub clock for {today}", flush=True)
+
+          clocks = api(
+              "GET",
+              "/actions/workflows/hub-snapshot-orchestrator.yml/runs?per_page=30",
+          )["workflow_runs"]
+          active_statuses = {"in_progress", "queued", "pending", "waiting", "requested"}
+          active = [r for r in clocks if r["status"] in active_statuses]
+          print(
+              f"Active Hub clock runs: {[(r['id'], r['status']) for r in active]}",
+              flush=True,
+          )
+
+          if not active:
+              dispatch_clock("no queued or running Hub clock")
+              raise SystemExit(0)
+
+          # Do not treat a currently queued successor as a stalled clock.
+          if any(r["status"] != "in_progress" for r in active):
+              print("Clock already queued; no watchdog intervention")
+              raise SystemExit(0)
+
+          # A live clock can legitimately be between 30-minute checkpoints.
+          # Investigate only if the published snapshot has aged beyond 75 minutes.
+          try:
+              document = api(
+                  "GET",
+                  "/contents/current/operational-readiness-hub.json?ref=main",
+              )
+              snapshot = json.loads(
+                  base64.b64decode(document["content"]).decode("utf-8")
+              )
+              snapshot_age = age_minutes(snapshot["meta"]["generated_at"])
+          except (KeyError, ValueError, TypeError, urllib.error.HTTPError) as error:
+              print(f"Snapshot age unavailable: {error}", flush=True)
+              snapshot_age = float("inf")
+
+          print(f"Published snapshot age: {snapshot_age:.1f} minutes", flush=True)
+          if snapshot_age <= 75:
+              print("Clock and snapshot are within the recovery threshold")
+              raise SystemExit(0)
+
+          # If the snapshot worker ran recently, the problem is downstream of
+          # the clock; leave the clock untouched rather than cycling it.
+          workers = api(
+              "GET",
+              "/actions/workflows/update-readiness-hub.yml/runs?per_page=10",
+          )["workflow_runs"]
+          if any(age_minutes(r.get("created_at")) <= 50 for r in workers):
+              print("A Hub snapshot worker ran within 50 minutes; not restarting clock")
+              raise SystemExit(0)
+
+          running = [r for r in active if r["status"] == "in_progress"]
+          # A new clock may still be catching up after the previous one failed.
+          running.sort(key=lambda r: r.get("created_at", ""), reverse=True)
+          clock = running[0]
+          clock_age = age_minutes(clock.get("run_started_at") or clock.get("created_at"))
+          if clock_age < 15:
+              print("Hub clock recently started; allowing catch-up time")
+              raise SystemExit(0)
+
+          print(
+              f"::warning::Hub clock {clock['id']} appears stalled: "
+              f"snapshot age {snapshot_age:.1f}m; no recent snapshot worker",
+              flush=True,
+          )
+          api("POST", f"/actions/runs/{clock['id']}/cancel")
+          dispatch_clock(f"cancelled apparently stalled clock {clock['id']}")
+          PY
