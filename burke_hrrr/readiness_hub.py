@@ -585,7 +585,8 @@ def build_timeline(
     downburst_valid_date: str | None,
     load_stress_level: int | None,
 ) -> list[dict[str, Any]]:
-    base = nws["qpf_window_start"]
+    # Advance elapsed source hours in UTC; local arithmetic can span 23/25 hours.
+    base = nws["qpf_window_start"].astimezone(dt.UTC)
     offsets = (0, 3, 6, 12, 24, 48, 72)
     rows: list[dict[str, Any]] = []
     for offset in offsets:
@@ -632,7 +633,7 @@ def build_timeline(
         rows.append(
             {
                 "label": _timeline_label(valid, now),
-                "valid_time": valid.isoformat(),
+                "valid_time": valid.astimezone(EASTERN).isoformat(),
                 "downburst_index": bucket_downburst,
                 "downburst_status": "Available" if downburst_available else "Not Assessed",
                 "spc_category": bucket_spc,
@@ -662,7 +663,8 @@ def build_daily(
     downburst_valid_date: str | None,
     load_stress_level: int | None,
 ) -> list[dict[str, Any]]:
-    base = nws["qpf_window_start"]
+    # Keep consecutive 24-hour source windows across both DST transitions.
+    base = nws["qpf_window_start"].astimezone(dt.UTC)
     results: list[dict[str, Any]] = []
     for day_index in range(7):
         start = base + dt.timedelta(hours=24 * day_index)
@@ -733,8 +735,8 @@ def build_daily(
             {
                 "label": label,
                 "forecast_date": local_date.isoformat(),
-                "window_start": start.isoformat(),
-                "window_end": end.isoformat(),
+                "window_start": start.astimezone(EASTERN).isoformat(),
+                "window_end": end.astimezone(EASTERN).isoformat(),
                 "overall_level": level,
                 "primary_hazard": hazard if level > 0 else "None",
                 "note": "; ".join(note_parts) + ".",
@@ -761,7 +763,7 @@ def fetch_nws_weather(now: dt.datetime) -> dict[str, Any]:
 
     qpf_start = qpf["window_start"]
     qpf_end = qpf["window_end"]
-    forecast_end = qpf_start + dt.timedelta(hours=72)
+    forecast_end = qpf_start.astimezone(dt.UTC) + dt.timedelta(hours=72)
 
     gust_uom, gust_values = _grid_values(grid, "windGust")
     gust_converter = _kmh_to_mph if gust_uom == "wmoUnit:km_h-1" else None
