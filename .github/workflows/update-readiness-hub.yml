@@ -63,6 +63,7 @@ jobs:
         run: |
           python -m json.tool current/operational-readiness-hub.json > /dev/null
           python - <<'PY'
+          import datetime as dt
           import json
           from pathlib import Path
 
@@ -100,7 +101,20 @@ jobs:
           assert "current_value_m3m3" not in json.dumps(data["sources"])
 
           if "timeline" in data:
-              assert len(data["timeline"]) == 7
+              timeline = data["timeline"]
+              assert len(timeline) == 16
+              assert [row["forecast_hour"] for row in timeline] == [*range(0, 24, 3), *range(24, 72, 6)]
+              for index, row in enumerate(timeline):
+                  duration = 3 if row["forecast_hour"] < 24 else 6
+                  assert row["interval_hours"] == duration
+                  start = dt.datetime.fromisoformat(row["valid_time"]).astimezone(dt.UTC)
+                  end = dt.datetime.fromisoformat(row["interval_end"]).astimezone(dt.UTC)
+                  assert end - start == dt.timedelta(hours=duration)
+                  if index:
+                      assert row["valid_time"] == timeline[index - 1]["interval_end"]
+                  qpf = row["interval_qpf_in"]
+                  assert qpf is None or isinstance(qpf, (int, float)) and qpf >= 0
+                  assert qpf is not None or row["data_status"] == "Partial"
               assert data["timeline"][0]["downburst_status"] in ("Available", "Not Assessed")
               assert data["timeline"][-1]["data_status"] in ("Complete", "Partial")
 
