@@ -585,15 +585,19 @@ def build_timeline(
     downburst_valid_date: str | None,
     load_stress_level: int | None,
 ) -> list[dict[str, Any]]:
-    base = nws["qpf_window_start"]
-    offsets = (0, 3, 6, 12, 24, 48, 72)
+    # Work in elapsed UTC hours so repeated/skipped Eastern DST hours cannot
+    # create a gap or overlap in the source-aligned forecast intervals.
+    base = nws["qpf_window_start"].astimezone(dt.UTC)
+    offsets = (*range(0, 24, 3), *range(24, 72, 6))
     rows: list[dict[str, Any]] = []
     for offset in offsets:
         valid = base + dt.timedelta(hours=offset)
-        short_end = valid + dt.timedelta(hours=3)
+        interval_hours = 3 if offset < 24 else 6
+        short_end = valid + dt.timedelta(hours=interval_hours)
         forward_end = valid + dt.timedelta(hours=24)
 
         gust = _series_max(nws["gust_series"], valid, short_end)
+        interval_qpf = _sum_hourly_qpf(nws["qpf_hourly_rows"], valid, short_end)
         qpf_24 = _sum_hourly_qpf(nws["qpf_hourly_rows"], valid, forward_end)
         min_temp = _series_min(nws["temperature_series"], valid, forward_end)
         snow = conservative_accumulation(
@@ -612,32 +616,48 @@ def build_timeline(
             downburst_index is not None
             and downburst_valid_date is not None
             and local_date == downburst_valid_date
+            and (short_end - dt.timedelta(microseconds=1))
+            .astimezone(EASTERN).date().isoformat() == downburst_valid_date
         )
         bucket_downburst = downburst_index if downburst_available else None
         bucket_spc = spc_category if downburst_available else None
 
-        required_available = all(
-            value is not None
-            for value in (gust, qpf_24, min_temp, snow, ice, rainfall_72_in)
+        nws_fields = {
+            "forecast gust": gust,
+            "interval QPF": interval_qpf,
+            "next-24-hour QPF": qpf_24,
+            "minimum temperature": min_temp,
+            "snowfall": snow,
+            "ice accretion": ice,
+        }
+        missing_nws = [name for name, value in nws_fields.items() if value is None]
+        complete = (
+            downburst_available and bucket_spc is not None and not missing_nws
+            and rainfall_72_in is not None and load_stress_level is not None
         )
-        complete = downburst_available and required_available
         note = (
-            "Current Downburst assessment applies to this local date."
+            "Current Downburst assessment applies throughout this forecast interval."
             if downburst_available
-            else "Downburst is not assessed beyond the current Daily Downburst Model valid date."
+            else "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date."
         )
-        if not required_available:
-            note += " One or more NWS timeline fields are unavailable."
+        if missing_nws:
+            note += " Unavailable NWS fields: " + ", ".join(missing_nws) + "."
+        if rainfall_72_in is None:
+            note += " ECONet antecedent rainfall baseline is unavailable."
 
         rows.append(
             {
                 "label": _timeline_label(valid, now),
-                "valid_time": valid.isoformat(),
+                "valid_time": valid.astimezone(EASTERN).isoformat(),
+                "interval_end": short_end.astimezone(EASTERN).isoformat(),
+                "forecast_hour": offset,
+                "interval_hours": interval_hours,
                 "downburst_index": bucket_downburst,
                 "downburst_status": "Available" if downburst_available else "Not Assessed",
                 "spc_category": bucket_spc,
                 "spc_status": "Available" if bucket_spc is not None else "Not Assessed",
                 "wind_gust_mph": None if gust is None else round(gust, 1),
+                "interval_qpf_in": None if interval_qpf is None else round(interval_qpf, 4),
                 "qpf_24_in": None if qpf_24 is None else round(qpf_24, 4),
                 "rainfall_72_in": rainfall_72_in,
                 "rainfall_72_status": "Current observed baseline",
@@ -1206,7 +1226,10 @@ def build_snapshot(
                 "windGust overlapping the same 24-hour window. Minimum temperature uses "
                 "NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid "
                 "accumulation intervals conservatively; non-zero partial boundary intervals "
-                "are unavailable rather than prorated."
+                "are unavailable rather than prorated. The 72-hour timeline uses "
+                "eight 3-hour intervals followed by eight 6-hour intervals. Interval "
+                "QPF sums consecutive NWS hourly slots; next-24-hour QPF is retained "
+                "separately for tree-moisture vulnerability."
             ),
         }
     except Exception as exc:
