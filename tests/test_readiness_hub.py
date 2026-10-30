@@ -455,7 +455,7 @@ class ReadinessHubTests(unittest.TestCase):
             downburst_valid_date="2026-10-10",
             load_stress_level=1,
         )
-        self.assertEqual(len(timeline), 7)
+        self.assertEqual(len(timeline), 16)
         self.assertEqual(timeline[0]["downburst_index"], 29)
         self.assertEqual(timeline[0]["downburst_status"], "Available")
         tomorrow = next(row for row in timeline if row["valid_time"].startswith("2026-10-11"))
@@ -463,6 +463,114 @@ class ReadinessHubTests(unittest.TestCase):
         self.assertEqual(tomorrow["downburst_status"], "Not Assessed")
         self.assertEqual(tomorrow["data_status"], "Partial")
         self.assertAlmostEqual(timeline[0]["qpf_24_in"], 1.2, places=6)
+        self.assertAlmostEqual(timeline[0]["interval_qpf_in"], 0.15, places=6)
+
+    def test_timeline_intervals_cover_72_hours_without_gaps(self) -> None:
+        nws = self._outlook_fixture()
+        base = nws["qpf_window_start"]
+        # A gust in the latter half of a six-hour interval must be included.
+        nws["gust_series"][29]["value"] = 55.0
+        timeline = build_timeline(nws, base, 0.05, 29, "General", "2026-10-10", 1)
+        self.assertEqual(
+            [row["forecast_hour"] for row in timeline],
+            [*range(0, 24, 3), *range(24, 72, 6)],
+        )
+        self.assertEqual([row["interval_hours"] for row in timeline], [3] * 8 + [6] * 8)
+        for index, row in enumerate(timeline):
+            start = dt.datetime.fromisoformat(row["valid_time"]).astimezone(dt.UTC)
+            end = dt.datetime.fromisoformat(row["interval_end"]).astimezone(dt.UTC)
+            self.assertEqual(end - start, dt.timedelta(hours=row["interval_hours"]))
+            if index:
+                self.assertEqual(row["valid_time"], timeline[index - 1]["interval_end"])
+            self.assertAlmostEqual(row["interval_qpf_in"], 0.05 * row["interval_hours"])
+            self.assertAlmostEqual(row["qpf_24_in"], 1.2)
+        self.assertEqual(
+            dt.datetime.fromisoformat(timeline[-1]["interval_end"]),
+            base + dt.timedelta(hours=72),
+        )
+        self.assertAlmostEqual(sum(row["interval_qpf_in"] for row in timeline), 3.6)
+        self.assertEqual(timeline[8]["wind_gust_mph"], 55.0)
+
+    def test_timeline_missing_qpf_is_not_zero_or_redistributed(self) -> None:
+        nws = self._outlook_fixture()
+        nws["qpf_hourly_rows"][1]["value"] = None
+        timeline = build_timeline(
+            nws, nws["qpf_window_start"], 0.05, 29, "General", "2026-10-10", 1
+        )
+        self.assertIsNone(timeline[0]["interval_qpf_in"])
+        self.assertIsNone(timeline[0]["qpf_24_in"])
+        self.assertEqual(timeline[0]["data_status"], "Partial")
+        self.assertIn("Unavailable NWS fields: interval QPF, next-24-hour QPF", timeline[0]["note"])
+        self.assertAlmostEqual(timeline[1]["interval_qpf_in"], 0.15)
+        self.assertAlmostEqual(timeline[1]["qpf_24_in"], 1.2)
+
+        # Interval QPF may be valid when its separate forward window is not.
+        nws = self._outlook_fixture()
+        nws["qpf_hourly_rows"] = nws["qpf_hourly_rows"][:72]
+        timeline = build_timeline(
+            nws, nws["qpf_window_start"], 0.05, 29, "General", "2026-10-10", 1
+        )
+        self.assertAlmostEqual(timeline[-1]["interval_qpf_in"], 0.3)
+        self.assertIsNone(timeline[-1]["qpf_24_in"])
+
+    def test_timeline_labels_missing_econet_without_claiming_nws_failure(self) -> None:
+        nws = self._outlook_fixture()
+        timeline = build_timeline(
+            nws, nws["qpf_window_start"], None, 29, "General", "2026-10-10", 1
+        )
+        self.assertTrue(all(row["data_status"] == "Partial" for row in timeline))
+        self.assertIn("ECONet antecedent rainfall baseline is unavailable", timeline[0]["note"])
+        self.assertNotIn("Unavailable NWS", timeline[0]["note"])
+        self.assertIsNone(timeline[0]["rainfall_72_in"])
+
+    def test_timeline_does_not_extend_downburst_across_midnight(self) -> None:
+        nws = self._outlook_fixture()
+        # A 23:00–02:00 interval extends beyond the handoff's valid date.
+        nws["qpf_window_start"] = nws["qpf_window_start"].replace(hour=23)
+        timeline = build_timeline(
+            nws, nws["qpf_window_start"], 0.05, 29, "General", "2026-10-10", 1
+        )
+        self.assertIsNone(timeline[0]["downburst_index"])
+        self.assertIsNone(timeline[0]["spc_category"])
+        self.assertEqual(timeline[0]["downburst_status"], "Not Assessed")
+        self.assertEqual(timeline[0]["data_status"], "Partial")
+
+    def test_timeline_interval_qpf_and_offsets_across_dst(self) -> None:
+        for anchor in ("2026-10-31T21:00:00-04:00", "2027-03-13T21:00:00-05:00"):
+            for named_zone in (False, True):
+                with self.subTest(anchor=anchor, named_zone=named_zone):
+                    base = dt.datetime.fromisoformat(anchor)
+                    if named_zone:
+                        base = base.astimezone(EASTERN)
+                    base_utc = base.astimezone(dt.UTC)
+                    nws = self._outlook_fixture()
+                    nws["qpf_window_start"] = base
+                    qpf = []
+                    gust = []
+                    temp = []
+                    for hour in range(96):
+                        start = base_utc + dt.timedelta(hours=hour)
+                        end = start + dt.timedelta(hours=1)
+                        qpf.append({"start": start, "end": end, "value": (hour + 1) / 1000})
+                        gust.append({"start": start, "end": end, "value": 10.0})
+                        temp.append({"start": start, "end": end, "value": 50.0})
+                    nws.update(qpf_hourly_rows=qpf, gust_series=gust, temperature_series=temp)
+                    zero = [{"validTime": f"{base_utc.isoformat()}/P4D", "value": 0}]
+                    nws.update(snow_raw_values=zero, ice_raw_values=zero)
+                    rows = build_timeline(nws, base, 0.05, 5, "General", base.date().isoformat(), 1)
+                    for row in rows:
+                        offset = row["forecast_hour"]
+                        duration = row["interval_hours"]
+                        start = base_utc + dt.timedelta(hours=offset)
+                        end = start + dt.timedelta(hours=duration)
+                        self.assertEqual(row["valid_time"], start.astimezone(EASTERN).isoformat())
+                        self.assertEqual(row["interval_end"], end.astimezone(EASTERN).isoformat())
+                        self.assertAlmostEqual(
+                            row["interval_qpf_in"], sum((h + 1) / 1000 for h in range(offset, offset + duration))
+                        )
+                    self.assertAlmostEqual(
+                        sum(row["interval_qpf_in"] for row in rows), sum((h + 1) / 1000 for h in range(72))
+                    )
 
     def test_daily_is_seven_planning_periods_and_future_is_partial(self) -> None:
         nws = self._outlook_fixture()
@@ -556,33 +664,57 @@ class ReadinessHubTests(unittest.TestCase):
                             self.assertEqual(row["data_status"], "Partial")
 
     def test_timeline_dst_times_labels_and_forward_windows(self) -> None:
-        for base_text, after_three, label in (
-            ("2026-11-01T00:00:00-04:00", "2026-11-01T02:00:00-05:00", "Today 2 AM"),
-            ("2027-03-14T00:00:00-05:00", "2027-03-14T04:00:00-04:00", "Today 4 AM"),
+        for base_text, after_three, label, handoff_cutoff in (
+            ("2026-11-01T00:00:00-04:00", "2026-11-01T02:00:00-05:00", "Today 2 AM", 24),
+            ("2027-03-14T00:00:00-05:00", "2027-03-14T04:00:00-04:00", "Today 4 AM", 21),
         ):
             fixed_base = dt.datetime.fromisoformat(base_text)
             for base in (fixed_base, fixed_base.astimezone(EASTERN), fixed_base.astimezone(dt.UTC)):
                 with self.subTest(base=base_text, tz=str(base.tzinfo)):
                     nws = self._dst_outlook_fixture(base)
+                    # Exercise the latter half of a six-hour interval too.
+                    nws["gust_series"][29]["value"] = 55.0
                     timeline = build_timeline(nws, base, 0.05, 29, "General", base_text[:10], 1)
-                    self.assertEqual(len(timeline), 7)
+                    offsets = [*range(0, 24, 3), *range(24, 72, 6)]
+                    self.assertEqual(len(timeline), 16)
+                    self.assertEqual([row["forecast_hour"] for row in timeline], offsets)
+                    self.assertEqual([row["interval_hours"] for row in timeline], [3] * 8 + [6] * 8)
                     self.assertEqual(timeline[1]["valid_time"], after_three)
                     self.assertEqual(timeline[1]["label"], label)
-                    for row, offset in zip(timeline, (0, 3, 6, 12, 24, 48, 72)):
+                    for index, (row, offset) in enumerate(zip(timeline, offsets)):
+                        duration = 3 if offset < 24 else 6
                         expected = fixed_base.astimezone(dt.UTC) + dt.timedelta(hours=offset)
+                        expected_end = expected + dt.timedelta(hours=duration)
                         self.assertEqual(row["valid_time"], expected.astimezone(EASTERN).isoformat())
+                        self.assertEqual(row["interval_end"], expected_end.astimezone(EASTERN).isoformat())
+                        start = dt.datetime.fromisoformat(row["valid_time"]).astimezone(dt.UTC)
+                        end = dt.datetime.fromisoformat(row["interval_end"]).astimezone(dt.UTC)
+                        self.assertEqual(end - start, dt.timedelta(hours=duration))
+                        if index:
+                            self.assertEqual(timeline[index - 1]["interval_end"], row["valid_time"])
                         # Distinct hourly values expose missing/duplicated QPF slots.
+                        self.assertAlmostEqual(row["interval_qpf_in"], sum(range(offset + 1, offset + duration + 1)) / 1000)
                         self.assertAlmostEqual(row["qpf_24_in"], sum(range(offset + 1, offset + 25)) / 1000)
                         # Non-zero partial snow/ice intervals stay unavailable.
                         self.assertEqual(row["snowfall_in"], None if offset % 6 else 1.0)
                         self.assertEqual(row["ice_accretion_in"], None if offset % 6 else 0.01)
-                        selected = nws["gust_series"][offset:offset + 3]
+                        selected = nws["gust_series"][offset:offset + duration]
                         self.assertEqual(row["wind_gust_mph"], max(r["value"] for r in selected))
                         selected = nws["temperature_series"][offset:offset + 24]
                         self.assertEqual(row["min_temp_f"], min(r["value"] for r in selected))
-                        available = expected.astimezone(EASTERN).date() == fixed_base.date()
+                        # The final interval starting on the handoff date crosses
+                        # midnight and must not inherit today's Downburst/SPC.
+                        available = offset < handoff_cutoff
                         self.assertEqual(row["downburst_index"], 29 if available else None)
                         self.assertEqual(row["spc_category"], "General" if available else None)
+                        self.assertEqual(row["downburst_status"], "Available" if available else "Not Assessed")
+                    self.assertEqual(
+                        dt.datetime.fromisoformat(timeline[-1]["interval_end"]).astimezone(dt.UTC)
+                        - dt.datetime.fromisoformat(timeline[0]["valid_time"]).astimezone(dt.UTC),
+                        dt.timedelta(hours=72),
+                    )
+                    self.assertAlmostEqual(sum(row["interval_qpf_in"] for row in timeline), sum(range(1, 73)) / 1000)
+                    self.assertEqual(timeline[8]["wind_gust_mph"], 55.0)
 
     def test_source_aligned_qpf_retains_all_hours_across_dst(self) -> None:
         for base_text in ("2026-11-01T00:00:00-04:00", "2027-03-14T00:00:00-05:00"):
@@ -642,22 +774,31 @@ class ReadinessHubTests(unittest.TestCase):
                     self.assertEqual(result["qpf_window_end"], nws["qpf_window_end"])
 
     def test_snapshot_dst_correction_preserves_reviewed_governance(self) -> None:
-        base = dt.datetime.fromisoformat("2026-10-31T06:00:00-04:00")
-        nws = self._dst_outlook_fixture(base)
-        nws.update(qpf_24_in=0.3, wind_gust_mph=20.0, min_temp_f=30.0,
-                   snowfall_in=3.0, ice_accretion_in=0.03, source_update_time=base)
-        with tempfile.TemporaryDirectory() as tmp, \
-             patch("burke_hrrr.readiness_hub.fetch_nws_weather", return_value=nws), \
-             patch("burke_hrrr.readiness_hub.fetch_nws_alert", return_value={
-                 "event": "None", "source_time": None, "notes": "Test alerts",
-             }):
-            snapshot = build_snapshot(Path(tmp), base)
-        self.assertEqual(snapshot["meta"]["mode"], "REVIEWED")
-        self.assertEqual(snapshot["meta"]["forecast_window"], "72 hours")
-        self.assertEqual(snapshot["daily"][1]["window_start"], "2026-11-01T05:00:00-05:00")
-        self.assertEqual(snapshot["severe"]["qpf_24_in"], 0.3)
-        self.assertEqual(snapshot["sources"]["nws_nbm"]["status"], "Available")
-        self.assertEqual(snapshot["sources"]["downburst_workflow"]["status"], "Unavailable")
+        for base_text, next_start in (
+            ("2026-10-31T06:00:00-04:00", "2026-11-01T05:00:00-05:00"),
+            ("2027-03-13T06:00:00-05:00", "2027-03-14T07:00:00-04:00"),
+        ):
+            with self.subTest(base=base_text):
+                base = dt.datetime.fromisoformat(base_text)
+                nws = self._dst_outlook_fixture(base)
+                nws.update(qpf_24_in=0.3, wind_gust_mph=20.0, min_temp_f=30.0,
+                           snowfall_in=3.0, ice_accretion_in=0.03, source_update_time=base)
+                with tempfile.TemporaryDirectory() as tmp, \
+                     patch("burke_hrrr.readiness_hub.fetch_nws_weather", return_value=nws), \
+                     patch("burke_hrrr.readiness_hub.fetch_nws_alert", return_value={
+                         "event": "None", "source_time": None, "notes": "Test alerts",
+                     }):
+                    snapshot = build_snapshot(Path(tmp), base)
+                self.assertEqual(snapshot["meta"]["mode"], "REVIEWED")
+                self.assertEqual(snapshot["meta"]["forecast_window"], "72 hours")
+                self.assertEqual(snapshot["daily"][1]["window_start"], next_start)
+                self.assertEqual(len(snapshot["daily"]), 7)
+                self.assertEqual(len(snapshot["timeline"]), 16)
+                self.assertAlmostEqual(snapshot["timeline"][0]["interval_qpf_in"], 0.006)
+                self.assertAlmostEqual(snapshot["timeline"][0]["qpf_24_in"], 0.3)
+                self.assertEqual(snapshot["severe"]["qpf_24_in"], 0.3)
+                self.assertEqual(snapshot["sources"]["nws_nbm"]["status"], "Available")
+                self.assertEqual(snapshot["sources"]["downburst_workflow"]["status"], "Unavailable")
 
     def test_load_stress_level_one_is_normal_manual_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
