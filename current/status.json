@@ -1,23 +1,22 @@
 {
-  "date_eastern": "2026-10-30",
+  "date_eastern": "2026-10-31",
   "econet_0830": {
-    "generated_at": "2026-10-30T12:25:15.306131+00:00",
+    "generated_at": "2026-10-31T12:05:17.349642+00:00",
     "path": "current/morg-econet-0830.json",
-    "status": "upstream_unavailable",
-    "upstream_tested": true
+    "status": "valid"
   },
   "econet_1030": {
     "generated_at": "2026-10-30T14:15:50.898831+00:00",
     "path": "current/morg-econet-1030.json",
-    "status": "valid"
+    "status": "not_current_for_today"
   },
   "hrrr_12z": {
     "cycle_initialized": "2026-10-30T12:00:00+00:00",
     "generated_at": "2026-10-30T14:16:01.126065+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "valid",
+    "status": "not_current_for_today",
     "through": "2026-10-31T00:00:00-04:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-10-30T19:44:21.697416+00:00"
+  "updated_at": "2026-10-31T12:05:25.509978+00:00"
 }
