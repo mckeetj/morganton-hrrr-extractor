@@ -7,14 +7,14 @@
       "ice_accretion_in": 0.0,
       "label": "Today",
       "min_temp_f": 34.0,
-      "note": "Max gust 8 mph; 24h QPF 0.00 in; Min temp 34 F; Downburst not assessed for this planning period; planning floor only.",
+      "note": "Max gust 9 mph; 24h QPF 0.00 in; Min temp 34 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
-      "wind_gust_mph": 8.1,
-      "window_end": "2026-11-09T04:00:00-05:00",
-      "window_start": "2026-11-08T04:00:00-05:00"
+      "wind_gust_mph": 9.2,
+      "window_end": "2026-11-09T05:00:00-05:00",
+      "window_start": "2026-11-08T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -22,15 +22,15 @@
       "forecast_date": "2026-11-09",
       "ice_accretion_in": 0.0,
       "label": "Tomorrow",
-      "min_temp_f": 39.0,
-      "note": "Max gust 9 mph; 24h QPF 0.00 in; Min temp 39 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 38.0,
+      "note": "Max gust 9 mph; 24h QPF 0.00 in; Min temp 38 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 9.2,
-      "window_end": "2026-11-10T04:00:00-05:00",
-      "window_start": "2026-11-09T04:00:00-05:00"
+      "window_end": "2026-11-10T05:00:00-05:00",
+      "window_start": "2026-11-09T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -45,8 +45,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 9.2,
-      "window_end": "2026-11-11T04:00:00-05:00",
-      "window_start": "2026-11-10T04:00:00-05:00"
+      "window_end": "2026-11-11T05:00:00-05:00",
+      "window_start": "2026-11-10T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -61,8 +61,8 @@
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 5.8,
-      "window_end": "2026-11-12T04:00:00-05:00",
-      "window_start": "2026-11-11T04:00:00-05:00"
+      "window_end": "2026-11-12T05:00:00-05:00",
+      "window_start": "2026-11-11T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -70,15 +70,15 @@
       "forecast_date": "2026-11-12",
       "ice_accretion_in": 0.0,
       "label": "Thu",
-      "min_temp_f": 39.0,
-      "note": "Max gust 18 mph; 24h QPF 0.08 in; Min temp 39 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 38.0,
+      "note": "Max gust 18 mph; 24h QPF 0.08 in; Min temp 38 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0798,
       "snowfall_in": 0.0,
       "wind_gust_mph": 18.4,
-      "window_end": "2026-11-13T04:00:00-05:00",
-      "window_start": "2026-11-12T04:00:00-05:00"
+      "window_end": "2026-11-13T05:00:00-05:00",
+      "window_start": "2026-11-12T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -86,15 +86,15 @@
       "forecast_date": "2026-11-13",
       "ice_accretion_in": 0.0,
       "label": "Fri",
-      "min_temp_f": 32.0,
-      "note": "Max gust 21 mph; 24h QPF 0.00 in; Min temp 32 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 31.0,
+      "note": "Max gust 21 mph; 24h QPF 0.00 in; Min temp 31 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
       "wind_gust_mph": 20.7,
-      "window_end": "2026-11-14T04:00:00-05:00",
-      "window_start": "2026-11-13T04:00:00-05:00"
+      "window_end": "2026-11-14T05:00:00-05:00",
+      "window_start": "2026-11-13T05:00:00-05:00"
     },
     {
       "data_status": "Partial",
@@ -103,20 +103,20 @@
       "ice_accretion_in": 0.0,
       "label": "Sat",
       "min_temp_f": 29.0,
-      "note": "Max gust 13 mph; 24h QPF 0.00 in; Min temp 29 F; Downburst not assessed for this planning period; planning floor only.",
+      "note": "Max gust 13 mph; Min temp 29 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
-      "qpf_24_in": 0.0,
+      "qpf_24_in": null,
       "snowfall_in": 0.0,
       "wind_gust_mph": 12.7,
-      "window_end": "2026-11-15T04:00:00-05:00",
-      "window_start": "2026-11-14T04:00:00-05:00"
+      "window_end": "2026-11-15T05:00:00-05:00",
+      "window_start": "2026-11-14T05:00:00-05:00"
     }
   ],
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Partial / Degraded",
     "forecast_window": "72 hours",
-    "generated_at": "2026-11-08T04:47:31.107342-05:00",
+    "generated_at": "2026-11-08T05:17:29.863195-05:00",
     "mode": "REVIEWED",
     "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual. Unavailable or unresolved fields: severe.downburst_index, severe.spc_category."
   },
@@ -124,14 +124,14 @@
     "current_day_inputs": {
       "antecedent_rainfall_168_in": 0.58,
       "antecedent_rainfall_72_in": 0.56,
-      "forecast_gust_mph": 8.1,
+      "forecast_gust_mph": 9.2,
       "forecast_qpf_24_in": 0.0,
       "minimum_temperature_f": 34.0,
       "nws_alert": "Frost Advisory"
     },
     "evaluation_window": "Next 72 hours (first three supplied daily periods)",
     "full_forecast_risk_assessed": false,
-    "generated_at": "2026-11-08T04:47:31.107342-05:00",
+    "generated_at": "2026-11-08T05:17:29.863195-05:00",
     "known_input_completeness": "NWS fields available; source freshness shown separately",
     "known_input_planning_floor": {
       "headline": "No elevated signal in assessed inputs \u2014 Partial",
@@ -139,8 +139,8 @@
       "level": 0,
       "period": "Today",
       "primary_hazard": "None",
-      "window_end": "2026-11-09T04:00:00-05:00",
-      "window_start": "2026-11-08T04:00:00-05:00"
+      "window_end": "2026-11-09T05:00:00-05:00",
+      "window_start": "2026-11-08T05:00:00-05:00"
     },
     "management_posture_assessed": false,
     "notes": "This is a conservative floor from available weather and other assessed hazard inputs, not an all-hazards forecast risk or a management posture. The unassessed Downburst/SPC inputs could raise the eventual risk level. Never treat a Normal known-input floor as clearance; follow current NWS alerts and City procedures.",
@@ -181,7 +181,7 @@
         "status": "current"
       }
     },
-    "wind_gust_mph": 8.1
+    "wind_gust_mph": 9.2
   },
   "sources": {
     "downburst_workflow": {
@@ -232,21 +232,21 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-11-08T04:47:31.107342-05:00",
+      "retrieved_at": "2026-11-08T05:17:29.863195-05:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "Active NWS alert selected for Hub display: Frost Advisory. Area: Alexander; Iredell; Davie; Catawba; Rowan; Greater Caldwell; Greater Burke; Eastern McDowell. Headline: Frost Advisory issued November 7 at 10:58PM EST until November 8 at 9:00AM EST by NWS Greenville-Spartanburg SC",
       "observation_time": "2026-11-07T22:58:00-05:00",
-      "retrieved_at": "2026-11-08T04:47:31.107342-05:00",
+      "retrieved_at": "2026-11-08T05:17:29.863195-05:00",
       "status": "Available"
     },
     "nws_nbm": {
-      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-11-08T04:00:00-05:00 through 2026-11-09T04:00:00-05:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated. The 72-hour timeline uses eight 3-hour intervals followed by eight 6-hour intervals. Interval QPF sums consecutive NWS hourly slots; next-24-hour QPF is retained separately for tree-moisture vulnerability.",
+      "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-11-08T05:00:00-05:00 through 2026-11-09T05:00:00-05:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated. The 72-hour timeline uses eight 3-hour intervals followed by eight 6-hour intervals. Interval QPF sums consecutive NWS hourly slots; next-24-hour QPF is retained separately for tree-moisture vulnerability.",
       "observation_time": "2026-11-08T06:23:17+00:00",
-      "retrieved_at": "2026-11-08T04:47:31.107342-05:00",
+      "retrieved_at": "2026-11-08T05:17:29.863195-05:00",
       "status": "Available",
-      "valid_time": "2026-11-08T04:00:00-05:00"
+      "valid_time": "2026-11-08T05:00:00-05:00"
     },
     "spc": {
       "notes": "No valid current Daily Downburst Model handoff was available.",
@@ -264,10 +264,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 0,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T07:00:00-05:00",
+      "interval_end": "2026-11-08T08:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 4 AM",
+      "label": "Today 5 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 34.0,
@@ -278,7 +278,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T04:00:00-05:00",
+      "valid_time": "2026-11-08T05:00:00-05:00",
       "wind_gust_mph": 1.2
     },
     {
@@ -287,13 +287,13 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 3,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T10:00:00-05:00",
+      "interval_end": "2026-11-08T11:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 7 AM",
+      "label": "Today 8 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 34.0,
+      "min_temp_f": 38.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.56,
@@ -301,8 +301,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T07:00:00-05:00",
-      "wind_gust_mph": 2.3
+      "valid_time": "2026-11-08T08:00:00-05:00",
+      "wind_gust_mph": 3.5
     },
     {
       "data_status": "Partial",
@@ -310,10 +310,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 6,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T13:00:00-05:00",
+      "interval_end": "2026-11-08T14:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 10 AM",
+      "label": "Today 11 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -324,8 +324,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T10:00:00-05:00",
-      "wind_gust_mph": 5.8
+      "valid_time": "2026-11-08T11:00:00-05:00",
+      "wind_gust_mph": 8.1
     },
     {
       "data_status": "Partial",
@@ -333,10 +333,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 9,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T16:00:00-05:00",
+      "interval_end": "2026-11-08T17:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 1 PM",
+      "label": "Today 2 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -347,7 +347,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T13:00:00-05:00",
+      "valid_time": "2026-11-08T14:00:00-05:00",
       "wind_gust_mph": 8.1
     },
     {
@@ -356,10 +356,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 12,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T19:00:00-05:00",
+      "interval_end": "2026-11-08T20:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 4 PM",
+      "label": "Today 5 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -370,7 +370,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T16:00:00-05:00",
+      "valid_time": "2026-11-08T17:00:00-05:00",
       "wind_gust_mph": 6.9
     },
     {
@@ -379,10 +379,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 15,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-08T22:00:00-05:00",
+      "interval_end": "2026-11-08T23:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 7 PM",
+      "label": "Today 8 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -393,8 +393,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T19:00:00-05:00",
-      "wind_gust_mph": 5.8
+      "valid_time": "2026-11-08T20:00:00-05:00",
+      "wind_gust_mph": 4.6
     },
     {
       "data_status": "Partial",
@@ -402,10 +402,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 18,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-09T01:00:00-05:00",
+      "interval_end": "2026-11-09T02:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Today 10 PM",
+      "label": "Today 11 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -416,8 +416,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-08T22:00:00-05:00",
-      "wind_gust_mph": 4.6
+      "valid_time": "2026-11-08T23:00:00-05:00",
+      "wind_gust_mph": 6.9
     },
     {
       "data_status": "Partial",
@@ -425,10 +425,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 21,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-09T04:00:00-05:00",
+      "interval_end": "2026-11-09T05:00:00-05:00",
       "interval_hours": 3,
       "interval_qpf_in": 0.0,
-      "label": "Tomorrow 1 AM",
+      "label": "Tomorrow 2 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 39.0,
@@ -439,8 +439,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-09T01:00:00-05:00",
-      "wind_gust_mph": 8.1
+      "valid_time": "2026-11-09T02:00:00-05:00",
+      "wind_gust_mph": 9.2
     },
     {
       "data_status": "Partial",
@@ -448,13 +448,13 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 24,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-09T10:00:00-05:00",
+      "interval_end": "2026-11-09T11:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tomorrow 4 AM",
+      "label": "Tomorrow 5 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 39.0,
+      "min_temp_f": 38.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.56,
@@ -462,7 +462,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-09T04:00:00-05:00",
+      "valid_time": "2026-11-09T05:00:00-05:00",
       "wind_gust_mph": 9.2
     },
     {
@@ -471,10 +471,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 30,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-09T16:00:00-05:00",
+      "interval_end": "2026-11-09T17:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tomorrow 10 AM",
+      "label": "Tomorrow 11 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 35.0,
@@ -485,7 +485,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-09T10:00:00-05:00",
+      "valid_time": "2026-11-09T11:00:00-05:00",
       "wind_gust_mph": 8.1
     },
     {
@@ -494,10 +494,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 36,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-09T22:00:00-05:00",
+      "interval_end": "2026-11-09T23:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tomorrow 4 PM",
+      "label": "Tomorrow 5 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 35.0,
@@ -508,7 +508,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-09T16:00:00-05:00",
+      "valid_time": "2026-11-09T17:00:00-05:00",
       "wind_gust_mph": 4.6
     },
     {
@@ -517,10 +517,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 42,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-10T04:00:00-05:00",
+      "interval_end": "2026-11-10T05:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tomorrow 10 PM",
+      "label": "Tomorrow 11 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 35.0,
@@ -531,8 +531,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-09T22:00:00-05:00",
-      "wind_gust_mph": 2.3
+      "valid_time": "2026-11-09T23:00:00-05:00",
+      "wind_gust_mph": 1.2
     },
     {
       "data_status": "Partial",
@@ -540,10 +540,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 48,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-10T10:00:00-05:00",
+      "interval_end": "2026-11-10T11:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tue 4 AM",
+      "label": "Tue 5 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 35.0,
@@ -554,8 +554,8 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-10T04:00:00-05:00",
-      "wind_gust_mph": 1.2
+      "valid_time": "2026-11-10T05:00:00-05:00",
+      "wind_gust_mph": 2.3
     },
     {
       "data_status": "Partial",
@@ -563,10 +563,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 54,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-10T16:00:00-05:00",
+      "interval_end": "2026-11-10T17:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tue 10 AM",
+      "label": "Tue 11 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 38.0,
@@ -577,7 +577,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-10T10:00:00-05:00",
+      "valid_time": "2026-11-10T11:00:00-05:00",
       "wind_gust_mph": 9.2
     },
     {
@@ -586,10 +586,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 60,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-10T22:00:00-05:00",
+      "interval_end": "2026-11-10T23:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tue 4 PM",
+      "label": "Tue 5 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 38.0,
@@ -600,7 +600,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-10T16:00:00-05:00",
+      "valid_time": "2026-11-10T17:00:00-05:00",
       "wind_gust_mph": 6.9
     },
     {
@@ -609,10 +609,10 @@
       "downburst_status": "Not Assessed",
       "forecast_hour": 66,
       "ice_accretion_in": 0.0,
-      "interval_end": "2026-11-11T04:00:00-05:00",
+      "interval_end": "2026-11-11T05:00:00-05:00",
       "interval_hours": 6,
       "interval_qpf_in": 0.0,
-      "label": "Tue 10 PM",
+      "label": "Tue 11 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
       "min_temp_f": 38.0,
@@ -623,7 +623,7 @@
       "snowfall_in": 0.0,
       "spc_category": null,
       "spc_status": "Not Assessed",
-      "valid_time": "2026-11-10T22:00:00-05:00",
+      "valid_time": "2026-11-10T23:00:00-05:00",
       "wind_gust_mph": 2.3
     }
   ],
