@@ -6,17 +6,23 @@
     "status": "valid"
   },
   "econet_1030": {
+    "actual_start_time": "2026-11-10T16:27:49.647957-05:00",
     "generated_at": "2026-11-09T15:05:55.101998+00:00",
+    "intended_schedule": "2026-11-10T10:57:00-05:00",
     "path": "current/morg-econet-1030.json",
-    "status": "not_current_for_today"
+    "reason": "GitHub delivered the scheduled run after the protected 10:30/noon recovery window; ECONet/CLOUDS was not tested in this run.",
+    "scheduler_delay_minutes": 330.8,
+    "status": "scheduler_missed_window",
+    "trigger_schedule": "57 10 * * *",
+    "upstream_tested": false
   },
   "hrrr_12z": {
-    "cycle_initialized": "2026-11-09T12:00:00+00:00",
-    "generated_at": "2026-11-09T15:06:05.506158+00:00",
+    "cycle_initialized": "2026-11-10T12:00:00+00:00",
+    "generated_at": "2026-11-10T21:28:25.574121+00:00",
     "path": "current/burke-hrrr-12z.json",
-    "status": "not_current_for_today",
-    "through": "2026-11-10T00:00:00-05:00"
+    "status": "valid",
+    "through": "2026-11-11T00:00:00-05:00"
   },
   "schema_version": 1,
-  "updated_at": "2026-11-10T13:05:27.450092+00:00"
+  "updated_at": "2026-11-10T21:30:06.833788+00:00"
 }
