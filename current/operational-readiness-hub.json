@@ -6,8 +6,8 @@
       "forecast_date": "2026-11-12",
       "ice_accretion_in": 0.0,
       "label": "Today",
-      "min_temp_f": 37.0,
-      "note": "Max gust 21 mph; 24h QPF 0.00 in; Min temp 37 F; Downburst Index 6.",
+      "min_temp_f": 36.0,
+      "note": "Max gust 21 mph; 24h QPF 0.00 in; Min temp 36 F; Downburst Index 6.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -22,13 +22,13 @@
       "forecast_date": "2026-11-13",
       "ice_accretion_in": 0.0,
       "label": "Tomorrow",
-      "min_temp_f": 30.0,
-      "note": "Max gust 15 mph; 24h QPF 0.00 in; Min temp 30 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 31.0,
+      "note": "Max gust 14 mph; 24h QPF 0.00 in; Min temp 31 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
-      "wind_gust_mph": 15.0,
+      "wind_gust_mph": 13.8,
       "window_end": "2026-11-14T13:00:00-05:00",
       "window_start": "2026-11-13T13:00:00-05:00"
     },
@@ -38,13 +38,13 @@
       "forecast_date": "2026-11-14",
       "ice_accretion_in": 0.0,
       "label": "Sat",
-      "min_temp_f": 26.0,
-      "note": "Max gust 15 mph; 24h QPF 0.00 in; Min temp 26 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 27.0,
+      "note": "Max gust 14 mph; 24h QPF 0.00 in; Min temp 27 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
-      "wind_gust_mph": 15.0,
+      "wind_gust_mph": 13.8,
       "window_end": "2026-11-15T13:00:00-05:00",
       "window_start": "2026-11-14T13:00:00-05:00"
     },
@@ -54,13 +54,13 @@
       "forecast_date": "2026-11-15",
       "ice_accretion_in": 0.0,
       "label": "Sun",
-      "min_temp_f": 28.0,
-      "note": "Max gust 3 mph; 24h QPF 0.00 in; Min temp 28 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 29.0,
+      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 29 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
       "snowfall_in": 0.0,
-      "wind_gust_mph": 3.5,
+      "wind_gust_mph": 4.6,
       "window_end": "2026-11-16T13:00:00-05:00",
       "window_start": "2026-11-15T13:00:00-05:00"
     },
@@ -70,8 +70,8 @@
       "forecast_date": "2026-11-16",
       "ice_accretion_in": 0.0,
       "label": "Mon",
-      "min_temp_f": 29.0,
-      "note": "Max gust 3 mph; 24h QPF 0.00 in; Min temp 29 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 31.0,
+      "note": "Max gust 3 mph; 24h QPF 0.00 in; Min temp 31 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -86,8 +86,8 @@
       "forecast_date": "2026-11-17",
       "ice_accretion_in": 0.0,
       "label": "Tue",
-      "min_temp_f": 29.0,
-      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 29 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 30.0,
+      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 30 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -102,8 +102,8 @@
       "forecast_date": "2026-11-18",
       "ice_accretion_in": 0.0,
       "label": "Wed",
-      "min_temp_f": 32.0,
-      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 32 F; Downburst not assessed for this planning period; planning floor only.",
+      "min_temp_f": 31.0,
+      "note": "Max gust 5 mph; 24h QPF 0.00 in; Min temp 31 F; Downburst not assessed for this planning period; planning floor only.",
       "overall_level": 0,
       "primary_hazard": "None",
       "qpf_24_in": 0.0,
@@ -116,7 +116,7 @@
   "meta": {
     "confidence": "Automated pilot snapshot \u2014 Complete controlling inputs",
     "forecast_window": "72 hours",
-    "generated_at": "2026-11-12T13:17:33.078746-05:00",
+    "generated_at": "2026-11-12T13:47:31.080961-05:00",
     "mode": "REVIEWED",
     "notes": "Automatically assembled controlled-pilot snapshot from the Morganton weather workflow. Defaults to REVIEWED and never self-designates OPERATIONAL. Daily Downburst Model supplies the reviewed Downburst Index/SPC handoff; NWS Digital Forecast/grid data supply wind, QPF, temperature, snow and ice; MORG ECONet supplies antecedent rainfall and permitted derived soil context; a QC-validated automated vegetation-moisture screening result (or separately validated, same-day qualitative briefing when supplied) is kept separate from calculated forecast risk; Load Stress remains manual."
   },
@@ -168,7 +168,7 @@
     "downburst_workflow": {
       "notes": "Deterministic Downburst Model v1.0 handoff from 11:00 AM Model Refresh; verdict=LOW; index=6; confidence=Moderate. Deterministic v1.0: SPC 5 + NWS thunder 0 + HRRR 1 = 6; SPC wind probability 0%.",
       "observation_time": "2026-11-12T11:05:09.344474-05:00",
-      "retrieved_at": "2026-11-12T13:17:33.078746-05:00",
+      "retrieved_at": "2026-11-12T13:47:31.080961-05:00",
       "status": "Available"
     },
     "econet": {
@@ -215,24 +215,24 @@
     "load_stress": {
       "notes": "Morganton Electric manual Load Stress assessment: Level 1 \u2014 Normal. Not inferred from weather.",
       "observation_time": "2026-10-09T16:39:35-04:00",
-      "retrieved_at": "2026-11-12T13:17:33.078746-05:00",
+      "retrieved_at": "2026-11-12T13:47:31.080961-05:00",
       "status": "Manual"
     },
     "nws_alerts": {
       "notes": "No active NWS alert returned for the Morganton point.",
-      "retrieved_at": "2026-11-12T13:17:33.078746-05:00",
+      "retrieved_at": "2026-11-12T13:47:31.080961-05:00",
       "status": "Available"
     },
     "nws_nbm": {
       "notes": "Schema source bucket retained for backward compatibility. Actual source is NWS Digital Forecast / NDFD and api.weather.gov grid data for Morganton. Source-aligned 24-hour QPF window 2026-11-12T13:00:00-05:00 through 2026-11-13T13:00:00-05:00, 24 consecutive NWS one-hour QPF slots, no minute-level prorating. Wind gust uses the maximum NWS grid windGust overlapping the same 24-hour window. Minimum temperature uses NWS hourly grid temperature through 72 hours. Snow and ice use NWS grid accumulation intervals conservatively; non-zero partial boundary intervals are unavailable rather than prorated. The 72-hour timeline uses eight 3-hour intervals followed by eight 6-hour intervals. Interval QPF sums consecutive NWS hourly slots; next-24-hour QPF is retained separately for tree-moisture vulnerability.",
-      "observation_time": "2026-11-12T06:23:56+00:00",
-      "retrieved_at": "2026-11-12T13:17:33.078746-05:00",
+      "observation_time": "2026-11-12T18:23:26+00:00",
+      "retrieved_at": "2026-11-12T13:47:31.080961-05:00",
       "status": "Available",
       "valid_time": "2026-11-12T13:00:00-05:00"
     },
     "spc": {
       "notes": "SPC category carried by the Deterministic Downburst Model v1.0 handoff: General. Exact SPC issue time was not established.",
-      "retrieved_at": "2026-11-12T13:17:33.078746-05:00",
+      "retrieved_at": "2026-11-12T13:47:31.080961-05:00",
       "status": "Available"
     },
     "vegetation_vulnerability": {
@@ -256,7 +256,7 @@
       "label": "Today 1 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
+      "min_temp_f": 36.0,
       "note": "Current Downburst assessment applies throughout this forecast interval.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -279,7 +279,7 @@
       "label": "Today 4 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
+      "min_temp_f": 36.0,
       "note": "Current Downburst assessment applies throughout this forecast interval.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -288,7 +288,7 @@
       "spc_category": "General",
       "spc_status": "Available",
       "valid_time": "2026-11-12T16:00:00-05:00",
-      "wind_gust_mph": 20.7
+      "wind_gust_mph": 18.4
     },
     {
       "data_status": "Complete",
@@ -302,7 +302,7 @@
       "label": "Today 7 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
+      "min_temp_f": 36.0,
       "note": "Current Downburst assessment applies throughout this forecast interval.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -311,7 +311,7 @@
       "spc_category": "General",
       "spc_status": "Available",
       "valid_time": "2026-11-12T19:00:00-05:00",
-      "wind_gust_mph": 18.4
+      "wind_gust_mph": 16.1
     },
     {
       "data_status": "Partial",
@@ -325,7 +325,7 @@
       "label": "Today 10 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
+      "min_temp_f": 36.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -348,7 +348,7 @@
       "label": "Tomorrow 1 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 37.0,
+      "min_temp_f": 36.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -357,7 +357,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-13T01:00:00-05:00",
-      "wind_gust_mph": 15.0
+      "wind_gust_mph": 13.8
     },
     {
       "data_status": "Partial",
@@ -380,7 +380,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-13T04:00:00-05:00",
-      "wind_gust_mph": 16.1
+      "wind_gust_mph": 15.0
     },
     {
       "data_status": "Partial",
@@ -394,7 +394,7 @@
       "label": "Tomorrow 7 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 30.0,
+      "min_temp_f": 31.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -417,7 +417,7 @@
       "label": "Tomorrow 10 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 30.0,
+      "min_temp_f": 31.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -426,7 +426,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-13T10:00:00-05:00",
-      "wind_gust_mph": 16.1
+      "wind_gust_mph": 17.3
     },
     {
       "data_status": "Partial",
@@ -440,7 +440,7 @@
       "label": "Tomorrow 1 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 30.0,
+      "min_temp_f": 31.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -463,7 +463,7 @@
       "label": "Tomorrow 7 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 30.0,
+      "min_temp_f": 31.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -486,7 +486,7 @@
       "label": "Sat 1 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 30.0,
+      "min_temp_f": 31.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -495,7 +495,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-14T01:00:00-05:00",
-      "wind_gust_mph": 6.9
+      "wind_gust_mph": 5.8
     },
     {
       "data_status": "Partial",
@@ -509,7 +509,7 @@
       "label": "Sat 7 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 26.0,
+      "min_temp_f": 27.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -518,7 +518,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-14T07:00:00-05:00",
-      "wind_gust_mph": 15.0
+      "wind_gust_mph": 13.8
     },
     {
       "data_status": "Partial",
@@ -532,7 +532,7 @@
       "label": "Sat 1 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 26.0,
+      "min_temp_f": 27.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -541,7 +541,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-14T13:00:00-05:00",
-      "wind_gust_mph": 15.0
+      "wind_gust_mph": 13.8
     },
     {
       "data_status": "Partial",
@@ -555,7 +555,7 @@
       "label": "Sat 7 PM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 26.0,
+      "min_temp_f": 27.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -564,7 +564,7 @@
       "spc_category": null,
       "spc_status": "Not Assessed",
       "valid_time": "2026-11-14T19:00:00-05:00",
-      "wind_gust_mph": 5.8
+      "wind_gust_mph": 6.9
     },
     {
       "data_status": "Partial",
@@ -578,7 +578,7 @@
       "label": "Sun 1 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 26.0,
+      "min_temp_f": 27.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -601,7 +601,7 @@
       "label": "Sun 7 AM",
       "load_stress_level": 1,
       "load_stress_status": "Manual",
-      "min_temp_f": 27.0,
+      "min_temp_f": 28.0,
       "note": "Downburst is not assessed for the full forecast interval beyond the current Daily Downburst Model valid date.",
       "qpf_24_in": 0.0,
       "rainfall_72_in": 0.0,
@@ -616,7 +616,7 @@
   "winter": {
     "ice_accretion_in": 0.0,
     "load_stress_level": 1,
-    "min_temp_f": 26.0,
+    "min_temp_f": 27.0,
     "snowfall_in": 0.0
   }
 }
